@@ -39,6 +39,8 @@
   },
   "repository": {
     "visibility": "private",
-    "status": "pending_publish"
+    "status": "published_and_verified",
+    "url": "https://github.com/acheAIsuiyimen/ache-life-to-comic",
+    "defaultBranch": "main"
   }
 }
