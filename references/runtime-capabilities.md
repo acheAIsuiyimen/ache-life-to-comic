@@ -1,0 +1,91 @@
+# 运行与图片能力
+
+## 能力契约
+
+先探测：
+
+```json
+{
+  "image": {
+    "generate": false,
+    "reference": false,
+    "edit": false,
+    "exactSize": false,
+    "transparent": false,
+    "seed": false,
+    "batchLimit": 1
+  },
+  "runtime": {
+    "fileWrite": true,
+    "browserRender": true,
+    "persistentStorage": true
+  },
+  "presentation": {
+    "imageAttachment": true,
+    "filePreview": true,
+    "htmlArtifact": true,
+    "openLocalPreview": true,
+    "interactiveChoices": true
+  }
+}
+```
+
+不要根据平台名猜能力。
+
+图片生成与图片展示是两种能力。生成成功不代表用户已经看到；必要视觉必须遵循
+`references/presentation-runtime.md` 并取得展示回执。
+
+## visual-job
+
+平台无关任务只包含：
+
+- `jobId`
+- 路由与页面职责
+- 画风 ID 和 DNA
+- 画面节拍
+- 角色锚点
+- 参考路径
+- 目标比例和安全区
+- 不可改变项
+- `textless-visual`
+- 可接受的降级路线
+
+平台入口负责翻译；核心不存模型专属参数。
+
+## 回执
+
+必须记录：
+
+- 实际输出文件
+- 实际宽高
+- 成功、失败和重试
+- 警告
+- 平台明确暴露的模型信息
+
+未暴露的模型、revision、seed 和费用写 `not_exposed`。
+
+## 无生图
+
+第一次缺失时让用户选择：
+
+1. `enable`：引导启用当前平台能力。
+2. `light`：原图、CSS/SVG、线条、色块、纸张与手写排版。
+3. `pending`：排版完成并加入待补图。
+
+保存选择，不重复询问。
+
+`light` 不是切换成通用信息卡。它必须继续读取当前画风卡：
+
+- 沿用书级白底、核心色板、线条、留白和成熟度；
+- 02 雪色粉蜡只使用纸白、冰蓝、炭灰和极少珊瑚红；没有内容依据时不加入黄色、橙色或新主题色；
+- 优先不规则手绘线、粉蜡颗粒、轻微纸边和视觉隐喻，禁止圆角 UI 卡片、悬浮阴影、仪表盘、PPT 图标和均分组件；
+- 准确文字仍由排版层生成，显示标题可以手写感，正文保持可读；
+- 输出仍要过原尺寸、135×180、桌面和手机四视图；“没有溢出”不等于画风通过。
+
+## 失败
+
+- 尺寸不符：记录实际尺寸，排版层适配。
+- 参考图不支持：降低到语义画风卡，不假装参考图已被模型读取。
+- 透明背景不支持：使用白底或确定性抠图能力；不要伪造透明回执。
+- 角色漂移：定向重做相关资产，不能重写故事。
+- 无图片文件返回：保留 job 和排版草稿，不占正式章节。

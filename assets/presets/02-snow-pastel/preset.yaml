@@ -1,0 +1,440 @@
+schema_version: "comic-life-preset/0.1"
+lifecycle: validated_preset
+approval:
+  g6_1:
+    status: user_approved
+    approved_on: "2026-07-29"
+    scope: "specification, evidence board, photo cover rule, display fixes, compound-input routing"
+  g6_2:
+    status: passed
+    approved_on: "2026-07-30"
+    current_step: complete
+    final_audit: "../漫画人生-02雪色粉蜡-G6.2-总审计-v0.1/audit.json"
+    planning_layer: passed
+    route_status:
+      S: user_approved
+      P: user_approved
+      K: user_approved
+      M: user_approved
+      L: user_approved
+  lifecycle_note: "G6.1 specification approval and G6.2 five-route cold-start acceptance are complete; preset 02 is validated for formal Skill packaging."
+distribution:
+  full_spec_package:
+    visibility: internal_system
+    one_copy_per_validated_preset: true
+    duplicate_per_user: false
+  per_book_profile:
+    visibility: user_viewable_runtime
+    lightweight: true
+    contains:
+      - selected_preset_or_custom_style_card
+      - recurring_character_compact_card
+      - privacy_budget_and_continuity
+      - pinned_preferences_and_forbidden
+      - current_serialization_position
+  user_default_deliverables:
+    - episode_pages
+    - monthly_chapter
+    - part_book_html_or_pdf
+    - readable_one_page_profile_summary
+  full_export:
+    available_on_request: true
+    purpose:
+      - migration
+      - backup
+      - advanced_editing
+preset:
+  id: "02-snow-pastel"
+  name_zh: "雪色粉蜡"
+  version: "1.0.0"
+  selector_cover: "cover.png"
+  approval_scope: "G1-G6.2 validated baseline"
+  formal_skill_ready: true
+  formal_skill_created: false
+
+output:
+  page:
+    width_px: 1080
+    height_px: 1440
+    aspect_ratio: "3:4"
+    color_space: "sRGB"
+    color_mode: "RGB"
+    alpha: false
+    background: "#FFFFFF"
+    white_area_ratio: [0.70, 0.85]
+  default_delivery:
+    - local_html
+    - png_3_4
+  online_reading: vertical_scroll
+  simulate_page_turn: false
+  min_safe_margin_px: 64
+
+style:
+  base:
+    paper_white: "#FFFFFF"
+    ink: "#23282E"
+    secondary_ink: "#647180"
+    ice_blue: "#82A9D7"
+    deep_blue: "#4C719D"
+    pale_blue: "#EDF4FB"
+    rule_line: "#D4DEE8"
+  page_special_color:
+    source: "current content evidence"
+    max_area_ratio: 0.05
+    allow_when_semantic: true
+  materials:
+    - soft_wax_pastel
+    - colored_pencil_line
+    - quiet_paper_fiber
+    - hand_torn_photo_support
+    - sparse_handwritten_marks
+  composition:
+    dominant_ground: white
+    asymmetry: controlled
+    whitespace: structural
+    sticker_density: low
+    one_primary_visual_action_per_band: true
+  typography:
+    long_body: deterministic_serif
+    title: editorial_serif_plus_hand_drawn_action
+    notes: handwriting_like
+    english_texture: optional
+    generated_image_text: forbidden
+  forbidden:
+    - beige_or_kraft_full_page_ground
+    - childish_sticker_pile
+    - equal_grid_by_default
+    - decorative_elements_without_semantic_source
+    - brown_mustard_palette_imported_from_reference
+    - long_body_in_handwriting_font
+    - system_explanation_inside_artwork
+
+onboarding:
+  ask_once:
+    - style_reference_or_preset
+    - recurring_character
+    - continuity_level
+    - privacy
+    - budget
+  style_reference_count:
+    min: 1
+    max: 5
+  default_continuity: L1
+  default_privacy: private_local
+  default_budget: standard
+  repeat_frozen_questions: false
+
+routing:
+  rules_version: "0.2.1"
+  priority:
+    - explicit_user_instruction
+    - safety_privacy_budget
+    - content_nodes
+    - asset_count
+    - template_capacity
+    - soft_preferences
+  supported:
+    S: daily_short
+    P: photo_record
+    K: knowledge_note
+    M: meeting_note
+    L: longform_preserve
+  episode_page_model:
+    cover_page_count: 1
+    body_page_count: content_decides
+    ending_page_count: content_decides
+    total_page_count: "cover + body + optional ending"
+  plan_record: plan.json
+  one_route_per_page: true
+  multi_route_episode_allowed: true
+  compound_input:
+    enabled: true
+    unit: "submission -> one or more episodes -> single-primary-route pages"
+    relation_model: content_graph
+    merge_when:
+      - shared_topic_or_event
+      - explicit_dependency_between_units
+      - personal_reaction_depends_on_knowledge
+      - public_share_copy_is_output_intent_for_same_content
+    split_when:
+      - independent_complete_topics
+      - no_semantic_dependency
+      - explicit_new_topic_marker
+      - separate_publishable_records
+    ambiguous_policy:
+      default: reversible_draft_plan
+      interrupt_only_when: "merge_or_split materially changes privacy, cost, or meaning"
+    related_input:
+      episode_count: 1
+      cover_page_count: 1
+      page_rule: "one primary route per page; routes may alternate across pages"
+      preferred_arc:
+        - personal_frame_when_present
+        - knowledge_or_factual_core
+        - optional_personal_return
+    unrelated_input:
+      episode_count: "one per connected content component"
+      cover_page_count_per_episode: 1
+    moments:
+      may_be_content_route: true
+      may_be_public_output_intent: true
+      public_draft_must_not_erase_private_book_context: true
+    traceability:
+      submission_group_id_required: true
+      episode_ids_required: true
+      merged_source_unit_ids_required: true
+  mixed_route_exceptions:
+    - weekly_digest
+    - monthly_digest
+    - user_declared_collection
+
+routes:
+  S:
+    visual_priority: high
+    default_range_pages: [1, 3]
+    use_multiframe_when:
+      min_action_or_emotion_beats: 3
+    preferred_sequence:
+      - establishing
+      - action_closeup
+      - emotional_result
+  P:
+    visual_priority: high
+    cover_required_for_new_episode: true
+    episode_structure:
+      - episode_cover
+      - photo_body_pages
+      - optional_ending
+    cover_is_separate_from_body: true
+    cover_must_not_replace_photo_body: true
+    same_episode_attachment_does_not_create_new_cover: true
+    original_asset_policy: preserve_complete
+    crop_default: false
+    redraw_original_default: false
+    fit: contain
+    photo_count_one_page_preference: [1, 4]
+    expand_when_subject_cannot_be_preserved: true
+    collage:
+      flow: vertical_relay
+      forbid_triangle_composition: true
+      supports: hand_torn_irregular_windows
+      illustrations_from_photo_evidence_only: true
+  K:
+    text_priority: high
+    illustration_density: "0-1 primary group per 1-3 body pages"
+    image_removal_must_preserve_explanation: true
+    sources_required_for_external_facts: true
+    forbid_one_big_image_per_fact: true
+  M:
+    text_priority: high
+    required_fields:
+      - meeting_flow
+      - speaker_or_role
+      - decisions
+      - unresolved
+      - risks
+      - todos
+      - owner
+      - deadline
+      - status
+    illustration_density: "0-1 margin illustration per 1-3 body pages"
+    everything_to_comic:
+      default: false
+      enable_only_on_explicit_request: true
+  L:
+    text_priority: highest
+    preserve_original_paragraphs: true
+    preserve_order: true
+    source_text_hash_required: true
+    allowed_edits:
+      - pagination
+      - line_break
+      - typography
+      - whitespace
+      - quote_from_original
+      - textless_spot_illustration
+    forbidden_edits:
+      - summary
+      - polish
+      - rewrite
+      - dialogue_conversion
+      - reorder
+      - added_facts
+    illustration_density: "0-1 spot illustration per 1-3 body pages"
+
+cover_director:
+  enabled: true
+  trigger: recordable_input
+  required_for_routes:
+    - S
+    - P
+    - K
+    - M
+    - L
+  cover_is_additional_to_body_pages: true
+  photo_route:
+    required: true
+    derive_from:
+      - photo_visual_evidence
+      - user_caption
+      - photo_time_weather_object_when_available
+    must_not_replace_original_photo_page: true
+    allow_privacy_safe_abstraction: true
+    forbid_invented_event_fact: true
+  ignore:
+    - revision
+    - same_episode_attachment
+    - factual_correction
+    - system_question
+    - explicit_continuation
+  active_pool_version: "0.1"
+  modes:
+    environment_transformation: 0.5
+    typography_in_scene: 0.5
+  seed: "sha256(episode_id + content_hash + pool_version)"
+  stable_for_same_input: true
+  avoid_immediate_repeat: true
+  reroll_command: "换一个"
+  idea_count: 1
+  free_layout_variant_count: 1
+  title_must_participate_in_scene: true
+  compare_recent_episodes: 5
+
+characters:
+  default_mode: none
+  anonymous_person:
+    allowed_when_content_requires: true
+    persist_to_library: false
+  recurring_character_is_optional: true
+  full_card_load_only_if_selected_for_page: true
+  "66_dawang":
+    enabled_for_this_book: true
+    default_frequency: low
+    modes:
+      - none
+      - recurring_margin
+      - recurring_scene
+    reference: "assets/06-66-character-anchor.png"
+    required_anchors:
+      - gray_long_fur
+      - black_beret
+      - round_black_glasses
+      - yellow_green_eyes
+      - pink_ear_nose_toes
+      - pale_muzzle
+      - fine_whiskers
+      - black_white_houndstooth_bandana
+    forbid:
+      - old_black_cat_silhouette
+      - forced_page_presence
+      - fabricated_user_voice
+      - covering_evidence
+
+memory:
+  default_level: L1
+  always_load:
+    - publication_profile
+    - compact_recurring_character_rule
+    - privacy
+    - budget
+    - current_part_and_month
+    - pinned_preferences_and_forbidden
+    - recent_five_page_form_summaries
+  do_not_load_by_default:
+    - recent_two_episode_full_text
+    - full_character_card_when_absent
+  expand_retrieval_when:
+    - explicit_user_request
+    - continuity_L2_or_L3
+    - exact_tag_match
+    - same_named_project
+    - same_explicit_person_or_place
+
+serialization:
+  hierarchy:
+    - part
+    - monthly_chapter
+    - episode
+    - page
+  episode: one_recordable_input
+  monthly_chapter: natural_month
+  part: three_natural_months
+  annual_set: four_parts
+  order: chronological
+  preserve_episode_cover: true
+  part_output_is_book_default: true
+  physical_page_turn_only: true
+
+generation:
+  art_layer_textless: true
+  deterministic_text_layout: true
+  original_assets_read_only: true
+  native_image_capability_default: true
+  non_native_or_paid_external_tool_requires_each_time_consent: true
+  budget:
+    economy_calls: [0, 1]
+    standard_calls: [1, 3]
+    collection_calls: "explicit confirmation"
+  model_lock:
+    record_tool: true
+    record_model_version: true
+    record_prompt_compiler_version: true
+    record_reference_asset_version: true
+    record_call_count: true
+
+no_image_light_mode:
+  inherit_style_dna: true
+  palette:
+    dominant: paper_white
+    structural: icy_blue
+    text: charcoal
+    accent: coral_red_one_small_mark
+  forbid_unprompted_colors:
+    - yellow
+    - orange
+  visual_language:
+    - irregular_hand_drawn_line
+    - wax_grain
+    - light_paper_edge
+    - one_explanatory_metaphor
+  forbid:
+    - rounded_ui_card
+    - floating_shadow
+    - dashboard
+    - ppt_icon
+    - evenly_split_component_grid
+
+concurrency:
+  task_id: uuid
+  idempotency_key: "sha256(book_id + episode_id + content_hash + config_version)"
+  lock_scope: book_commit
+  page_number_allocation: commit_time
+  write: atomic_temp_validate_replace
+  duplicate_request_returns_existing_result: true
+
+qa:
+  require_fail_zero: true
+  views:
+    - original_1080x1440
+    - phone_135x180
+    - html_desktop
+    - html_mobile
+  checks:
+    - missing_asset
+    - text_overflow
+    - text_garbled
+    - unsafe_crop
+    - overlap
+    - source_line_safe_area
+    - page_number_safe_area
+    - image_text_overlap
+    - character_anchor_drift
+    - palette_drift
+    - route_density
+    - horizontal_overflow
+    - privacy_and_exif
+  repair:
+    first_failure: local_repair
+    second_failure: change_composition_or_template
+    third_failure: downgrade_to_original_photo_text_or_abstract
+    stop_at_budget: true

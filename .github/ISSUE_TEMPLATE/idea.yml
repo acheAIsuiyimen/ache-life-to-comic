@@ -1,0 +1,31 @@
+name: 新点子
+description: 提议一种更好玩的记录、连载或装订方式
+title: "[Idea] "
+labels: ["idea"]
+body:
+  - type: textarea
+    id: moment
+    attributes:
+      label: 它发生在什么记录场景
+      description: 先讲你想留下什么，不用先想功能名。
+    validations:
+      required: true
+  - type: textarea
+    id: feeling
+    attributes:
+      label: 你希望这一页给人什么感觉
+    validations:
+      required: true
+  - type: textarea
+    id: current
+    attributes:
+      label: 现在为什么不够好
+    validations:
+      required: true
+  - type: checkboxes
+    id: license
+    attributes:
+      label: 素材确认
+      options:
+        - label: 我不会提交无权公开的参考图、角色或个人内容
+          required: true

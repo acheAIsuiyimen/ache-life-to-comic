@@ -1,0 +1,8 @@
+{
+  "status": "PASS",
+  "files": [
+    "docs/assets/readme-hero.png",
+    "docs/assets/readme-demo.gif"
+  ],
+  "consoleErrors": []
+}

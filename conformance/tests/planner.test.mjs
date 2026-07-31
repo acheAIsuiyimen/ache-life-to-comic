@@ -4,7 +4,7 @@ import assert from "node:assert/strict";
 import {
   planEntry,
   resolveCompoundInput
-} from "../../dist/codex/ache-life-to-comic/scripts/plan-entry.mjs";
+} from "../../scripts/plan-entry.mjs";
 
 test("every recordable entry receives one stable content-derived cover", () => {
   const input = {
@@ -17,7 +17,7 @@ test("every recordable entry receives one stable content-derived cover", () => {
   assert.equal(first.cover.required, true);
   assert.equal(first.cover.grammar, second.cover.grammar);
   assert.equal(first.totalPageCount, first.bodyPageCount + 1);
-  assert.equal(first.designSystemVersion, "ache-design-system/1.0.0");
+  assert.equal(first.designSystemVersion, "ache-design-system/1.1.0");
   assert.equal(first.layout.canvas.background, "#FFFFFF");
 });
 

@@ -3,7 +3,7 @@ import {readFile, stat, writeFile} from "node:fs/promises";
 import path from "node:path";
 
 const projectRoot = path.resolve(".");
-const skillRoot = path.join(projectRoot, "dist/codex/ache-life-to-comic");
+const skillRoot = path.join(projectRoot, ".");
 const assets = [
   {
     file: "assets/presets/02-snow-pastel/golden/cover-environment-transformation.png",

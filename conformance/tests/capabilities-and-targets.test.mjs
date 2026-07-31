@@ -6,10 +6,10 @@ import {
   createVisualReceipt,
   normalizeCapabilities,
   resolveVisualMode
-} from "../../dist/codex/ache-life-to-comic/scripts/runtime-capabilities.mjs";
+} from "../../scripts/runtime-capabilities.mjs";
 import {
   resolvePublicationTarget
-} from "../../dist/codex/ache-life-to-comic/scripts/publication-target.mjs";
+} from "../../scripts/publication-target.mjs";
 
 test("capability probe never guesses support", () => {
   assert.deepEqual(normalizeCapabilities({}), {
@@ -27,6 +27,13 @@ test("capability probe never guesses support", () => {
       fileWrite: false,
       browserRender: false,
       persistentStorage: false
+    },
+    presentation: {
+      imageAttachment: false,
+      filePreview: false,
+      htmlArtifact: false,
+      openLocalPreview: false,
+      interactiveChoices: false
     }
   });
 });

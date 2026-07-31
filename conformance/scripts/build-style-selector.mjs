@@ -19,7 +19,7 @@ const renderedPath = path.join(
 );
 const packagedPath = path.join(
   projectRoot,
-  "dist/codex/ache-life-to-comic/assets/presets/style-selector.png"
+  "/assets/presets/style-selector.png"
 );
 
 await mkdir(path.dirname(renderedPath), {recursive: true});

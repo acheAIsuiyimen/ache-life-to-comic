@@ -5,7 +5,7 @@ import os from "node:os";
 import path from "node:path";
 import {spawnSync} from "node:child_process";
 
-const cli = path.resolve("dist/codex/ache-life-to-comic/scripts/cli.mjs");
+const cli = path.resolve("scripts/cli.mjs");
 
 function run(args) {
   return spawnSync(process.execPath, [cli, ...args], {

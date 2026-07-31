@@ -9,10 +9,10 @@ import {
   inspectSeries,
   inspectVolume,
   readMonthlyHtml
-} from "../../dist/codex/ache-life-to-comic/scripts/monthly-serial.mjs";
+} from "../../scripts/monthly-serial.mjs";
 
 const skillRoot = path.resolve(
-  "dist/codex/ache-life-to-comic"
+  "."
 );
 const goldenPage = path.join(
   skillRoot,
@@ -121,7 +121,7 @@ test("visual-pending chapter remains readable", async () => {
   }));
   const html = await readMonthlyHtml(root, "my-life", "2026-07");
   assert.match(html, /图还没补，但正文必须先能读/u);
-  assert.match(html, /插图待补/u);
+  assert.match(html, /画面待补/u);
 });
 
 test("unsafe ids and unsupported page files are rejected", async () => {

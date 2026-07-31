@@ -1,0 +1,33 @@
+schema_version: "comic-life-preset/1.0"
+lifecycle: optional_candidate
+preset:
+  id: "03-white-pencil"
+  name_zh: "白纸彩铅"
+  version: "1.0.0"
+  selector_cover: "cover.png"
+output:
+  background: "#FFFFFF"
+  white_area_ratio: [0.70, 0.85]
+style:
+  medium: "refined colored pencil and thin graphite"
+  palette:
+    - bright_white
+    - navy
+    - forest_green
+    - brick_red
+    - faded_sky_blue
+  character: "observational mature proportions"
+  strengths:
+    - daily_observation
+    - diary
+    - quiet_group_scene
+  forbidden:
+    - beige_full_page_ground
+    - crowded_magazine_cover
+    - cute_big_head
+    - generated_text
+calibration:
+  required_on_first_book_use: true
+  deliverables:
+    - episode_cover
+    - standard_page

@@ -2,12 +2,14 @@
 
 ## Current result
 
-- Skill files: 45
-- Automated tests: 42 / 42
+- Skill files: 53
+- Automated tests: 46 / 46
 - Desktop render: PASS
 - Mobile render: PASS
+- Required images and console: PASS
+- README static hero and animation: PASS
 - YAML: Ruby parser PASS
-- Official `quick_validate.py`: unavailable because the bundled Python environment does not include PyYAML
+- Official `quick_validate.py`: PASS
 
 ## Seven hardening changes
 
@@ -18,12 +20,15 @@
 5. Pure-white page ground enforced in prompt and layout.
 6. Deterministic typography, templates and layout cooldown.
 7. One versioned design baseline reused across platforms and models.
+8. One deterministic 3:4 renderer; platforms cannot replace it with a generic blog.
+9. A separate presentation contract; required visuals need a real `displayed` receipt.
+10. Balanced Chinese title wrapping and explicit handling for precomposed pages.
 
 ## Commands
 
 ```bash
 node --test conformance/tests/*.test.mjs
-node dist/codex/ache-life-to-comic/scripts/cli.mjs onboarding-start
+node scripts/cli.mjs onboarding-start
 ```
 
 The Skill package intentionally contains no provider credentials, local user data, `.env`, or provider-specific image configuration.

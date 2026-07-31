@@ -1,0 +1,43 @@
+name: 排版或运行问题
+description: 提交一个可以复现的页面、续更、图片或数据问题
+title: "[Bug] "
+labels: ["bug", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        谢谢你帮这本书找问题。请先去掉照片、会议和账号里的隐私信息。
+  - type: textarea
+    id: input
+    attributes:
+      label: 最小复现输入
+      description: 你发了什么？可以用脱敏后的示例代替。
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: 你原本期待看到什么
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: 实际发生了什么
+      description: 可以附截图和输出文件结构。
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: 使用环境
+      placeholder: "例如：Codex / WorkBuddy / TRAE / 其他 Agent，macOS 版本"
+    validations:
+      required: true
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: 隐私确认
+      options:
+        - label: 我已经删除凭证、真实会议隐私和无权公开的图片
+          required: true

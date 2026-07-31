@@ -1,10 +1,21 @@
 {
-  "name": "ache-life-to-comic-working-copy",
+  "name": "ache-life-to-comic",
+  "version": "0.1.0",
+  "description": "把日常、照片、知识、会议和长文持续收进按月成册的漫画手帐。",
   "private": true,
+  "license": "PolyForm-Noncommercial-1.0.0",
   "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/acheAIsuiyimen/ache-life-to-comic.git"
+  },
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "test": "node --test conformance/tests/*.test.mjs",
     "visual:fixture": "node conformance/scripts/build-visual-fixture.mjs",
-    "visual:check": "node conformance/scripts/visual-check.mjs"
+    "visual:check": "node conformance/scripts/visual-check.mjs",
+    "readme:assets": "node conformance/scripts/build-readme-assets.mjs"
   }
 }

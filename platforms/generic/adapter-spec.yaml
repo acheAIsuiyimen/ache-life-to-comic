@@ -1,7 +1,7 @@
-schema_version: "1.0.0"
+schema_version: "1.1.0"
 platform: "generic-agent-workspace"
-status: "adapter_spec_only"
-canonical_skill: "../../dist/codex/ache-life-to-comic"
+status: "portable_contract"
+canonical_skill: "../.."
 minimum_runtime:
   markdown_instruction_support: true
   json_file_support: true
@@ -9,6 +9,15 @@ minimum_runtime:
 capability_probe:
   image_generation: "detect_at_runtime"
   local_file_write: "required_for_persistent_serial"
+  presentation: "detect_at_runtime"
+presentation_policy:
+  ordered_modes: ["native-image-attachment", "native-file-preview", "html-artifact", "local-preview"]
+  invented_tool_names_forbidden: true
+  required_visual_receipt: "displayed"
+rendering:
+  entrypoint: "scripts/page-renderer.mjs"
+  stylesheet: "assets/templates/page-system.css"
+  platform_freehand_html_forbidden: true
 image_policy:
   provider_binding: false
   missing_capability: ["light-illustration", "visual-pending"]

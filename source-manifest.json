@@ -1,11 +1,12 @@
 {
-  "schemaVersion": "1.1.0",
+  "schemaVersion": "1.2.0",
   "productName": "Ache life-to-comic",
   "skillId": "ache-life-to-comic",
-  "canonicalPackage": "dist/codex/ache-life-to-comic",
-  "designSystemVersion": "ache-design-system/1.0.0",
-  "onboardingVersion": "ache-onboarding/1.0.0",
+  "canonicalPackage": ".",
+  "designSystemVersion": "ache-design-system/1.1.0",
+  "onboardingVersion": "ache-onboarding/1.1.0",
   "contextPackVersion": "ache-context/1.0.0",
+  "rendererVersion": "ache-monthly-renderer/1.0.0",
   "defaultStyle": {
     "id": "02-snow-pastel",
     "lifecycle": "validated_preset"
@@ -17,30 +18,35 @@
     "05-ink-watercolor"
   ],
   "adapters": {
-    "codex": "working_copy",
-    "workbuddy": "adapter_spec_only",
-    "trae": "adapter_spec_only",
-    "generic": "adapter_spec_only"
+    "core": "portable_contract",
+    "codex": "native_capability_binding",
+    "workbuddy": "native_capability_binding",
+    "trae": "native_capability_binding",
+    "generic": "portable_contract"
   },
   "installation": {
-    "status": "installed_and_verified",
-    "fileCount": 45,
-    "externalWritesPerformed": false
+    "status": "local_installed_and_verified",
+    "fileCount": 53,
+    "backup": "created_outside_repository"
   },
   "verification": {
     "automatedTests": {
-      "passed": 42,
+      "passed": 46,
       "failed": 0
     },
     "desktopRender": "PASS",
     "mobileRender": "PASS",
+    "requiredImages": "PASS",
+    "consoleErrors": "PASS",
+    "readmeAssets": "PASS",
     "yamlParse": "PASS",
-    "officialQuickValidate": "blocked_missing_pyyaml"
+    "officialQuickValidate": "PASS"
   },
   "repository": {
-    "visibility": "private",
-    "status": "published_and_verified",
+    "visibility": "public",
+    "status": "release_ready",
     "url": "https://github.com/acheAIsuiyimen/ache-life-to-comic",
-    "defaultBranch": "main"
+    "defaultBranch": "main",
+    "license": "PolyForm-Noncommercial-1.0.0"
   }
 }

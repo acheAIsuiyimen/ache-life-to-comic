@@ -7,16 +7,16 @@ import {
   answerOnboarding,
   profileFromOnboarding,
   startOnboarding
-} from "../../dist/codex/ache-life-to-comic/scripts/onboarding.mjs";
+} from "../../scripts/onboarding.mjs";
 import {
   buildContextPack
-} from "../../dist/codex/ache-life-to-comic/scripts/context-pack.mjs";
+} from "../../scripts/context-pack.mjs";
 import {
   planLayout,
   validateLayoutPlan
-} from "../../dist/codex/ache-life-to-comic/scripts/layout-plan.mjs";
+} from "../../scripts/layout-plan.mjs";
 
-const skillRoot = path.resolve("dist/codex/ache-life-to-comic");
+const skillRoot = path.resolve(".");
 
 test("onboarding asks exactly one human-sized question at a time", () => {
   let result = startOnboarding();
@@ -25,6 +25,7 @@ test("onboarding asks exactly one human-sized question at a time", () => {
   assert.match(result.view.question, /挑一种呼吸感/u);
   assert.equal(result.view.options.length, 6);
   assert.ok(result.view.selector.endsWith("style-selector.png"));
+  assert.equal(result.view.selectorRequired, true);
 
   const expected = [
     ["02-snow-pastel", "2/4", /角色/u],
@@ -41,7 +42,7 @@ test("onboarding asks exactly one human-sized question at a time", () => {
   const profile = profileFromOnboarding(result.state, {bookId: "life"});
   assert.equal(profile.style.id, "02-snow-pastel");
   assert.equal(profile.publication.primary, "local-html");
-  assert.equal(profile.designSystemVersion, "ache-design-system/1.0.0");
+  assert.equal(profile.designSystemVersion, "ache-design-system/1.1.0");
 });
 
 test("onboarding never exposes production jargon in the visible prompts", () => {

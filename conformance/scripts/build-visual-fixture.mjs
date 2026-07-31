@@ -3,14 +3,14 @@ import path from "node:path";
 
 import {
   appendEpisode
-} from "../../dist/codex/ache-life-to-comic/scripts/monthly-serial.mjs";
+} from "../../scripts/monthly-serial.mjs";
 
 const projectRoot = path.resolve(".");
 const reviewRoot = path.join(projectRoot, "conformance/review/visual-fixture");
 const library = path.join(reviewRoot, "library");
 const golden = path.join(
   projectRoot,
-  "dist/codex/ache-life-to-comic/assets/presets/02-snow-pastel/golden"
+  "assets/presets/02-snow-pastel/golden"
 );
 
 await rm(reviewRoot, {recursive: true, force: true});

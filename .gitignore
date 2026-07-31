@@ -4,4 +4,6 @@ node_modules/
 *.lock
 coverage/
 conformance/forward-tests/
+conformance/review/visual-fixture/
+docs/assets/.hero-frames/
 review/rendered/

@@ -1,0 +1,32 @@
+schema_version: "comic-life-preset/1.0"
+lifecycle: optional_candidate
+preset:
+  id: "01-cloud-gouache"
+  name_zh: "云层水粉"
+  version: "1.0.0"
+  selector_cover: "cover.png"
+output:
+  background: "#FFFFFF"
+  white_area_ratio: [0.70, 0.85]
+style:
+  medium: "opaque gouache with visible dry-brush edges"
+  palette:
+    - deep_cobalt
+    - cloud_white
+    - gray_green
+    - restrained_vermilion
+  character: "simplified mature anatomy"
+  strengths:
+    - weather
+    - city
+    - collectible_scene
+  forbidden:
+    - beige_full_page_ground
+    - generic_digital_painting
+    - childish_proportions
+    - generated_text
+calibration:
+  required_on_first_book_use: true
+  deliverables:
+    - episode_cover
+    - standard_page

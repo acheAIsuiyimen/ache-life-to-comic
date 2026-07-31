@@ -3,7 +3,16 @@ import assert from "node:assert/strict";
 import {readFile, readdir} from "node:fs/promises";
 import path from "node:path";
 
-const skillRoot = path.resolve("dist/codex/ache-life-to-comic");
+const skillRoot = path.resolve(".");
+const skillDirectories = ["agents", "assets", "references", "scripts"];
+
+async function skillFiles() {
+  const files = [path.join(skillRoot, "SKILL.md")];
+  for (const directory of skillDirectories) {
+    files.push(...await walk(path.join(skillRoot, directory)));
+  }
+  return files;
+}
 
 async function walk(directory) {
   const entries = await readdir(directory, {withFileTypes: true});
@@ -75,16 +84,17 @@ test("canonical design baseline is versioned and referenced by the skill", async
     path.join(skillRoot, "assets/layout-system/design-baseline.json"),
     "utf8"
   ));
-  assert.equal(baseline.schemaVersion, "ache-design-system/1.0.0");
+  assert.equal(baseline.schemaVersion, "ache-design-system/1.1.0");
   assert.equal(baseline.canvas.background, "#FFFFFF");
   assert.deepEqual(baseline.canvas.whiteAreaRatio, [0.7, 0.85]);
   assert.equal(baseline.typography.body.handwritingForbidden, true);
   assert.match(skill, /references\/design-system\.md/u);
   assert.match(skill, /references\/interaction-voice\.md/u);
+  assert.equal(baseline.implementation.freehandPlatformHtmlForbidden, true);
 });
 
 test("skill contains no specific image provider or secret-bearing file", async () => {
-  const files = await walk(skillRoot);
+  const files = await skillFiles();
   const textFiles = files.filter((file) => /\.(md|mjs|json|ya?ml)$/iu.test(file));
   const forbiddenProviders = [
     "meitu",
@@ -109,7 +119,7 @@ test("openai interface metadata names the skill in the default prompt", async ()
 });
 
 test("no README or installation guide is embedded in the skill package", async () => {
-  const names = (await walk(skillRoot)).map((file) => path.basename(file).toLowerCase());
+  const names = (await skillFiles()).map((file) => path.basename(file).toLowerCase());
   assert.equal(names.includes("readme.md"), false);
   assert.equal(names.includes("install.md"), false);
   assert.equal(names.includes("changelog.md"), false);

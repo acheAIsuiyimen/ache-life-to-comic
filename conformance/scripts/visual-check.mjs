@@ -50,8 +50,11 @@ for (const viewport of [
       missingImages: images.filter((image) => !image.complete || image.naturalWidth === 0).length,
       requiredImageCount: images.length,
       outOfCanvas,
-      articleCount: document.querySelectorAll("article.episode").length,
-      pendingCount: document.querySelectorAll(".visual-pending").length
+      pageCount: document.querySelectorAll(".ache-page").length,
+      articleCount: document.querySelectorAll("article.ache-episode").length,
+      pendingCount: document.querySelectorAll(".ache-pending").length,
+      designSystem:
+        document.querySelector('meta[name="ache-design-system"]')?.content ?? null
     };
   });
   results.push({
@@ -63,8 +66,10 @@ for (const viewport of [
       && metrics.missingImages === 0
       && metrics.requiredImageCount === 4
       && metrics.outOfCanvas === 0
+      && metrics.pageCount >= 6
       && metrics.articleCount === 3
       && metrics.pendingCount === 1
+      && metrics.designSystem === "ache-design-system/1.1.0"
       && consoleErrors.length === 0
   });
   await page.close();

@@ -6,7 +6,7 @@ import path from "node:path";
 
 import {
   validateEntry
-} from "../../dist/codex/ache-life-to-comic/scripts/validate-entry.mjs";
+} from "../../scripts/validate-entry.mjs";
 
 test("P preserves every original photo byte-for-byte", async () => {
   const root = await mkdtemp(path.join(os.tmpdir(), "ache-validate-"));

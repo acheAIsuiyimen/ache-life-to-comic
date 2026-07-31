@@ -1,16 +1,24 @@
-schema_version: "1.0.0"
+schema_version: "1.1.0"
 platform: "workbuddy"
-status: "adapter_spec_only"
-canonical_skill: "../../dist/codex/ache-life-to-comic"
+status: "portable_contract"
+canonical_skill: "../.."
 packaging:
-  verified: false
-  note: "只定义能力与数据契约；安装目录和清单格式须在目标平台当前版本中实测后生成。"
+  strategy: "copy-canonical-skill-and-bind-native-capabilities"
 capability_probe:
   image_generation: "detect_at_runtime"
   image_editing: "detect_at_runtime"
   local_file_write: "detect_at_runtime"
   browser_render: "detect_at_runtime"
   feishu_connection: "detect_at_runtime"
+  presentation: "detect_at_runtime"
+presentation_policy:
+  ordered_modes: ["native-image-attachment", "native-file-preview", "html-artifact", "local-preview"]
+  invented_tool_names_forbidden: true
+  required_visual_receipt: "displayed"
+rendering:
+  entrypoint: "scripts/page-renderer.mjs"
+  stylesheet: "assets/templates/page-system.css"
+  platform_freehand_html_forbidden: true
 image_policy:
   provider_binding: false
   use_platform_native_default: true
