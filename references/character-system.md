@@ -34,7 +34,7 @@
 
 ## 66 大王
 
-66 大王是阿车这本书的默认 NPC，也是 Skill 内置的持续角色示例；不自动写入其他用户的书。使用 `assets/characters/66-dawang/` 中的锚点：
+66 大王是 Skill 内置的持续角色示例；不自动写入用户的书。使用 `assets/characters/66-dawang/` 中的锚点：
 
 - 灰色长毛猫
 - 黑色贝雷帽

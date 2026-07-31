@@ -48,7 +48,7 @@
 ## 载体
 
 - 本地：断网可读，链接与图片有效。
-- 飞书：仅个人 `felix`；回读 block、图片、warnings/degrade 和 revision。
+- 飞书：仅使用已核验的个人账号；回读 block、图片、warnings/degrade 和 revision。
 - GitHub：公开包已脱敏；未授权不 push。
 
 ## Skill

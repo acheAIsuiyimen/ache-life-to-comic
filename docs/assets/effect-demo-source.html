@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ache life-to-comic 高清效果演示</title>
+  <style>
+    * { box-sizing: border-box; }
+    html, body {
+      width: 1800px;
+      height: 960px;
+      margin: 0;
+      overflow: hidden;
+      background: #fff;
+    }
+    body {
+      position: relative;
+      background:
+        radial-gradient(circle at 8% 12%, rgba(105, 162, 226, .12), transparent 24%),
+        radial-gradient(circle at 92% 86%, rgba(229, 124, 112, .08), transparent 21%),
+        #fff;
+    }
+    body::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      opacity: .17;
+      background-image:
+        linear-gradient(rgba(64, 101, 142, .08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(64, 101, 142, .06) 1px, transparent 1px);
+      background-size: 32px 32px;
+      mask-image: linear-gradient(180deg, transparent, #000 18%, #000 82%, transparent);
+    }
+    .board {
+      position: absolute;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      gap: 50px;
+      padding: 58px 70px;
+    }
+    body[data-demo="all-routes"] .all-routes,
+    body[data-demo="s-daily"] .s-daily,
+    body[data-demo="p-photo"] .p-photo,
+    body[data-demo="k-knowledge"] .k-knowledge,
+    body[data-demo="m-meeting"] .m-meeting,
+    body[data-demo="l-longform"] .l-longform {
+      display: flex;
+    }
+    .page {
+      position: relative;
+      flex: none;
+      margin: 0;
+      padding: 9px;
+      overflow: hidden;
+      border: 1px solid #d9e2ec;
+      border-radius: 5px;
+      background: #fff;
+      box-shadow: 0 28px 56px rgba(39, 65, 95, .15), 0 4px 12px rgba(39, 65, 95, .08);
+    }
+    .page img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      background: #fff;
+    }
+    .all-routes { gap: 34px; }
+    .all-routes .page { width: 300px; height: 400px; }
+    .all-routes .page:nth-child(1) { transform: rotate(-4deg) translateY(36px); }
+    .all-routes .page:nth-child(2) { transform: rotate(2deg) translateY(-40px); }
+    .all-routes .page:nth-child(3) { transform: rotate(-1deg) scale(1.14); z-index: 3; }
+    .all-routes .page:nth-child(4) { transform: rotate(3deg) translateY(-34px); }
+    .all-routes .page:nth-child(5) { transform: rotate(-3deg) translateY(36px); }
+    .s-daily .page,
+    .k-knowledge .page { width: 430px; height: 573px; }
+    .s-daily .page:nth-child(1),
+    .k-knowledge .page:nth-child(1) { transform: rotate(-3deg) translateY(24px); }
+    .s-daily .page:nth-child(2),
+    .k-knowledge .page:nth-child(2) { transform: rotate(1deg) translateY(-18px); }
+    .s-daily .page:nth-child(3),
+    .k-knowledge .page:nth-child(3) { transform: rotate(3deg) translateY(20px); }
+    .p-photo .page,
+    .l-longform .page { width: 520px; height: 693px; }
+    .p-photo .page:first-child,
+    .l-longform .page:first-child { transform: rotate(-3deg) translateY(22px); }
+    .p-photo .page:last-child,
+    .l-longform .page:last-child { transform: rotate(3deg) translateY(-18px); }
+    .m-meeting { gap: 38px; }
+    .m-meeting .page { width: 350px; height: 467px; }
+    .m-meeting .page:nth-child(1) { transform: rotate(-4deg) translateY(32px); }
+    .m-meeting .page:nth-child(2) { transform: rotate(2deg) translateY(-28px); }
+    .m-meeting .page:nth-child(3) { transform: rotate(-2deg) translateY(22px); }
+    .m-meeting .page:nth-child(4) { transform: rotate(4deg) translateY(-24px); }
+  </style>
+</head>
+<body data-demo="all-routes">
+  <main>
+    <section class="board all-routes" aria-label="五种内容进入同一本书">
+      <figure class="page"><img src="./effect-demo/book-s-cover.jpg" alt="日常章节封面"></figure>
+      <figure class="page"><img src="./effect-demo/book-p-page.jpg" alt="照片手帐页"></figure>
+      <figure class="page"><img src="./effect-demo/role-girl.jpg" alt="人物漫画页"></figure>
+      <figure class="page"><img src="./effect-demo/book-k-page.jpg" alt="知识笔记页"></figure>
+      <figure class="page"><img src="./effect-demo/book-l-page.jpg" alt="长文正文页"></figure>
+    </section>
+
+    <section class="board s-daily" aria-label="日常与心情">
+      <figure class="page"><img src="./effect-demo/book-s-cover.jpg" alt="日常封面"></figure>
+      <figure class="page"><img src="./effect-demo/book-s-page.jpg" alt="日常三格正文"></figure>
+      <figure class="page"><img src="./effect-demo/book-s-continuation.jpg" alt="日常续页"></figure>
+    </section>
+
+    <section class="board p-photo" aria-label="照片手帐">
+      <figure class="page"><img src="./effect-demo/book-p-cover.jpg" alt="照片章节封面"></figure>
+      <figure class="page"><img src="./effect-demo/book-p-page.jpg" alt="照片手帐正文"></figure>
+    </section>
+
+    <section class="board k-knowledge" aria-label="知识笔记">
+      <figure class="page"><img src="./effect-demo/book-k-cover.jpg" alt="知识章节封面"></figure>
+      <figure class="page"><img src="./effect-demo/book-k-page.jpg" alt="知识正文一"></figure>
+      <figure class="page"><img src="./effect-demo/book-k-page-2.jpg" alt="知识正文二"></figure>
+    </section>
+
+    <section class="board m-meeting" aria-label="会议纪要">
+      <figure class="page"><img src="./effect-demo/book-m-cover.jpg" alt="会议章节封面"></figure>
+      <figure class="page"><img src="./effect-demo/book-m-page-1.jpg" alt="会议讨论页"></figure>
+      <figure class="page"><img src="./effect-demo/book-m-page.jpg" alt="会议决定与风险页"></figure>
+      <figure class="page"><img src="./effect-demo/book-m-page-2.jpg" alt="会议行动页"></figure>
+    </section>
+
+    <section class="board l-longform" aria-label="长文">
+      <figure class="page"><img src="./effect-demo/book-l-cover.jpg" alt="长文章节封面"></figure>
+      <figure class="page"><img src="./effect-demo/book-l-page.jpg" alt="长文正文"></figure>
+    </section>
+  </main>
+</body>
+</html>

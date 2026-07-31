@@ -101,11 +101,11 @@ test("local and local-then-sync never perform external writes", () => {
   }
 });
 
-test("Feishu is blocked unless verified personal felix and authorized", () => {
+test("Feishu is blocked unless a verified personal account is authorized", () => {
   for (const connection of [
     null,
-    {identity: "company", verified: true, write: true},
-    {identity: "felix", verified: false, write: true}
+    {personal: false, verified: true, write: true},
+    {personal: true, verified: false, write: true}
   ]) {
     const result = resolvePublicationTarget({
       target: "feishu",
@@ -118,13 +118,13 @@ test("Feishu is blocked unless verified personal felix and authorized", () => {
 
   assert.equal(resolvePublicationTarget({
     target: "feishu",
-    connection: {identity: "felix", verified: true, write: true},
+    connection: {personal: true, verified: true, write: true},
     externalWriteAuthorized: false
   }).status, "authorization-required");
 
   const ready = resolvePublicationTarget({
     target: "feishu",
-    connection: {identity: "Felix", verified: true, write: true},
+    connection: {personal: true, verified: true, write: true},
     externalWriteAuthorized: true
   });
   assert.equal(ready.status, "ready");

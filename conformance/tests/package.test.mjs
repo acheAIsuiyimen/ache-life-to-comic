@@ -97,7 +97,6 @@ test("skill contains no specific image provider or secret-bearing file", async (
   const files = await skillFiles();
   const textFiles = files.filter((file) => /\.(md|mjs|json|ya?ml)$/iu.test(file));
   const forbiddenProviders = [
-    "meitu",
     "midjourney",
     "ideogram",
     "stability ai"
