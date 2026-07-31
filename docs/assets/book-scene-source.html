@@ -1,0 +1,380 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>一本漫画人生怎样长出来</title>
+  <style>
+    @font-face {
+      font-family: "WenKai";
+      src: url("../../assets/fonts/LXGWWenKaiGBScreen.ttf") format("truetype");
+    }
+    @font-face {
+      font-family: "Smiley";
+      src: url("../../assets/fonts/SmileySans-Oblique.woff2") format("woff2");
+    }
+    :root {
+      --ink: #17233a;
+      --muted: #6f7f95;
+      --blue: #7ca9e7;
+      --blue-soft: #eaf3ff;
+      --red: #cf7065;
+      --paper: #ffffff;
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      width: 1600px;
+      height: 1000px;
+      margin: 0;
+      overflow: hidden;
+      background: #ffffff;
+    }
+    body {
+      position: relative;
+      color: var(--ink);
+      font-family: "WenKai", "PingFang SC", sans-serif;
+      background:
+        radial-gradient(circle at 13% 10%, rgba(124, 169, 231, .13), transparent 21%),
+        radial-gradient(circle at 91% 16%, rgba(207, 112, 101, .07), transparent 18%),
+        linear-gradient(180deg, #fff 0 73%, #f7fbff 73% 100%);
+    }
+    body::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      opacity: .18;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(50, 80, 120, .07) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(50, 80, 120, .05) 1px, transparent 1px);
+      background-size: 28px 28px;
+      mask-image: linear-gradient(180deg, transparent, #000 68%);
+    }
+    .header {
+      position: absolute;
+      left: 96px;
+      top: 58px;
+      width: 620px;
+      z-index: 5;
+    }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font: 700 20px/1 "Smiley", sans-serif;
+      color: #496d9e;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+    .eyebrow::before {
+      content: "";
+      width: 34px;
+      height: 5px;
+      border-radius: 20px;
+      background: var(--blue);
+      transform: rotate(-4deg);
+    }
+    h1 {
+      margin: 18px 0 10px;
+      font: 400 60px/1.08 "WenKai", sans-serif;
+      letter-spacing: -.04em;
+    }
+    .subtitle {
+      margin: 0;
+      font-size: 23px;
+      color: var(--muted);
+    }
+    .desk-shadow {
+      position: absolute;
+      left: 118px;
+      top: 656px;
+      width: 1310px;
+      height: 90px;
+      border-radius: 50%;
+      filter: blur(22px);
+      background: rgba(39, 65, 95, .13);
+      transform: rotate(-1deg);
+    }
+    .book {
+      position: absolute;
+      left: 95px;
+      top: 236px;
+      width: 970px;
+      height: 530px;
+      transform: rotate(-1.7deg);
+      filter: drop-shadow(0 25px 25px rgba(43, 72, 103, .17));
+      z-index: 3;
+    }
+    .book::before {
+      content: "";
+      position: absolute;
+      inset: -14px -18px -24px;
+      border-radius: 20px 28px 31px 19px;
+      background: #d7e7fb;
+      transform: rotate(.3deg);
+      z-index: -3;
+    }
+    .book::after {
+      content: "";
+      position: absolute;
+      left: 49.7%;
+      top: 8px;
+      width: 4px;
+      height: 510px;
+      background: linear-gradient(180deg, transparent, rgba(73, 96, 124, .24) 11%, rgba(73, 96, 124, .15) 88%, transparent);
+      box-shadow: -8px 0 16px rgba(42, 64, 92, .11), 8px 0 16px rgba(42, 64, 92, .08);
+      z-index: 5;
+    }
+    .spread {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      border: 1px solid #d8e0e8;
+      border-radius: 14px 24px 25px 13px;
+      background: #fff;
+    }
+    .paper {
+      position: relative;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      background: #fff;
+    }
+    .paper:first-child {
+      border-radius: 14px 4px 6px 13px;
+      box-shadow: inset -18px 0 32px rgba(55, 76, 104, .07);
+    }
+    .paper:last-child {
+      border-radius: 4px 24px 25px 6px;
+      box-shadow: inset 18px 0 32px rgba(55, 76, 104, .06);
+    }
+    .paper img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+      background: #fff;
+    }
+    .page-tab {
+      position: absolute;
+      right: -8px;
+      top: 48px;
+      padding: 11px 20px 12px 18px;
+      border-radius: 9px 0 0 9px;
+      color: #fff;
+      background: var(--red);
+      font: 700 18px/1 "Smiley", sans-serif;
+      letter-spacing: .08em;
+      box-shadow: 0 7px 14px rgba(90, 70, 60, .12);
+      z-index: 8;
+    }
+    .loose-note {
+      position: absolute;
+      left: 54px;
+      bottom: -4px;
+      padding: 12px 18px;
+      color: #486582;
+      background: rgba(255,255,255,.94);
+      border: 1px solid #cddced;
+      box-shadow: 0 8px 18px rgba(51, 79, 110, .11);
+      font-size: 18px;
+      transform: rotate(2.5deg);
+      z-index: 8;
+    }
+    .shelf {
+      position: absolute;
+      right: 72px;
+      top: 190px;
+      width: 420px;
+      height: 575px;
+      z-index: 2;
+    }
+    .mini-pages {
+      position: absolute;
+      left: 30px;
+      top: 7px;
+      width: 300px;
+      height: 360px;
+    }
+    .mini {
+      position: absolute;
+      width: 160px;
+      height: 214px;
+      object-fit: contain;
+      border: 8px solid white;
+      border-radius: 4px;
+      box-shadow: 0 15px 28px rgba(48, 68, 94, .16);
+      background: #fff;
+    }
+    .mini:nth-child(1) { left: 8px; top: 58px; transform: rotate(-8deg); }
+    .mini:nth-child(2) { left: 105px; top: 10px; transform: rotate(5deg); }
+    .mini:nth-child(3) { left: 161px; top: 110px; transform: rotate(10deg); }
+    .paperclip {
+      position: absolute;
+      right: 62px;
+      top: 2px;
+      width: 34px;
+      height: 76px;
+      border: 5px solid #779dcc;
+      border-radius: 18px;
+      transform: rotate(14deg);
+      opacity: .72;
+    }
+    .volumes {
+      position: absolute;
+      left: 18px;
+      bottom: 6px;
+      width: 380px;
+    }
+    .volume {
+      position: relative;
+      height: 47px;
+      margin-top: 9px;
+      border-radius: 5px 12px 12px 5px;
+      box-shadow: 0 9px 13px rgba(37, 62, 91, .12);
+      color: #2a4161;
+      background: #fff;
+      border: 1px solid #cbd9e8;
+      font: 700 18px/45px "Smiley", sans-serif;
+      letter-spacing: .08em;
+      padding-left: 82px;
+    }
+    .volume::before {
+      content: attr(data-month);
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 62px;
+      height: 45px;
+      text-align: center;
+      color: #fff;
+      background: var(--blue);
+      border-radius: 4px 0 0 4px;
+    }
+    .volume:nth-child(2) { margin-left: 20px; background: #f8fbff; }
+    .volume:nth-child(3) { margin-left: 42px; background: #f2f7fd; }
+    .volume.part {
+      margin-top: 17px;
+      margin-left: 3px;
+      width: 370px;
+      color: #fff;
+      background: #283b58;
+      border-color: #283b58;
+    }
+    .volume.part::before { background: #cf7065; }
+    .workflow {
+      position: absolute;
+      left: 92px;
+      right: 92px;
+      bottom: 48px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 42px;
+      z-index: 4;
+    }
+    .step {
+      position: relative;
+      min-height: 112px;
+      padding: 20px 22px 18px 66px;
+      border: 1px solid #d8e4f0;
+      border-radius: 18px;
+      background: rgba(255,255,255,.9);
+      box-shadow: 0 10px 28px rgba(52, 82, 116, .06);
+    }
+    .step:not(:last-child)::after {
+      content: "→";
+      position: absolute;
+      right: -33px;
+      top: 31px;
+      color: #83a5ce;
+      font: 32px/1 "Smiley", sans-serif;
+    }
+    .number {
+      position: absolute;
+      left: 19px;
+      top: 18px;
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      color: #fff;
+      background: #789fce;
+      font: 700 18px/1 "Smiley", sans-serif;
+    }
+    .step b {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 21px;
+      font-weight: 700;
+    }
+    .step span {
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="eyebrow">FROM A NOTE TO A BOOK</div>
+    <h1>每个月，长成一本。</h1>
+    <p class="subtitle">章节有自己的情绪，月册保留同一本书的呼吸。</p>
+  </header>
+
+  <div class="desk-shadow"></div>
+
+  <section class="book" aria-label="打开的七月漫画月册">
+    <div class="spread">
+      <article class="paper">
+        <img src="./effect-demo/book-s-cover.jpg" alt="日常章节封面">
+      </article>
+      <article class="paper">
+        <img src="./effect-demo/book-s-page.jpg" alt="日常章节正文">
+      </article>
+    </div>
+    <div class="page-tab">2026 · 07 月册</div>
+    <div class="loose-note">一句话也可以成为一章。</div>
+  </section>
+
+  <aside class="shelf" aria-label="不同内容和连续成册">
+    <div class="mini-pages">
+      <img class="mini" src="./effect-demo/book-p-page.jpg" alt="照片手帐页">
+      <img class="mini" src="./effect-demo/book-k-page.jpg" alt="知识笔记页">
+      <img class="mini" src="./effect-demo/book-m-page.jpg" alt="会议纪要页">
+      <div class="paperclip" aria-hidden="true"></div>
+    </div>
+    <div class="volumes">
+      <div class="volume" data-month="07">日常、照片、笔记都在这里</div>
+      <div class="volume" data-month="08">新的章节继续追加</div>
+      <div class="volume" data-month="09">三个月仍各自成册</div>
+      <div class="volume part" data-month="Q3">季度成部 · 年末成集</div>
+    </div>
+  </aside>
+
+  <section class="workflow" aria-label="成书工作逻辑">
+    <div class="step">
+      <i class="number">1</i>
+      <b>你把今天发来</b>
+      <span>一句话、照片、知识、会议或长文</span>
+    </div>
+    <div class="step">
+      <i class="number">2</i>
+      <b>内容决定页法</b>
+      <span>漫画多格、照片拼贴或文字主导</span>
+    </div>
+    <div class="step">
+      <i class="number">3</i>
+      <b>这一章被装订</b>
+      <span>独立封面和正文，续进当月月册</span>
+    </div>
+    <div class="step">
+      <i class="number">4</i>
+      <b>书慢慢长大</b>
+      <span>月册、季度部和年度合辑自然形成</span>
+    </div>
+  </section>
+</body>
+</html>

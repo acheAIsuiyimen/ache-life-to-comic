@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ache life-to-comic 效果展示</title>
+  <style>
+    :root {
+      --paper: #ffffff;
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      width: 1800px;
+      height: 1000px;
+      margin: 0;
+      overflow: hidden;
+      background: #fff;
+    }
+    body {
+      position: relative;
+      background:
+        radial-gradient(circle at 13% 22%, rgba(83, 174, 233, .13), transparent 24%),
+        radial-gradient(circle at 88% 78%, rgba(255, 108, 153, .10), transparent 21%),
+        radial-gradient(circle at 58% 8%, rgba(255, 201, 63, .10), transparent 18%),
+        #fff;
+    }
+    body::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      opacity: .22;
+      background-image:
+        linear-gradient(rgba(79, 119, 163, .08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(79, 119, 163, .06) 1px, transparent 1px);
+      background-size: 34px 34px;
+      mask-image: linear-gradient(180deg, transparent 0, #000 12%, #000 88%, transparent);
+    }
+    .gallery {
+      position: absolute;
+      inset: 0;
+    }
+    .page {
+      position: absolute;
+      margin: 0;
+      padding: 9px;
+      border-radius: 6px;
+      background: var(--paper);
+      border: 1px solid rgba(104, 129, 157, .21);
+      box-shadow:
+        0 34px 64px rgba(37, 62, 91, .17),
+        0 5px 14px rgba(37, 62, 91, .10);
+      transform-origin: center;
+    }
+    .page img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: contain;
+      background: #fff;
+    }
+    .color-cover {
+      left: -118px;
+      top: -104px;
+      width: 500px;
+      height: 667px;
+      transform: rotate(-10deg);
+      z-index: 2;
+    }
+    .photo {
+      left: 292px;
+      top: -188px;
+      width: 488px;
+      height: 651px;
+      transform: rotate(7deg);
+      z-index: 1;
+    }
+    .girl {
+      left: 632px;
+      top: 86px;
+      width: 545px;
+      height: 727px;
+      transform: rotate(-2deg);
+      z-index: 8;
+    }
+    .blue-cover {
+      left: 1042px;
+      top: -182px;
+      width: 478px;
+      height: 638px;
+      transform: rotate(7deg);
+      z-index: 2;
+    }
+    .knowledge {
+      left: 1380px;
+      top: -94px;
+      width: 462px;
+      height: 616px;
+      transform: rotate(-7deg);
+      z-index: 1;
+    }
+    .longform {
+      left: 1574px;
+      top: 244px;
+      width: 430px;
+      height: 573px;
+      transform: rotate(10deg);
+      z-index: 3;
+    }
+    .color-continuation {
+      left: -32px;
+      top: 458px;
+      width: 506px;
+      height: 675px;
+      transform: rotate(8deg);
+      z-index: 4;
+    }
+    .role {
+      left: 364px;
+      top: 546px;
+      width: 470px;
+      height: 627px;
+      transform: rotate(-7deg);
+      z-index: 6;
+    }
+    .color-standard {
+      left: 914px;
+      top: 520px;
+      width: 492px;
+      height: 656px;
+      transform: rotate(6deg);
+      z-index: 7;
+    }
+    .daily {
+      left: 1230px;
+      top: 504px;
+      width: 458px;
+      height: 611px;
+      transform: rotate(-5deg);
+      z-index: 5;
+    }
+    .meeting {
+      left: 1468px;
+      top: 516px;
+      width: 456px;
+      height: 608px;
+      transform: rotate(8deg);
+      z-index: 4;
+    }
+  </style>
+</head>
+<body>
+  <main class="gallery" aria-label="不同内容类型的完整页面效果展示">
+    <figure class="page color-cover">
+      <img src="./effect-demo/custom-color-cover.jpg" alt="彩色手绘日常章节封面完整页">
+    </figure>
+    <figure class="page photo">
+      <img src="./effect-demo/book-p-page.jpg" alt="照片手帐完整页">
+    </figure>
+    <figure class="page girl">
+      <img src="./effect-demo/role-girl.jpg" alt="女生主体三格漫画完整页">
+    </figure>
+    <figure class="page blue-cover">
+      <img src="./effect-demo/book-s-cover.jpg" alt="雪色粉蜡日常章节封面完整页">
+    </figure>
+    <figure class="page knowledge">
+      <img src="./effect-demo/book-k-page.jpg" alt="知识笔记完整页">
+    </figure>
+    <figure class="page longform">
+      <img src="./effect-demo/book-l-page.jpg" alt="长文完整页">
+    </figure>
+    <figure class="page color-continuation">
+      <img src="./effect-demo/custom-color-continuation.jpg" alt="彩色手绘三格漫画完整页">
+    </figure>
+    <figure class="page role">
+      <img src="./effect-demo/role-66.jpg" alt="66 大王入景完整页">
+    </figure>
+    <figure class="page color-standard">
+      <img src="./effect-demo/custom-color-standard.jpg" alt="彩色手绘双格漫画完整页">
+    </figure>
+    <figure class="page daily">
+      <img src="./effect-demo/book-s-page.jpg" alt="雪色粉蜡多格漫画完整页">
+    </figure>
+    <figure class="page meeting">
+      <img src="./effect-demo/book-m-page.jpg" alt="轻配图会议页完整页">
+    </figure>
+  </main>
+</body>
+</html>

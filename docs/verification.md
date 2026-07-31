@@ -7,7 +7,8 @@
 - Desktop render: PASS
 - Mobile render: PASS
 - Required images and console: PASS
-- README static hero and animation: PASS
+- README effect showcase, book scene, static hero and animation: PASS
+- README referenced-page rendering: 16 / 16 loaded; book-scene pages fully visible; showcase pages keep at least 45% visible area
 - YAML: Ruby parser PASS
 - Official `quick_validate.py`: PASS
 

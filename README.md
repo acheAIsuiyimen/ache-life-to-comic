@@ -1,19 +1,86 @@
 # Ache life-to-comic
 
 <p align="center">
-  <img src="./docs/assets/readme-hero.png" alt="Ache life-to-comic：把今天收进漫画里" width="100%">
+  <img src="./docs/assets/readme-showcase.png" alt="Ache life-to-comic：日常、照片、知识、会议、长文和角色进入同一本书" width="100%">
 </p>
 
 <p align="center">
   <strong>把今天收进一本会继续长大的漫画里。</strong>
 </p>
 
-一句话、一张照片、一段会议，或者一篇不想改的长文。第一次创刊后，接下来只管发来。它会判断这次适合一页还是多页，做成独立章节，再续进当月的漫画手帐。
+一句话、一张照片、一段会议，或者一篇不想改的长文。第一次创刊后，接下来只管发来。每次记录会拥有自己的封面和页法，再续进当月的漫画手帐。
 
-不是把每条内容套进同一张海报，也不要求你天天都有故事。它更像一本有人替你整理、画画、装订的生活连载。
+不是把所有内容塞进同一张模板，也不要求你天天都有故事。有时是三格漫画，有时是一页照片手帐，有时只需要文字和一幅很小的图。
+
+## 效果演示：先翻开看看
 
 <p align="center">
-  <img src="./docs/assets/readme-demo.gif" alt="章节一页一页进入漫画月册" width="80%">
+  <img src="./docs/assets/effect-demo/all-routes.png" alt="日常、照片、知识、会议和长文进入同一本漫画人生" width="100%">
+</p>
+
+下面使用示例内容与生成画面，展示不同输入会怎样排版。
+
+<table>
+  <tr>
+    <td width="50%" valign="top">
+      <img src="./docs/assets/effect-demo/s-daily.png" alt="日常与心情的三页漫画效果演示">
+      <br><strong>日常与心情</strong>
+      <br>从一句小事里找到动作和情绪。该三格的时候就三格，该留白的时候不硬塞剧情。
+    </td>
+    <td width="50%" valign="top">
+      <img src="./docs/assets/effect-demo/p-photo.png" alt="三张照片的手帐排版效果演示">
+      <br><strong>照片</strong>
+      <br>竖图、横图和方图都保留完整。外层可以是手撕纸、异形窗口和随手写下的旁注。
+    </td>
+  </tr>
+  <tr>
+    <td width="50%" valign="top">
+      <img src="./docs/assets/effect-demo/k-knowledge.png" alt="知识笔记的图文排版效果演示">
+      <br><strong>知识与读书笔记</strong>
+      <br>正文先讲清楚。只有关系、过程和尺度难以只靠文字理解时，才加一幅解释图。
+    </td>
+    <td width="50%" valign="top">
+      <img src="./docs/assets/effect-demo/m-meeting.png" alt="会议纪要的轻配图排版效果演示">
+      <br><strong>会议</strong>
+      <br>先留下决定、风险、待办、负责人和期限。配图轻一点，不让画面盖过真正要执行的事。
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" valign="top">
+      <img src="./docs/assets/effect-demo/l-longform.png" alt="完整长文的正文主导排版效果演示">
+      <br><strong>已经写好的长文</strong>
+      <br>不为了“像漫画”而改掉原文。先把文章排得舒服，再让少量插画和纸张材料进入空隙。
+    </td>
+  </tr>
+</table>
+
+## 角色可以主导，也可以只是路过
+
+<table>
+  <tr>
+    <td width="50%" valign="top">
+      <img src="./docs/assets/effect-demo/role-girl.jpg" alt="女生主体的三格漫画效果演示">
+      <br><strong>持续人物</strong>
+      <br>有明确人物时，镜头可以跟着她的动作与心情走。人物可辨认，但不需要每页都正面出场。
+    </td>
+    <td width="50%" valign="top">
+      <img src="./docs/assets/effect-demo/role-66.jpg" alt="66 大王进入日常漫画场景的效果演示">
+      <br><strong>穿插 IP</strong>
+      <br>IP 可以在页边观察，也可以偶尔进入场景。这里的 66 大王是阿车自己的书级 NPC；你的书会先问要不要带上自己的角色。
+    </td>
+  </tr>
+</table>
+
+## 最后得到的不是一叠散图
+
+<p align="center">
+  <img src="./docs/assets/readme-book-scene.png" alt="章节装订为月册、季度部和年度合辑的成书场景" width="100%">
+</p>
+
+你把今天发来，内容决定页法。这一章有独立封面和正文，随后被装进当月唯一的连续阅读入口。下个月另起一本月册，三个月形成一部，年末再生成合辑索引。
+
+<p align="center">
+  <img src="./docs/assets/readme-demo.gif" alt="章节一页一页进入漫画月册" width="78%">
 </p>
 
 > [!IMPORTANT]

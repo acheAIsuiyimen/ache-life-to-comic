@@ -2,7 +2,117 @@
   "status": "PASS",
   "files": [
     "docs/assets/readme-hero.png",
-    "docs/assets/readme-demo.gif"
+    "docs/assets/readme-demo.gif",
+    "docs/assets/readme-book-scene.png",
+    "docs/assets/readme-showcase.png"
   ],
+  "audits": {
+    "bookScene": {
+      "pass": true,
+      "items": [
+        {
+          "alt": "日常章节封面",
+          "loaded": true,
+          "objectFit": "contain",
+          "insideViewport": true
+        },
+        {
+          "alt": "日常章节正文",
+          "loaded": true,
+          "objectFit": "contain",
+          "insideViewport": true
+        },
+        {
+          "alt": "照片手帐页",
+          "loaded": true,
+          "objectFit": "contain",
+          "insideViewport": true
+        },
+        {
+          "alt": "知识笔记页",
+          "loaded": true,
+          "objectFit": "contain",
+          "insideViewport": true
+        },
+        {
+          "alt": "会议纪要页",
+          "loaded": true,
+          "objectFit": "contain",
+          "insideViewport": true
+        }
+      ]
+    },
+    "showcase": {
+      "pass": true,
+      "items": [
+        {
+          "alt": "彩色手绘日常章节封面完整页",
+          "loaded": true,
+          "objectFit": "contain",
+          "visibleAreaRatio": 0.58
+        },
+        {
+          "alt": "照片手帐完整页",
+          "loaded": true,
+          "objectFit": "contain",
+          "visibleAreaRatio": 0.695
+        },
+        {
+          "alt": "女生主体三格漫画完整页",
+          "loaded": true,
+          "objectFit": "contain",
+          "visibleAreaRatio": 1
+        },
+        {
+          "alt": "雪色粉蜡日常章节封面完整页",
+          "loaded": true,
+          "objectFit": "contain",
+          "visibleAreaRatio": 0.698
+        },
+        {
+          "alt": "知识笔记完整页",
+          "loaded": true,
+          "objectFit": "contain",
+          "visibleAreaRatio": 0.701
+        },
+        {
+          "alt": "长文完整页",
+          "loaded": true,
+          "objectFit": "contain",
+          "visibleAreaRatio": 0.521
+        },
+        {
+          "alt": "彩色手绘三格漫画完整页",
+          "loaded": true,
+          "objectFit": "contain",
+          "visibleAreaRatio": 0.677
+        },
+        {
+          "alt": "66 大王入景完整页",
+          "loaded": true,
+          "objectFit": "contain",
+          "visibleAreaRatio": 0.707
+        },
+        {
+          "alt": "彩色手绘双格漫画完整页",
+          "loaded": true,
+          "objectFit": "contain",
+          "visibleAreaRatio": 0.716
+        },
+        {
+          "alt": "雪色粉蜡多格漫画完整页",
+          "loaded": true,
+          "objectFit": "contain",
+          "visibleAreaRatio": 0.794
+        },
+        {
+          "alt": "轻配图会议页完整页",
+          "loaded": true,
+          "objectFit": "contain",
+          "visibleAreaRatio": 0.535
+        }
+      ]
+    }
+  },
   "consoleErrors": []
 }
