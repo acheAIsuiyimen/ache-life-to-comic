@@ -1,0 +1,44 @@
+{
+  "schemaVersion": "1.1.0",
+  "productName": "Ache life-to-comic",
+  "skillId": "ache-life-to-comic",
+  "canonicalPackage": "dist/codex/ache-life-to-comic",
+  "designSystemVersion": "ache-design-system/1.0.0",
+  "onboardingVersion": "ache-onboarding/1.0.0",
+  "contextPackVersion": "ache-context/1.0.0",
+  "defaultStyle": {
+    "id": "02-snow-pastel",
+    "lifecycle": "validated_preset"
+  },
+  "optionalStyles": [
+    "01-cloud-gouache",
+    "03-white-pencil",
+    "04-two-color-line",
+    "05-ink-watercolor"
+  ],
+  "adapters": {
+    "codex": "working_copy",
+    "workbuddy": "adapter_spec_only",
+    "trae": "adapter_spec_only",
+    "generic": "adapter_spec_only"
+  },
+  "installation": {
+    "status": "installed_and_verified",
+    "fileCount": 45,
+    "externalWritesPerformed": false
+  },
+  "verification": {
+    "automatedTests": {
+      "passed": 42,
+      "failed": 0
+    },
+    "desktopRender": "PASS",
+    "mobileRender": "PASS",
+    "yamlParse": "PASS",
+    "officialQuickValidate": "blocked_missing_pyyaml"
+  },
+  "repository": {
+    "visibility": "private",
+    "status": "pending_publish"
+  }
+}

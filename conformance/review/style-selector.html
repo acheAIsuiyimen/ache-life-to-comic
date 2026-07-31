@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>画风选择器</title>
+  <style>
+    * { box-sizing: border-box; }
+    html, body { margin: 0; width: 2000px; height: 1500px; background: #fff; }
+    body {
+      color: #20262d;
+      font-family: "Songti SC", "Noto Serif CJK SC", serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    main {
+      position: relative;
+      width: 2000px;
+      height: 1500px;
+      padding: 76px 96px 64px;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 86% 8%, rgba(130,169,215,.11), transparent 18%),
+        #fff;
+    }
+    header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      padding: 0 8px 34px;
+      border-bottom: 2px solid #e4eaf0;
+    }
+    h1 {
+      margin: 0;
+      font-size: 54px;
+      font-weight: 600;
+      letter-spacing: .04em;
+    }
+    header p {
+      margin: 0 0 6px;
+      color: #647180;
+      font-family: "PingFang SC", sans-serif;
+      font-size: 24px;
+      letter-spacing: .08em;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 28px;
+      padding-top: 42px;
+    }
+    article {
+      min-width: 0;
+      position: relative;
+    }
+    figure {
+      margin: 0;
+      position: relative;
+      height: 1020px;
+      background: #fff;
+      border: 1px solid #dce4eb;
+      overflow: hidden;
+      box-shadow: 0 14px 36px rgba(39,55,69,.08);
+    }
+    img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    article[data-default="true"] figure {
+      border: 4px solid #82a9d7;
+    }
+    .default {
+      position: absolute;
+      z-index: 2;
+      top: 18px;
+      right: 18px;
+      padding: 9px 15px 8px;
+      border-radius: 999px;
+      color: #fff;
+      background: #4c719d;
+      font-family: "PingFang SC", sans-serif;
+      font-size: 18px;
+      letter-spacing: .08em;
+    }
+    .label {
+      display: grid;
+      grid-template-columns: 58px 1fr;
+      gap: 14px;
+      align-items: start;
+      padding: 24px 4px 0;
+    }
+    .number {
+      color: #4c719d;
+      font: 500 26px/1.2 "Helvetica Neue", sans-serif;
+      letter-spacing: .08em;
+    }
+    h2 {
+      margin: -2px 0 7px;
+      font-size: 30px;
+      font-weight: 600;
+    }
+    .desc {
+      color: #647180;
+      font: 20px/1.55 "PingFang SC", sans-serif;
+    }
+    .note {
+      position: absolute;
+      right: 96px;
+      bottom: 38px;
+      color: #8c99a5;
+      font: 18px/1.4 "PingFang SC", sans-serif;
+    }
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>先为这本书，挑一种呼吸感。</h1>
+    <p>同一阵风 · 五种画法</p>
+  </header>
+  <section class="grid">
+    <article>
+      <figure><img src="../../dist/codex/ache-life-to-comic/assets/presets/01-cloud-gouache/cover.png" alt=""></figure>
+      <div class="label"><span class="number">01</span><div><h2>云层水粉</h2><div class="desc">厚涂云气 · 城市收藏感</div></div></div>
+    </article>
+    <article data-default="true">
+      <figure><span class="default">默认</span><img src="../../dist/codex/ache-life-to-comic/assets/presets/02-snow-pastel/cover.png" alt=""></figure>
+      <div class="label"><span class="number">02</span><div><h2>雪色粉蜡</h2><div class="desc">安静粉蜡 · 轻柔日常</div></div></div>
+    </article>
+    <article>
+      <figure><img src="../../dist/codex/ache-life-to-comic/assets/presets/03-white-pencil/cover.png" alt=""></figure>
+      <div class="label"><span class="number">03</span><div><h2>白纸彩铅</h2><div class="desc">观察笔记 · 生活细节</div></div></div>
+    </article>
+    <article>
+      <figure><img src="../../dist/codex/ache-life-to-comic/assets/presets/04-two-color-line/cover.png" alt=""></figure>
+      <div class="label"><span class="number">04</span><div><h2>双色线记</h2><div class="desc">聪明线描 · 情绪隐喻</div></div></div>
+    </article>
+    <article>
+      <figure><img src="../../dist/codex/ache-life-to-comic/assets/presets/05-ink-watercolor/cover.png" alt=""></figure>
+      <div class="label"><span class="number">05</span><div><h2>细墨轻彩</h2><div class="desc">钢笔水彩 · 地点与旅行</div></div></div>
+    </article>
+  </section>
+  <div class="note">也可以上传 1–5 张参考图，做成只属于这本书的画风。</div>
+</main>
+</body>
+</html>

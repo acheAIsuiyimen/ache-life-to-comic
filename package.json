@@ -1,0 +1,10 @@
+{
+  "name": "ache-life-to-comic-working-copy",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test conformance/tests/*.test.mjs",
+    "visual:fixture": "node conformance/scripts/build-visual-fixture.mjs",
+    "visual:check": "node conformance/scripts/visual-check.mjs"
+  }
+}

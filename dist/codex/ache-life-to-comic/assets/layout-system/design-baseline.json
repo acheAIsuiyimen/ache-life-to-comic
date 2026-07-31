@@ -1,0 +1,129 @@
+{
+  "schemaVersion": "ache-design-system/1.0.0",
+  "id": "ache-comic-journal-white-1",
+  "source": {
+    "canonicalHandbook": "漫画人生-喜茶近三月插画排版手册-v0.1/设计排版手册.md",
+    "policy": "reuse-before-invent",
+    "note": "这是生成、排版与验收的唯一基础口径；新增样式只能作为有版本的扩展。"
+  },
+  "canvas": {
+    "widthPx": 1080,
+    "heightPx": 1440,
+    "aspectRatio": "3:4",
+    "background": "#FFFFFF",
+    "whiteAreaRatio": [0.7, 0.85],
+    "safeMarginRatio": 0.05,
+    "paperTextureOpacity": [0.02, 0.06],
+    "beigeOrKraftAllowedOnlyWhenSemantic": true
+  },
+  "color": {
+    "inkAreaRatio": [0.08, 0.15],
+    "contentColorAreaRatio": [0.05, 0.15],
+    "contentColorCount": 1,
+    "forbiddenPageGrounds": [
+      "#F5E6C8",
+      "#F1DFC0",
+      "#EAD4A8",
+      "beige",
+      "kraft",
+      "parchment",
+      "warm yellow paper"
+    ]
+  },
+  "typography": {
+    "fontRoleCountMax": 3,
+    "display": {
+      "role": "chapter-title",
+      "familyToken": "editorial-cjk-display",
+      "maxCjk": 14,
+      "mayUseHandDrawnAccent": true
+    },
+    "body": {
+      "role": "facts-and-long-reading",
+      "familyToken": "readable-cjk-serif-or-sans",
+      "handwritingForbidden": true,
+      "minPxAt1080": 28,
+      "lineHeight": [1.55, 1.8]
+    },
+    "note": {
+      "role": "emotion-and-margin-note",
+      "familyToken": "handwriting-like-cjk",
+      "maxCjkPerNote": 22,
+      "maxBrushStylesPerPage": 2
+    },
+    "generatedImageText": "forbidden"
+  },
+  "pageZones": {
+    "titleAndDateRatio": [0.06, 0.1],
+    "mainVisualRatio": [0.28, 0.58],
+    "narrationAndEvidenceRatio": [0.12, 0.22],
+    "footerAndSourceRatio": [0.03, 0.06],
+    "whitespaceRatio": [0.4, 0.65],
+    "factRatioMax": 0.18,
+    "materialGroupCount": [0, 2]
+  },
+  "templates": {
+    "A-white-object-theatre": {
+      "name": "白纸物件剧场",
+      "defaultRoutes": ["S"],
+      "useWhen": ["no-photo", "one-symbolic-object", "single-emotional-turn"]
+    },
+    "B-photo-window": {
+      "name": "照片异形窗口",
+      "defaultRoutes": ["P"],
+      "useWhen": ["one-to-five-photos", "preserve-complete-photo"]
+    },
+    "C-handwritten-archive": {
+      "name": "手写档案页",
+      "defaultRoutes": ["K", "M", "L"],
+      "useWhen": ["text-first", "facts-or-notes", "few-supporting-illustrations"]
+    },
+    "D-single-object-totem": {
+      "name": "单物图腾",
+      "defaultRoutes": ["cover", "ending"],
+      "useWhen": ["one-memory-object", "chapter-title-needs-icon"]
+    },
+    "E-continuous-action": {
+      "name": "连续动作漫画",
+      "defaultRoutes": ["S"],
+      "useWhen": ["two-or-more-real-beats", "state-change", "before-after"]
+    }
+  },
+  "routing": {
+    "photoCount": {
+      "1": "B-photo-window",
+      "2": "B-photo-window-main-plus-echo",
+      "3": "B-photo-window-vertical-relay-only-when-time-or-view-changes",
+      "4-5": "B-photo-window-main-plus-evidence-strip",
+      "6-9": "B-photo-window-two-or-three-pages",
+      "10+": "group-before-layout"
+    },
+    "cooldown": {
+      "sameSkeletonMaxConsecutivePages": 2,
+      "sameMaterialMaxConsecutivePages": 1,
+      "consecutiveWhitePagesMustMoveMainVisual": true
+    },
+    "multiPanel": {
+      "equalColumnsForbiddenByDefault": true,
+      "largestPanelRatio": [0.45, 0.6],
+      "readingDirection": "top-to-bottom",
+      "triangleStackForbidden": true
+    }
+  },
+  "quality": {
+    "oneVisualSurprisePerPage": true,
+    "forbiddenLooks": [
+      "presentation-slide",
+      "product-ui-card",
+      "children-homework",
+      "sticker-pile",
+      "yellow-beige-full-page-ground"
+    ],
+    "requiredViewports": [
+      "1080x1440",
+      "135x180",
+      "desktop-1440",
+      "mobile-390"
+    ]
+  }
+}

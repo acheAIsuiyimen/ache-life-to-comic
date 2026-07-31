@@ -1,0 +1,85 @@
+import {mkdir, rm, writeFile} from "node:fs/promises";
+import path from "node:path";
+
+import {
+  appendEpisode
+} from "../../dist/codex/ache-life-to-comic/scripts/monthly-serial.mjs";
+
+const projectRoot = path.resolve(".");
+const reviewRoot = path.join(projectRoot, "conformance/review/visual-fixture");
+const library = path.join(reviewRoot, "library");
+const golden = path.join(
+  projectRoot,
+  "dist/codex/ache-life-to-comic/assets/presets/02-snow-pastel/golden"
+);
+
+await rm(reviewRoot, {recursive: true, force: true});
+await mkdir(reviewRoot, {recursive: true});
+
+const photo = await appendEpisode(library, {
+  bookId: "visual-book",
+  bookTitle: "Ache life-to-comic 测试月册",
+  idempotencyKey: "visual-photo",
+  episodeId: "visual-photo",
+  title: "雨停以后，窗边留下三件小事",
+  text: "照片完整保留，漫画只在照片之外补充当时的空气。",
+  route: "P",
+  recordedAt: "2026-07-18T18:20:00+08:00",
+  pages: [
+    {
+      path: path.join(golden, "cover-environment-transformation.png"),
+      alt: "照片章节封面"
+    },
+    {
+      path: path.join(golden, "photo-page.png"),
+      alt: "照片手帐正文"
+    }
+  ]
+});
+
+const knowledge = await appendEpisode(library, {
+  bookId: "visual-book",
+  bookTitle: "Ache life-to-comic 测试月册",
+  idempotencyKey: "visual-knowledge",
+  episodeId: "visual-knowledge",
+  title: "把复杂知识留成一页能重看的笔记",
+  text: "正文先讲清楚，解释图只在关系、过程或尺度真正需要时出现。",
+  route: "K",
+  recordedAt: "2026-07-21T21:10:00+08:00",
+  pages: [
+    {
+      path: path.join(golden, "cover-typography-in-scene.png"),
+      alt: "知识章节封面"
+    },
+    {
+      path: path.join(golden, "knowledge-contact-sheet.png"),
+      alt: "知识正文样张"
+    }
+  ]
+});
+
+const pending = await appendEpisode(library, {
+  bookId: "visual-book",
+  bookTitle: "Ache life-to-comic 测试月册",
+  idempotencyKey: "visual-pending",
+  episodeId: "visual-pending",
+  title: "先把今天留下，画面以后再补",
+  text: "即使当前平台没有生图能力，这段记录也会先进入当月连载，不阻塞下一次续更。",
+  route: "S",
+  visualStatus: "visual-pending",
+  recordedAt: "2026-07-24T23:00:00+08:00"
+});
+
+const report = {
+  status: "fixture-ready",
+  monthlyIndex: photo.monthlyIndex,
+  seriesIndex: photo.seriesIndex,
+  episodes: [photo.episodeId, knowledge.episodeId, pending.episodeId],
+  externalWritesPerformed: false
+};
+await writeFile(
+  path.join(reviewRoot, "fixture-report.json"),
+  `${JSON.stringify(report, null, 2)}\n`,
+  "utf8"
+);
+process.stdout.write(`${JSON.stringify(report, null, 2)}\n`);

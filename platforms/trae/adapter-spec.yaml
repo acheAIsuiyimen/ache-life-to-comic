@@ -1,0 +1,27 @@
+schema_version: "1.0.0"
+platform: "trae"
+status: "adapter_spec_only"
+canonical_skill: "../../dist/codex/ache-life-to-comic"
+packaging:
+  verified: false
+  note: "不假定 TRAE 与 Codex 使用相同 Skill 清单；先在当前版本核对目录、入口和工具声明。"
+capability_probe:
+  image_generation: "detect_at_runtime"
+  image_editing: "detect_at_runtime"
+  local_file_write: "detect_at_runtime"
+  browser_render: "detect_at_runtime"
+  feishu_connection: "detect_at_runtime"
+image_policy:
+  provider_binding: false
+  use_platform_native_default: true
+  missing_capability: ["enable-native", "light-illustration", "visual-pending"]
+data_contract:
+  profile: "publication-profile.json"
+  monthly_serial: "monthly-volumes/YYYY-MM/continuous-edition"
+  visual_job: "provider-neutral"
+publication:
+  default: "local-html"
+  external_write_requires_explicit_authorization: true
+feishu:
+  ache_project_identity_required: "felix"
+  unknown_identity_action: "identity_confirmation_required"
