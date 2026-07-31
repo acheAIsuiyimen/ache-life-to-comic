@@ -31,5 +31,5 @@ publication:
   default: "local-html"
   external_write_requires_explicit_authorization: true
 feishu:
-  ache_project_identity_required: "felix"
+  verified_personal_identity_required: true
   unknown_identity_action: "identity_confirmation_required"

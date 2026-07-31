@@ -34,16 +34,16 @@ export function resolvePublicationTarget({
   }
 
   if (target === "feishu") {
-    const identity = String(connection?.identity ?? "").trim().toLowerCase();
     const verified = connection?.verified === true;
+    const personal = connection?.personal === true;
     const writable = connection?.write === true;
-    if (!verified || identity !== "felix") {
+    if (!verified || !personal) {
       return {
         status: "identity-confirmation-required",
         target,
         externalWrite: false,
         monthlyUnit: true,
-        reason: "personal-felix-required"
+        reason: "verified-personal-account-required"
       };
     }
     if (!writable || !externalWriteAuthorized) {

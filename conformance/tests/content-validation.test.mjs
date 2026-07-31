@@ -62,12 +62,12 @@ test("K keeps a traceable fact ledger", async () => {
 
 test("M preserves structured meeting fields and complete tasks", async () => {
   const meeting = {
-    speakers: ["Felix", "Mia"],
+    speakers: ["Lin", "Mia"],
     decisions: ["第一周重做旧素材"],
     risks: ["设计资源只有一人"],
     openQuestions: [],
     tasks: [
-      {owner: "Felix", due: "2026-08-02", status: "open", text: "给出标题池"}
+      {owner: "Lin", due: "2026-08-02", status: "open", text: "给出标题池"}
     ]
   };
   assert.equal((await validateEntry({

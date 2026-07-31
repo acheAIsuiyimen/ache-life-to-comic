@@ -32,12 +32,12 @@
 - 写入后回读 block、图片、链接、warnings/degrade 和 revision。
 - 达到平台限制时按月或季度切换，不按单章切换。
 
-阿车项目只允许个人 `felix`：
+只允许用户已经核验的个人账号：
 
 1. 回读当前连接身份。
-2. `identity.toLowerCase() === "felix"` 才能进入授权检查。
-3. 身份未知或其他账号返回 `identity_confirmation_required`。
-4. 即使是 `felix`，没有本次外部写入授权仍返回 `authorization_required`。
+2. 只有 `verified === true` 且 `personal === true` 才能进入授权检查。
+3. 身份未知、组织账号或他人账号返回 `identity_confirmation_required`。
+4. 即使个人身份已核验，没有本次外部写入授权仍返回 `authorization_required`。
 
 ## GitHub
 

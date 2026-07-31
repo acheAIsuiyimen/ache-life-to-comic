@@ -10,9 +10,12 @@ const root = path.resolve(".");
 const source = path.join(root, "docs/assets/readme-hero-source.html");
 const bookSource = path.join(root, "docs/assets/book-scene-source.html");
 const showcaseSource = path.join(root, "docs/assets/showcase-source.html");
+const effectSource = path.join(root, "docs/assets/effect-demo-source.html");
 const output = path.join(root, "docs/assets");
+const effectOutput = path.join(output, "effect-demo");
 const frames = path.join(output, ".hero-frames");
 await mkdir(frames, {recursive: true});
+await mkdir(effectOutput, {recursive: true});
 
 const browser = await chromium.launch({
   headless: true,
@@ -20,7 +23,7 @@ const browser = await chromium.launch({
 });
 const page = await browser.newPage({
   viewport: {width: 1200, height: 630},
-  deviceScaleFactor: 1
+  deviceScaleFactor: 2
 });
 const errors = [];
 page.on("console", (message) => {
@@ -40,8 +43,8 @@ for (const [index, step] of ["0", "1", "2", "3", "3"].entries()) {
 }
 
 const bookPage = await browser.newPage({
-  viewport: {width: 1600, height: 1000},
-  deviceScaleFactor: 1
+  viewport: {width: 1800, height: 1125},
+  deviceScaleFactor: 2
 });
 bookPage.on("console", (message) => {
   if (message.type() === "error") errors.push(message.text());
@@ -65,20 +68,32 @@ const bookAudit = await bookPage.evaluate(() => {
         && rect.bottom <= innerHeight
     };
   });
+  const safeFrame = [...document.querySelectorAll(".book, .shelf, .workflow, .step")]
+    .every((element) => {
+      const rect = element.getBoundingClientRect();
+      return rect.left >= 36
+        && rect.top >= 36
+        && rect.right <= innerWidth - 36
+        && rect.bottom <= innerHeight - 36;
+    });
   return {
-    pass: items.every((item) =>
-      item.loaded
-      && item.objectFit === "contain"
-      && item.insideViewport
-    ),
-    items
+    pass:
+      safeFrame
+      &&
+      items.every((item) =>
+        item.loaded
+        && item.objectFit === "contain"
+        && item.insideViewport
+      ),
+    items,
+    safeFrame
   };
 });
 if (!bookAudit.pass) errors.push("Book scene contains a cropped or missing page");
 
 const showcasePage = await browser.newPage({
   viewport: {width: 1800, height: 1000},
-  deviceScaleFactor: 1
+  deviceScaleFactor: 2
 });
 showcasePage.on("console", (message) => {
   if (message.type() === "error") errors.push(message.text());
@@ -114,10 +129,62 @@ const showcaseAudit = await showcasePage.evaluate(() => {
 if (!showcaseAudit.pass) {
   errors.push("Showcase contains a missing image or an unreadably cropped page");
 }
+
+const effectPage = await browser.newPage({
+  viewport: {width: 1800, height: 960},
+  deviceScaleFactor: 2
+});
+effectPage.on("console", (message) => {
+  if (message.type() === "error") errors.push(message.text());
+});
+effectPage.on("pageerror", (error) => errors.push(error.message));
+await effectPage.goto(`file://${effectSource}`, {waitUntil: "load"});
+const effectAudits = {};
+for (const demo of [
+  "all-routes",
+  "s-daily",
+  "p-photo",
+  "k-knowledge",
+  "m-meeting",
+  "l-longform"
+]) {
+  await effectPage.evaluate((value) => {
+    document.body.dataset.demo = value;
+  }, demo);
+  await effectPage.evaluate(() => document.fonts.ready);
+  await effectPage.screenshot({path: path.join(effectOutput, `${demo}.png`)});
+  const audit = await effectPage.evaluate((value) => {
+    const pages = [...document.querySelectorAll(`.${value} .page`)];
+    const items = pages.map((pageElement) => {
+      const image = pageElement.querySelector("img");
+      const rect = pageElement.getBoundingClientRect();
+      return {
+        alt: image?.alt ?? "",
+        loaded: Boolean(image?.complete && image?.naturalWidth > 0),
+        objectFit: image ? getComputedStyle(image).objectFit : null,
+        insideViewport:
+          rect.left >= 30
+          && rect.top >= 30
+          && rect.right <= innerWidth - 30
+          && rect.bottom <= innerHeight - 30
+      };
+    });
+    return {
+      pass: items.length > 0 && items.every((item) =>
+        item.loaded
+        && item.objectFit === "contain"
+        && item.insideViewport
+      ),
+      items
+    };
+  }, demo);
+  effectAudits[demo] = audit;
+  if (!audit.pass) errors.push(`Effect demo failed safe-frame audit: ${demo}`);
+}
 await browser.close();
 
-const width = 960;
-const height = 504;
+const width = 1200;
+const height = 630;
 const canvas = createCanvas(width, height);
 const context = canvas.getContext("2d");
 const encoder = new GifEncoder(width, height, {repeat: 0, quality: 12});
@@ -144,11 +211,18 @@ const report = {
     "docs/assets/readme-hero.png",
     "docs/assets/readme-demo.gif",
     "docs/assets/readme-book-scene.png",
-    "docs/assets/readme-showcase.png"
+    "docs/assets/readme-showcase.png",
+    "docs/assets/effect-demo/all-routes.png",
+    "docs/assets/effect-demo/s-daily.png",
+    "docs/assets/effect-demo/p-photo.png",
+    "docs/assets/effect-demo/k-knowledge.png",
+    "docs/assets/effect-demo/m-meeting.png",
+    "docs/assets/effect-demo/l-longform.png"
   ],
   audits: {
     bookScene: bookAudit,
-    showcase: showcaseAudit
+    showcase: showcaseAudit,
+    effects: effectAudits
   },
   consoleErrors: errors
 };

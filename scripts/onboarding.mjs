@@ -24,7 +24,7 @@ const STEPS = [
     options: [
       {value: "none", label: "暂时没有（默认）"},
       {value: "custom", label: "带上我的人物、宠物、物件或 IP"},
-      {value: "66-dawang", label: "66 大王（阿车的默认 NPC / 示例）"}
+      {value: "66-dawang", label: "66 大王（内置角色示例）"}
     ],
     defaultValue: "none"
   },

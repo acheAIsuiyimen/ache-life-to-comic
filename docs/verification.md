@@ -8,7 +8,9 @@
 - Mobile render: PASS
 - Required images and console: PASS
 - README effect showcase, book scene, static hero and animation: PASS
-- README referenced-page rendering: 16 / 16 loaded; book-scene pages fully visible; showcase pages keep at least 45% visible area
+- README HD assets: hero 2400×1260; showcase 3600×2000; book scene 3600×2250; six route sheets 3600×1920
+- README referenced-page rendering: every page loaded with `contain`; book-scene critical elements stay at least 36 px inside the canvas; showcase pages keep at least 45% visible area
+- Public-source privacy scan: PASS; no local path, private identity, credential or provider-specific internal wording
 - YAML: Ruby parser PASS
 - Official `quick_validate.py`: PASS
 

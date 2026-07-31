@@ -4,7 +4,13 @@
     "docs/assets/readme-hero.png",
     "docs/assets/readme-demo.gif",
     "docs/assets/readme-book-scene.png",
-    "docs/assets/readme-showcase.png"
+    "docs/assets/readme-showcase.png",
+    "docs/assets/effect-demo/all-routes.png",
+    "docs/assets/effect-demo/s-daily.png",
+    "docs/assets/effect-demo/p-photo.png",
+    "docs/assets/effect-demo/k-knowledge.png",
+    "docs/assets/effect-demo/m-meeting.png",
+    "docs/assets/effect-demo/l-longform.png"
   ],
   "audits": {
     "bookScene": {
@@ -40,7 +46,8 @@
           "objectFit": "contain",
           "insideViewport": true
         }
-      ]
+      ],
+      "safeFrame": true
     },
     "showcase": {
       "pass": true,
@@ -112,6 +119,152 @@
           "visibleAreaRatio": 0.535
         }
       ]
+    },
+    "effects": {
+      "all-routes": {
+        "pass": true,
+        "items": [
+          {
+            "alt": "日常章节封面",
+            "loaded": true,
+            "objectFit": "contain",
+            "insideViewport": true
+          },
+          {
+            "alt": "照片手帐页",
+            "loaded": true,
+            "objectFit": "contain",
+            "insideViewport": true
+          },
+          {
+            "alt": "人物漫画页",
+            "loaded": true,
+            "objectFit": "contain",
+            "insideViewport": true
+          },
+          {
+            "alt": "知识笔记页",
+            "loaded": true,
+            "objectFit": "contain",
+            "insideViewport": true
+          },
+          {
+            "alt": "长文正文页",
+            "loaded": true,
+            "objectFit": "contain",
+            "insideViewport": true
+          }
+        ]
+      },
+      "s-daily": {
+        "pass": true,
+        "items": [
+          {
+            "alt": "日常封面",
+            "loaded": true,
+            "objectFit": "contain",
+            "insideViewport": true
+          },
+          {
+            "alt": "日常三格正文",
+            "loaded": true,
+            "objectFit": "contain",
+            "insideViewport": true
+          },
+          {
+            "alt": "日常续页",
+            "loaded": true,
+            "objectFit": "contain",
+            "insideViewport": true
+          }
+        ]
+      },
+      "p-photo": {
+        "pass": true,
+        "items": [
+          {
+            "alt": "照片章节封面",
+            "loaded": true,
+            "objectFit": "contain",
+            "insideViewport": true
+          },
+          {
+            "alt": "照片手帐正文",
+            "loaded": true,
+            "objectFit": "contain",
+            "insideViewport": true
+          }
+        ]
+      },
+      "k-knowledge": {
+        "pass": true,
+        "items": [
+          {
+            "alt": "知识章节封面",
+            "loaded": true,
+            "objectFit": "contain",
+            "insideViewport": true
+          },
+          {
+            "alt": "知识正文一",
+            "loaded": true,
+            "objectFit": "contain",
+            "insideViewport": true
+          },
+          {
+            "alt": "知识正文二",
+            "loaded": true,
+            "objectFit": "contain",
+            "insideViewport": true
+          }
+        ]
+      },
+      "m-meeting": {
+        "pass": true,
+        "items": [
+          {
+            "alt": "会议章节封面",
+            "loaded": true,
+            "objectFit": "contain",
+            "insideViewport": true
+          },
+          {
+            "alt": "会议讨论页",
+            "loaded": true,
+            "objectFit": "contain",
+            "insideViewport": true
+          },
+          {
+            "alt": "会议决定与风险页",
+            "loaded": true,
+            "objectFit": "contain",
+            "insideViewport": true
+          },
+          {
+            "alt": "会议行动页",
+            "loaded": true,
+            "objectFit": "contain",
+            "insideViewport": true
+          }
+        ]
+      },
+      "l-longform": {
+        "pass": true,
+        "items": [
+          {
+            "alt": "长文章节封面",
+            "loaded": true,
+            "objectFit": "contain",
+            "insideViewport": true
+          },
+          {
+            "alt": "长文正文",
+            "loaded": true,
+            "objectFit": "contain",
+            "insideViewport": true
+          }
+        ]
+      }
     }
   },
   "consoleErrors": []
