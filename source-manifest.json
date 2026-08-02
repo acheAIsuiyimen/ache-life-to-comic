@@ -1,7 +1,7 @@
 {
   "schemaVersion": "1.2.0",
-  "productName": "Ache life-to-comic",
-  "skillId": "ache-life-to-comic",
+  "productName": "Ache life-to-comic skill",
+  "skillId": "ache-life-to-comic-skill",
   "canonicalPackage": ".",
   "designSystemVersion": "ache-design-system/1.1.0",
   "onboardingVersion": "ache-onboarding/1.1.0",
@@ -26,12 +26,12 @@
   },
   "installation": {
     "status": "local_installed_and_verified",
-    "fileCount": 53,
+    "fileCount": 54,
     "backup": "created_outside_repository"
   },
   "verification": {
     "automatedTests": {
-      "passed": 46,
+      "passed": 55,
       "failed": 0
     },
     "desktopRender": "PASS",
@@ -45,7 +45,7 @@
   "repository": {
     "visibility": "public",
     "status": "release_ready",
-    "url": "https://github.com/acheAIsuiyimen/ache-life-to-comic",
+    "url": "https://github.com/acheAIsuiyimen/ache-life-to-comic-skill",
     "defaultBranch": "main",
     "license": "PolyForm-Noncommercial-1.0.0"
   }

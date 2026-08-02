@@ -49,6 +49,7 @@ test("monthly renderer owns fixed page artboards instead of generic blog HTML", 
   assert.equal(validateRenderedHtmlText(html).status, "PASS");
   assert.match(html, /class="ache-page ache-cover-page"/u);
   assert.match(html, /class="ache-page ache-visual-page/u);
+  assert.match(html, /<h2 class="ache-sr-only">雨停之后<\/h2>/u);
   assert.doesNotMatch(html, /class="page-frame"|class="episode"/u);
   assert.doesNotMatch(html, /fonts\.googleapis\.com/u);
 });

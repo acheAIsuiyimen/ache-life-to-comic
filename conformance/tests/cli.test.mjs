@@ -80,3 +80,50 @@ test("CLI rejects path-traversal book ids", async () => {
   assert.notEqual(result.status, 0);
   assert.match(result.stderr, /safe file segment/u);
 });
+
+test("CLI asks for and creates a standalone portable share after append", async () => {
+  const root = await mkdtemp(path.join(os.tmpdir(), "ache-cli-"));
+  const library = path.join(root, "library");
+  const inputPath = path.join(root, "input.json");
+  await writeFile(inputPath, JSON.stringify({
+    bookId: "ache-life",
+    idempotencyKey: "portable-001",
+    episodeId: "portable-001",
+    title: "今天被收进来了",
+    text: "这是便携分享测试。",
+    route: "S",
+    recordedAt: "2026-07-31T12:00:00+08:00",
+    pages: [path.resolve("assets/presets/02-snow-pastel/golden/photo-page.png")]
+  }));
+  assert.equal(run([
+    "init-book",
+    "--library", library,
+    "--book-id", "ache-life"
+  ]).status, 0);
+  const append = run(["append", "--library", library, "--input", inputPath]);
+  assert.equal(append.status, 0, append.stderr);
+  assert.equal(JSON.parse(append.stdout).portableShare.status, "choice-required");
+
+  const prompt = run([
+    "share-prompt",
+    "--library", library,
+    "--book-id", "ache-life",
+    "--unit", "chapter",
+    "--key", "portable-001"
+  ]);
+  assert.equal(prompt.status, 0, prompt.stderr);
+  assert.equal(JSON.parse(prompt.stdout).defaultValue, null);
+
+  const choice = run([
+    "share-choice",
+    "--library", library,
+    "--book-id", "ache-life",
+    "--unit", "chapter",
+    "--key", "portable-001",
+    "--choice", "light"
+  ]);
+  assert.equal(choice.status, 0, choice.stderr);
+  const exported = JSON.parse(choice.stdout);
+  assert.equal(exported.status, "exported");
+  assert.ok((await readFile(exported.output, "utf8")).includes("data:image/png;base64,"));
+});

@@ -238,6 +238,7 @@ export function renderMonthlyDocument(book, volume) {
         <span>第 ${String(episode.episodeNumber).padStart(2, "0")} 章</span>
         <span>${escapeHtml(routeLabel(episode.route))}</span>
       </div>
+      <h2 class="ache-sr-only">${escapeHtml(episode.title)}</h2>
       ${rendered.html}
       ${episode.visualStatus === "visual-pending"
         ? '<p class="ache-pending">画面待补，文字和页码已经留下。</p>'

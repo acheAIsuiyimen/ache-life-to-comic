@@ -20,7 +20,7 @@ const goldenPage = path.join(
 );
 
 async function temporaryLibrary() {
-  return mkdtemp(path.join(os.tmpdir(), "ache-life-to-comic-"));
+  return mkdtemp(path.join(os.tmpdir(), "ache-life-to-comic-skill-"));
 }
 
 function episode(index, overrides = {}) {

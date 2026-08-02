@@ -3,7 +3,7 @@
 ## Current result
 
 - Skill files: 53
-- Automated tests: 46 / 46
+- Automated tests: 55 / 55
 - Desktop render: PASS
 - Mobile render: PASS
 - Required images and console: PASS
@@ -13,6 +13,8 @@
 - Public-source privacy scan: PASS; no local path, private identity, credential or provider-specific internal wording
 - YAML: Ruby parser PASS
 - Official `quick_validate.py`: PASS
+- Portable share: chapter / volume / part / book hierarchy PASS; light and faithful embedding PASS; skip-then-export PASS
+- Standalone offline HTML: copied without `assets`, required images, desktop and 390 px mobile PASS
 
 ## Seven hardening changes
 
@@ -26,6 +28,7 @@
 8. One deterministic 3:4 renderer; platforms cannot replace it with a generic blog.
 9. A separate presentation contract; required visuals need a real `displayed` receipt.
 10. Balanced Chinese title wrapping and explicit handling for precomposed pages.
+11. Default editable `HTML + assets` plus explicit light / faithful / skip portable export choices at four completion levels.
 
 ## Commands
 
