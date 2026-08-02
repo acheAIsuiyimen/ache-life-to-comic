@@ -1,7 +1,7 @@
 interface:
-  display_name: "Ache life-to-comic"
+  display_name: "Ache life-to-comic skill"
   short_description: "把日常、照片、知识、会议和长文持续做成漫画手帐月册"
-  default_prompt: "使用 $ache-life-to-comic，把我这次发送的内容续进漫画人生。"
+  default_prompt: "使用 $ache-life-to-comic-skill，把我这次发送的内容续进漫画人生。"
 
 policy:
   allow_implicit_invocation: true

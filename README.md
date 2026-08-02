@@ -1,7 +1,7 @@
-# Ache life-to-comic
+# Ache life-to-comic skill
 
 <p align="center">
-  <img src="./docs/assets/readme-showcase.png" alt="Ache life-to-comic：日常、照片、知识、会议、长文和角色进入同一本书" width="100%">
+  <img src="./docs/assets/readme-showcase.png" alt="Ache life-to-comic skill：日常、照片、知识、会议、长文和角色进入同一本书" width="100%">
 </p>
 
 <p align="center">
@@ -89,12 +89,12 @@
 ## 30 秒开始
 
 ```bash
-npx skills add https://github.com/acheAIsuiyimen/ache-life-to-comic --skill ache-life-to-comic
+npx skills add https://github.com/acheAIsuiyimen/ache-life-to-comic-skill --skill ache-life-to-comic-skill
 ```
 
 也可以把这句话直接发给有文件和终端能力的 Agent：
 
-> 帮我安装 `ache-life-to-comic`。从 `https://github.com/acheAIsuiyimen/ache-life-to-comic` 安装后，确认根目录里有 `SKILL.md`、`assets/`、`references/` 和 `scripts/`。
+> 帮我安装 `ache-life-to-comic-skill`。从 `https://github.com/acheAIsuiyimen/ache-life-to-comic-skill` 安装后，确认根目录里有 `SKILL.md`、`assets/`、`references/` 和 `scripts/`。
 
 装好后，不需要先学命令。直接说：
 
@@ -127,6 +127,18 @@ npx skills add https://github.com/acheAIsuiyimen/ache-life-to-comic --skill ache
 | 几种内容一起发 | 判断它们是在说同一件事还是应该拆成不同章节 |
 
 每次正式输入都有自己的章节封面。一个月的内容持续进入同一本月册，每三个月形成一部，年末再生成合辑索引。不是每章散落一个 HTML 文件，也不会因为连载一年就把全部历史塞进上下文。
+
+## 想把 HTML 单独发给别人时
+
+平时连载保留的是可继续修改的 `HTML + assets`，像书稿和插图放在同一个书盒里。单独只发其中的 `index.html`，图片当然不会跟着走。
+
+所以，每次单章、单册、单部或单本完成后，它会问你一次：
+
+- **轻量分享版**：图片与版式已经装进一个 HTML，适合聊天和邮件发送；
+- **完整保真版**：连字体也一起装进去，更接近原书，但文件更大；
+- **暂不导出**：继续保留可编辑主版本，以后想发时再补导。
+
+选择前会先告诉你预计大小，不会悄悄生成一个几十 MB 的文件。导出的成品放进 `share-exports/`，可以离开原来的 `assets/`，断网单独打开。
 
 ## 让自己的 IP 进入漫画
 
@@ -178,7 +190,8 @@ books/
     │       └── continuous-edition/
     │           └── index.html            # 当月唯一连续阅读入口
     ├── parts/2026-Q3/                    # 三个月一部，只做索引
-    └── annuals/2026/                     # 年度合辑索引
+    ├── annuals/2026/                     # 年度合辑索引
+    └── share-exports/                    # 按需生成的离线单文件
 ```
 
 同一本书只会越来越厚，不会越用越散。上下文默认只带书级设定、最近五条形式摘要、少量直接相关旧记录和钉住内容，长期连载也不会线性拖慢每次响应。
@@ -194,7 +207,7 @@ books/
 - 桌面、手机、原尺寸和缩略图都要检查；
 - 并发追加使用 UUID、书级锁、幂等键和原子写入，避免页码重复或文件损坏。
 
-当前自动化回归为 **46 / 46**。验收内容见 [docs/verification.md](./docs/verification.md)。
+当前自动化回归为 **55 / 55**。验收内容见 [docs/verification.md](./docs/verification.md)。
 
 ## 仓库里有什么
 

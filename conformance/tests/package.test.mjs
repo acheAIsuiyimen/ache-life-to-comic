@@ -34,7 +34,7 @@ test("SKILL frontmatter is minimal and body stays under 500 lines", async () => 
     .filter((line) => line.includes(":"))
     .map((line) => line.split(":")[0]);
   assert.deepEqual(keys, ["name", "description"]);
-  assert.match(text, /name: ache-life-to-comic/u);
+  assert.match(text, /name: ache-life-to-comic-skill/u);
 });
 
 test("all first-level references named by SKILL exist", async () => {
@@ -113,8 +113,8 @@ test("skill contains no specific image provider or secret-bearing file", async (
 
 test("openai interface metadata names the skill in the default prompt", async () => {
   const text = await readFile(path.join(skillRoot, "agents/openai.yaml"), "utf8");
-  assert.match(text, /display_name: "Ache life-to-comic"/u);
-  assert.match(text, /\$ache-life-to-comic/u);
+  assert.match(text, /display_name: "Ache life-to-comic skill"/u);
+  assert.match(text, /\$ache-life-to-comic-skill/u);
 });
 
 test("no README or installation guide is embedded in the skill package", async () => {

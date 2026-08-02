@@ -22,6 +22,11 @@ import {
 import {
   resolvePresentationMode
 } from "./presentation.mjs";
+import {
+  exportPortableShare,
+  inspectPortableShares,
+  preparePortableSharePrompt
+} from "./portable-export.mjs";
 
 function parseArgs(argv) {
   const [command, ...rest] = argv;
@@ -220,8 +225,38 @@ async function main() {
     return;
   }
 
+  if (command === "share-prompt") {
+    const library = path.resolve(args.library);
+    print(await preparePortableSharePrompt(library, {
+      bookId: safeSegment(args["book-id"], "bookId"),
+      unit: args.unit,
+      key: args.key
+    }));
+    return;
+  }
+
+  if (command === "share-choice") {
+    const library = path.resolve(args.library);
+    print(await exportPortableShare(library, {
+      bookId: safeSegment(args["book-id"], "bookId"),
+      unit: args.unit,
+      key: args.key,
+      choice: args.choice
+    }));
+    return;
+  }
+
+  if (command === "share-inspect") {
+    const library = path.resolve(args.library);
+    print(await inspectPortableShares(
+      library,
+      safeSegment(args["book-id"], "bookId")
+    ));
+    return;
+  }
+
   throw new Error(
-    "Use onboarding-start, onboarding-answer, onboarding-profile, context, layout, capabilities, presentation, target, plan, compound, validate, init-book, append, or inspect"
+    "Use onboarding-start, onboarding-answer, onboarding-profile, context, layout, capabilities, presentation, target, plan, compound, validate, init-book, append, inspect, share-prompt, share-choice, or share-inspect"
   );
 }
 

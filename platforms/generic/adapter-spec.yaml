@@ -23,6 +23,8 @@ image_policy:
   missing_capability: ["light-illustration", "visual-pending"]
 publication:
   supported_core: ["local-html"]
+  portable_share: ["light", "faithful", "skip"]
+  portable_share_entrypoint: "scripts/portable-export.mjs"
   optional_adapters: ["feishu", "github"]
   external_write_requires_explicit_authorization: true
 feishu:

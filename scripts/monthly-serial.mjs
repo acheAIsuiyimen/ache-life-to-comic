@@ -3,6 +3,7 @@ import path from "node:path";
 import {randomUUID} from "node:crypto";
 import {atomicWriteJson, atomicWriteText, ensureDir, readJsonIfExists} from "./io.mjs";
 import {installRendererAssets, renderMonthlyDocument} from "./page-renderer.mjs";
+import {preparePortableSharePrompt} from "./portable-export.mjs";
 
 const wait = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
 
@@ -303,12 +304,23 @@ export async function appendEpisode(root, rawEpisode) {
 
   await initialize(root, episode.bookId, episode.bookTitle);
   const lock = await acquireLock(root, episode.bookId);
+  let lockHeld = true;
   try {
     const locations = await initialize(root, episode.bookId, episode.bookTitle);
     const series = await readJsonIfExists(locations.seriesManifest);
     const existingId = series.idempotency[episode.idempotencyKey];
     if (existingId) {
-      return {episodeId: existingId, reused: true};
+      await releaseLock(lock);
+      lockHeld = false;
+      return {
+        episodeId: existingId,
+        reused: true,
+        portableShare: await preparePortableSharePrompt(root, {
+          bookId: episode.bookId,
+          unit: "chapter",
+          key: existingId
+        })
+      };
     }
 
     const placement = resolvePlacement(episode);
@@ -396,16 +408,23 @@ export async function appendEpisode(root, rawEpisode) {
     await updateCollectionIndexes(locations, series);
     await atomicWriteJson(locations.seriesManifest, series);
     await atomicWriteText(locations.seriesIndex, renderSeriesHtml(series));
+    await releaseLock(lock);
+    lockHeld = false;
     return {
       episodeId: committed.episodeId,
       episodeNumber: committed.episodeNumber,
       month: placement.month,
       reused: false,
       monthlyIndex: volumeLocations.index,
-      seriesIndex: locations.seriesIndex
+      seriesIndex: locations.seriesIndex,
+      portableShare: await preparePortableSharePrompt(root, {
+        bookId: episode.bookId,
+        unit: "chapter",
+        key: committed.episodeId
+      })
     };
   } finally {
-    await releaseLock(lock);
+    if (lockHeld) await releaseLock(lock);
   }
 }
 

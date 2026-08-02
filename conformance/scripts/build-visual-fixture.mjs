@@ -18,7 +18,7 @@ await mkdir(reviewRoot, {recursive: true});
 
 const photo = await appendEpisode(library, {
   bookId: "visual-book",
-  bookTitle: "Ache life-to-comic 测试月册",
+  bookTitle: "Ache life-to-comic skill 测试月册",
   idempotencyKey: "visual-photo",
   episodeId: "visual-photo",
   title: "雨停以后，窗边留下三件小事",
@@ -39,7 +39,7 @@ const photo = await appendEpisode(library, {
 
 const knowledge = await appendEpisode(library, {
   bookId: "visual-book",
-  bookTitle: "Ache life-to-comic 测试月册",
+  bookTitle: "Ache life-to-comic skill 测试月册",
   idempotencyKey: "visual-knowledge",
   episodeId: "visual-knowledge",
   title: "把复杂知识留成一页能重看的笔记",
@@ -60,7 +60,7 @@ const knowledge = await appendEpisode(library, {
 
 const pending = await appendEpisode(library, {
   bookId: "visual-book",
-  bookTitle: "Ache life-to-comic 测试月册",
+  bookTitle: "Ache life-to-comic skill 测试月册",
   idempotencyKey: "visual-pending",
   episodeId: "visual-pending",
   title: "先把今天留下，画面以后再补",

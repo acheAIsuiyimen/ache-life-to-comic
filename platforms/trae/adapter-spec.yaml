@@ -29,6 +29,8 @@ data_contract:
   visual_job: "provider-neutral"
 publication:
   default: "local-html"
+  portable_share: ["light", "faithful", "skip"]
+  portable_share_entrypoint: "scripts/portable-export.mjs"
   external_write_requires_explicit_authorization: true
 feishu:
   verified_personal_identity_required: true
