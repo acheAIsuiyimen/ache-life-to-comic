@@ -17,7 +17,7 @@ test("every recordable entry receives one stable content-derived cover", () => {
   assert.equal(first.cover.required, true);
   assert.equal(first.cover.grammar, second.cover.grammar);
   assert.equal(first.totalPageCount, first.bodyPageCount + 1);
-  assert.equal(first.designSystemVersion, "ache-design-system/1.1.0");
+  assert.equal(first.designSystemVersion, "ache-design-system/1.2.0");
   assert.equal(first.layout.canvas.background, "#FFFFFF");
 });
 
@@ -30,16 +30,28 @@ test("route and density heuristics cover S P K M L", () => {
   assert.equal(daily.route, "S");
   assert.deepEqual(daily.panelPlan.pages.map((page) => page.panelCount), [3]);
   assert.equal(daily.imageBudget, 2);
+  assert.equal(daily.routeContract.preservation, "source-beat-order");
 
   const photo = planEntry({
     idempotencyKey: "p",
     kind: "photo",
-    images: ["a", "b", "c"]
+    images: ["a", "b", "c"],
+    coverSemantics: {
+      coreObject: "圆窗",
+      emotionVerb: "偷看",
+      smallContrast: "圆窗像月亮",
+      grammar: "environment-transformation"
+    }
   });
   assert.equal(photo.route, "P");
   assert.equal(photo.bodyPageCount, 1);
   assert.equal(photo.preservation.originalPhoto, true);
   assert.equal(photo.layout.templateId, "B-photo-window-vertical-relay");
+  assert.equal(photo.visualLayout, "hero-plus-two");
+  assert.equal(photo.cover.photoSemanticCoverRequired, true);
+  assert.equal(photo.cover.photoRestyleForbidden, true);
+  assert.equal(photo.cover.semantics.coreObject, "圆窗");
+  assert.equal(photo.routeContract.coverSource, "semantic-recomposition-from-visible-evidence");
 
   const knowledge = planEntry({
     idempotencyKey: "k",
@@ -50,6 +62,7 @@ test("route and density heuristics cover S P K M L", () => {
   assert.equal(knowledge.bodyPageCount, 2);
   assert.equal(knowledge.imageBudget, 1);
   assert.equal(knowledge.layout.templateId, "C-handwritten-archive");
+  assert.equal(knowledge.routeContract.imagePolicy, "one-visual-breathing-point-per-one-to-three-pages");
 
   const meeting = planEntry({
     idempotencyKey: "m",
@@ -59,6 +72,7 @@ test("route and density heuristics cover S P K M L", () => {
   assert.equal(meeting.route, "M");
   assert.equal(meeting.bodyPageCount, 2);
   assert.equal(meeting.imageBudget, 1);
+  assert.equal(meeting.routeContract.bodyMode, "structured-notes-with-light-illustration");
 
   const longform = planEntry({
     idempotencyKey: "l",
@@ -70,6 +84,35 @@ test("route and density heuristics cover S P K M L", () => {
   assert.equal(longform.requiresLayoutMeasure, true);
   assert.equal(longform.preservation.exactOriginalText, true);
   assert.equal(longform.panelPlan, null);
+  assert.equal(longform.routeContract.preservation, "exact-text-paragraphs-and-order");
+});
+
+test("all five routes expose the same mandatory cover director card", () => {
+  for (const route of ["S", "P", "K", "M", "L"]) {
+    const coverDirection = {
+      coreObject: `${route}-object`,
+      emotionVerb: `${route}-verb`,
+      smallContrast: `${route}-contrast`,
+      grammar: "environment-transformation"
+    };
+    const plan = planEntry({
+      idempotencyKey: `director-${route}`,
+      route,
+      coverDirection,
+      images: route === "P" ? ["photo.jpg"] : [],
+      knowledgePoints: route === "K" ? ["fact"] : [],
+      meetingFields: route === "M" ? ["decision"] : [],
+      preserveOriginal: route === "L"
+    });
+    assert.deepEqual(plan.cover.requiredSemanticFields, [
+      "coreObject",
+      "emotionVerb",
+      "smallContrast",
+      "grammar"
+    ]);
+    assert.deepEqual(plan.cover.semantics, coverDirection);
+    assert.ok(plan.routeContract);
+  }
 });
 
 test("compound inputs merge only by explicit relation key", () => {

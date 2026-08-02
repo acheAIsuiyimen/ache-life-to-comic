@@ -14,9 +14,23 @@ function sameJson(left, right) {
   return isDeepStrictEqual(left, right);
 }
 
+const COVER_DIRECTION_FIELDS = ["coreObject", "emotionVerb", "smallContrast", "grammar"];
+const COVER_GRAMMARS = new Set(["environment-transformation", "typography-in-scene"]);
+
 export async function validateEntry({route, source = {}, output = {}}) {
   const errors = [];
   const evidence = {};
+  const coverDirection = output.coverDirection ?? {};
+
+  for (const field of COVER_DIRECTION_FIELDS) {
+    if (!String(coverDirection[field] ?? "").trim()) {
+      errors.push(`cover-direction-missing:${field}`);
+    }
+  }
+  if (coverDirection.grammar && !COVER_GRAMMARS.has(coverDirection.grammar)) {
+    errors.push("cover-direction-invalid:grammar");
+  }
+  evidence.coverDirection = coverDirection;
 
   if (route === "P") {
     const sourceImages = source.images ?? [];
@@ -36,6 +50,15 @@ export async function validateEntry({route, source = {}, output = {}}) {
       evidence.photoHashes = pairs;
       if (pairs.some((pair) => pair.sourceHash !== pair.outputHash)) {
         errors.push("photo-hash-mismatch");
+      }
+    }
+    if (!output.coverVisual) {
+      errors.push("photo-semantic-cover-missing");
+    } else {
+      const coverHash = await hashFile(output.coverVisual);
+      evidence.coverHash = coverHash;
+      if (evidence.photoHashes?.some((pair) => pair.sourceHash === coverHash)) {
+        errors.push("photo-cover-reuses-original");
       }
     }
   }

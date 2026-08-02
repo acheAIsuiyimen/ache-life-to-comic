@@ -8,23 +8,43 @@ import {
   validateEntry
 } from "../../scripts/validate-entry.mjs";
 
+const direction = {
+  coreObject: "纸页",
+  emotionVerb: "展开",
+  smallContrast: "一张纸留下一个转折",
+  grammar: "environment-transformation"
+};
+
 test("P preserves every original photo byte-for-byte", async () => {
   const root = await mkdtemp(path.join(os.tmpdir(), "ache-validate-"));
   const source = path.join(root, "source.png");
   const copy = path.join(root, "copy.png");
+  const cover = path.join(root, "cover.png");
   await writeFile(source, "same-bytes");
   await writeFile(copy, "same-bytes");
+  await writeFile(cover, "semantic-cover-bytes");
+  const coverDirection = {
+    coreObject: "圆窗",
+    emotionVerb: "偷看",
+    smallContrast: "圆窗像月亮",
+    grammar: "environment-transformation"
+  };
   assert.equal((await validateEntry({
     route: "P",
     source: {images: [source]},
-    output: {preservedImages: [copy]}
+    output: {preservedImages: [copy], coverVisual: cover, coverDirection}
   })).status, "PASS");
   await writeFile(copy, "changed");
   assert.equal((await validateEntry({
     route: "P",
     source: {images: [source]},
-    output: {preservedImages: [copy]}
+    output: {preservedImages: [copy], coverVisual: cover, coverDirection}
   })).status, "FAIL");
+  assert.equal((await validateEntry({
+    route: "P",
+    source: {images: [source]},
+    output: {preservedImages: [source], coverVisual: source, coverDirection}
+  })).errors.includes("photo-cover-reuses-original"), true);
 });
 
 test("K keeps a traceable fact ledger", async () => {
@@ -38,6 +58,7 @@ test("K keeps a traceable fact ledger", async () => {
     route: "K",
     source,
     output: {
+      coverDirection: direction,
       factLedger: [
         {
           sourceFactId: "f1",
@@ -56,7 +77,7 @@ test("K keeps a traceable fact ledger", async () => {
   assert.equal((await validateEntry({
     route: "K",
     source,
-    output: {factLedger: []}
+    output: {coverDirection: direction, factLedger: []}
   })).status, "FAIL");
 });
 
@@ -73,12 +94,12 @@ test("M preserves structured meeting fields and complete tasks", async () => {
   assert.equal((await validateEntry({
     route: "M",
     source: meeting,
-    output: structuredClone(meeting)
+    output: {...structuredClone(meeting), coverDirection: direction}
   })).status, "PASS");
   assert.equal((await validateEntry({
     route: "M",
     source: meeting,
-    output: {...meeting, tasks: [{text: "给出标题池"}]}
+    output: {...meeting, coverDirection: direction, tasks: [{text: "给出标题池"}]}
   })).status, "FAIL");
 });
 
@@ -88,13 +109,22 @@ test("L preserves exact text, paragraph count and order", async () => {
   const pass = await validateEntry({
     route: "L",
     source: {originalText, paragraphs},
-    output: {originalText, paragraphs}
+    output: {originalText, paragraphs, coverDirection: direction}
   });
   assert.equal(pass.status, "PASS");
   assert.equal(pass.evidence.sourceTextHash, pass.evidence.outputTextHash);
   assert.equal((await validateEntry({
     route: "L",
     source: {originalText, paragraphs},
-    output: {originalText: "第一段。第二段。", paragraphs: [...paragraphs].reverse()}
+    output: {originalText: "第一段。第二段。", paragraphs: [...paragraphs].reverse(), coverDirection: direction}
   })).status, "FAIL");
+});
+
+test("every route fails final validation without the four-field cover director card", async () => {
+  for (const route of ["S", "P", "K", "M", "L"]) {
+    const result = await validateEntry({route, source: {}, output: {}});
+    for (const field of ["coreObject", "emotionVerb", "smallContrast", "grammar"]) {
+      assert.equal(result.errors.includes(`cover-direction-missing:${field}`), true);
+    }
+  }
 });

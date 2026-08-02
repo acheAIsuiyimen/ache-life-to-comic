@@ -12,6 +12,39 @@ const ROUTE_BY_KIND = {
   longform: "L"
 };
 
+const ROUTE_CONTRACTS = {
+  S: {
+    coverSource: "one-real-moment-or-emotion",
+    bodyMode: "one-to-three-top-to-bottom-comic-panels",
+    imagePolicy: "one-composite-visual-per-body-page",
+    preservation: "source-beat-order"
+  },
+  P: {
+    coverSource: "semantic-recomposition-from-visible-evidence",
+    bodyMode: "complete-original-photos-in-journal-layout",
+    imagePolicy: "independent-cover-plus-byte-identical-originals",
+    preservation: "original-photo-bytes-and-complete-visible-frame"
+  },
+  K: {
+    coverSource: "one-core-process-or-relation",
+    bodyMode: "readable-text-with-sparse-explanatory-visual",
+    imagePolicy: "one-visual-breathing-point-per-one-to-three-pages",
+    preservation: "facts-and-source-traceability"
+  },
+  M: {
+    coverSource: "meeting-topic-decision-tension-or-next-action",
+    bodyMode: "structured-notes-with-light-illustration",
+    imagePolicy: "no-panel-count-derived-from-field-count",
+    preservation: "speakers-decisions-risks-open-questions-and-tasks"
+  },
+  L: {
+    coverSource: "single-metaphor-from-the-whole-text",
+    bodyMode: "exact-longform-reading-with-margin-illustration",
+    imagePolicy: "at-most-one-light-visual-per-one-to-three-pages",
+    preservation: "exact-text-paragraphs-and-order"
+  }
+};
+
 function countText(text = "") {
   return Array.from(String(text).trim()).length;
 }
@@ -139,6 +172,15 @@ function imageBudget(route, bodyPageCount) {
   return 1;
 }
 
+function visualLayout(route, input) {
+  const count = route === "P"
+    ? (input.images?.length ?? 0)
+    : (input.beats?.length ?? 0);
+  if (count === 2) return "scrapbook-pair";
+  if (count === 3) return "hero-plus-two";
+  return "vertical-relay";
+}
+
 export function planEntry(input, profile = {}) {
   if (!input?.idempotencyKey) throw new Error("idempotencyKey is required");
   const route = routeFor(input);
@@ -151,20 +193,28 @@ export function planEntry(input, profile = {}) {
     input,
     previousTemplates: profile.recentTemplates ?? []
   });
+  const coverSemantics = input.coverDirection ?? input.coverSemantics ?? null;
   return {
     schemaVersion: "1.1.0",
     ruleVersion: "ache-route-1.2.0",
     designSystemVersion: layout.designSystemVersion,
     route,
+    routeContract: ROUTE_CONTRACTS[route],
     cover: {
       required: true,
-      grammar: coverGrammar(input.idempotencyKey)
+      grammar: coverGrammar(input.idempotencyKey),
+      directionRequired: true,
+      semantics: coverSemantics,
+      requiredSemanticFields: ["coreObject", "emotionVerb", "smallContrast", "grammar"],
+      photoSemanticCoverRequired: route === "P",
+      photoRestyleForbidden: route === "P"
     },
     bodyPageCount,
     totalPageCount: bodyPageCount + 1,
     requiresLayoutMeasure: route === "L",
     imageBudget: imageBudget(route, bodyPageCount),
     layout,
+    visualLayout: input.visualLayout ?? visualLayout(route, input),
     panelPlan: panelPlan(input, route, bodyPageCount),
     characterMode: input.characterMode ?? profile.character?.mode ?? "none",
     style: profile.style ?? {

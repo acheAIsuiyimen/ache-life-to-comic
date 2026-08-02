@@ -47,11 +47,14 @@ test("monthly renderer owns fixed page artboards instead of generic blog HTML", 
     {month: "2026-07", episodes: [sampleEpisode()]}
   );
   assert.equal(validateRenderedHtmlText(html).status, "PASS");
-  assert.match(html, /class="ache-page ache-cover-page"/u);
+  assert.match(html, /class="ache-page ache-cover-page ache-route-s"/u);
   assert.match(html, /class="ache-page ache-visual-page/u);
   assert.match(html, /<h2 class="ache-sr-only">雨停之后<\/h2>/u);
   assert.doesNotMatch(html, /class="page-frame"|class="episode"/u);
   assert.doesNotMatch(html, /fonts\.googleapis\.com/u);
+  assert.doesNotMatch(html, /ache-text-token/u);
+  assert.doesNotMatch(html, /\.ache-title[^}]*white-space:\s*nowrap/u);
+  assert.match(html, /data-image-fit="contain"/u);
 });
 
 test("text-first routes keep cover and readable body pages with sparse illustration", () => {
@@ -70,7 +73,85 @@ test("text-first routes keep cover and readable body pages with sparse illustrat
     );
     assert.equal(validateRenderedHtmlText(html).status, "PASS");
     assert.match(html, /ache-text-page/u);
+    assert.doesNotMatch(html, /ache-text-token/u);
   }
+});
+
+test("meeting renderer exposes editorial decision risk and action rhythm", () => {
+  const html = renderMonthlyDocument(
+    {title: "一本书"},
+    {month: "2026-07", episodes: [sampleEpisode({
+      route: "M",
+      title: "这次会留下了什么",
+      text: "背景：先核对进度。风险：接口仍不稳定。决议：周三先灰度。待办：小林周二提交清单。"
+    })]}
+  );
+  assert.match(html, /ache-meeting-risk/u);
+  assert.match(html, /ache-meeting-decision/u);
+  assert.match(html, /ache-meeting-action/u);
+});
+
+test("long text paginates instead of shrinking mobile typography", () => {
+  const longText = Array.from({length: 24}, (_, index) =>
+    `第${index + 1}段保留完整事实与阅读顺序，内容超出时沿语义边界进入下一页。`
+  ).join("\n");
+  const html = renderMonthlyDocument(
+    {title: "一本书"},
+    {month: "2026-07", episodes: [sampleEpisode({route: "L", text: longText})]}
+  );
+  assert.ok((html.match(/class="ache-page ache-text-page/gu) ?? []).length >= 3);
+  assert.doesNotMatch(html, /font-size:\s*(?:9|10|11)(?:px|\.\d+px)/u);
+});
+
+test("long-form rendering preserves every source character in order", () => {
+  const source = [
+    "第一段保留原来的引号、顿号与句号。",
+    "“第二段不会被拆成孤零零的标点。这里还有第二句。”",
+    "第三段很长，".repeat(90)
+  ].join("\n\n");
+  const html = renderMonthlyDocument(
+    {title: "一本书"},
+    {month: "2026-07", episodes: [sampleEpisode({route: "L", text: source})]}
+  );
+  const renderedText = [...html.matchAll(/<div class="ache-text-column">([\s\S]*?)<\/div>/gu)]
+    .map((match) => match[1])
+    .join("")
+    .replaceAll("&amp;", "&")
+    .replaceAll("&lt;", "<")
+    .replaceAll("&gt;", ">")
+    .replaceAll("&quot;", '"')
+    .replaceAll("&#039;", "'")
+    .replace(/<br>/gu, "\n")
+    .replace(/<[^>]+>/gu, "")
+    .replace(/\s+/gu, "");
+  assert.equal(renderedText, source.replace(/\s+/gu, ""));
+});
+
+test("titles wrap naturally and photos are never crop fitted", () => {
+  const html = renderMonthlyDocument(
+    {title: "一本书"},
+    {month: "2026-07", episodes: [sampleEpisode({
+      route: "P",
+      title: "这是一条需要自然换行而不是挤进图片区的长标题"
+    })]}
+  );
+  assert.match(html, /ache-title--long/u);
+  assert.doesNotMatch(html, /ache-title-line/u);
+  assert.doesNotMatch(html, /data-image-fit="cover"/u);
+});
+
+test("photo route never promotes an original body photo into the cover", () => {
+  const html = renderMonthlyDocument(
+    {title: "一本书"},
+    {month: "2026-07", episodes: [sampleEpisode({
+      route: "P",
+      pageAssets: [{src: "assets/original.jpg", alt: "完整原图", role: "body-photo"}]
+    })]}
+  );
+  const cover = html.match(/ache-cover-page[\s\S]*?<\/section>/u)?.[0] ?? "";
+  const body = html.match(/ache-visual-page[\s\S]*?<\/section>/u)?.[0] ?? "";
+  assert.doesNotMatch(cover, /assets\/original\.jpg/u);
+  assert.match(body, /assets\/original\.jpg/u);
 });
 
 test("presentation plan uses real declared surfaces and never invents tool names", () => {
