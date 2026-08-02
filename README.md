@@ -207,7 +207,7 @@ books/
 - 桌面、手机、原尺寸和缩略图都要检查；
 - 并发追加使用 UUID、书级锁、幂等键和原子写入，避免页码重复或文件损坏。
 
-当前自动化回归为 **55 / 55**。验收内容见 [docs/verification.md](./docs/verification.md)。
+当前自动化回归为 **62 / 62**。验收内容见 [docs/verification.md](./docs/verification.md)。
 
 ## 仓库里有什么
 

@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "ache-design-system/1.1.0",
+  "schemaVersion": "ache-design-system/1.2.0",
   "id": "ache-comic-journal-white-1",
   "source": {
     "canonicalHandbook": "漫画人生-喜茶近三月插画排版手册-v0.1/设计排版手册.md",
@@ -93,9 +93,40 @@
     "renderer": "scripts/page-renderer.mjs",
     "stylesheet": "assets/templates/page-system.css",
     "contract": "Platforms supply content and textless visuals; the deterministic renderer owns page ratio, type roles, spacing, image fitting, page boundaries and responsive behavior.",
-    "freehandPlatformHtmlForbidden": true
+    "freehandPlatformHtmlForbidden": true,
+    "normalFlowForPrimaryZones": true,
+    "absolutePositioningForTextForbidden": true,
+    "precomposedPageMustNotBeReframed": true,
+    "imageCropRequiresExplicitOptIn": true
   },
   "routing": {
+    "routeContracts": {
+      "S": {
+        "cover": "one-real-moment-or-emotion",
+        "body": "one-to-three-top-to-bottom-comic-panels",
+        "preserve": "source-beat-order"
+      },
+      "P": {
+        "cover": "independent-semantic-recomposition",
+        "body": "complete-original-photos-in-journal-layout",
+        "preserve": "original-photo-bytes-and-complete-visible-frame"
+      },
+      "K": {
+        "cover": "one-core-process-or-relation",
+        "body": "readable-text-with-sparse-explanatory-visual",
+        "preserve": "facts-and-source-traceability"
+      },
+      "M": {
+        "cover": "topic-decision-tension-or-next-action",
+        "body": "structured-notes-with-light-illustration",
+        "preserve": "speakers-decisions-risks-open-questions-and-tasks"
+      },
+      "L": {
+        "cover": "single-metaphor-from-the-whole-text",
+        "body": "exact-longform-reading-with-margin-illustration",
+        "preserve": "exact-text-paragraphs-and-order"
+      }
+    },
     "photoCount": {
       "1": "B-photo-window",
       "2": "B-photo-window-main-plus-echo",
@@ -118,6 +149,24 @@
   },
   "quality": {
     "oneVisualSurprisePerPage": true,
+    "approvedCaseAlignment": {
+      "sameLayoutRequired": false,
+      "mustPreserve": [
+        "white-ground-and-restrained-materials",
+        "title-to-visual-relationship",
+        "one-meaningful-visual-surprise",
+        "route-specific-editorial-rhythm"
+      ],
+      "rejectIfTechnicallyCorrectButGeneric": true
+    },
+    "blockingGeometryChecks": [
+      "header-content-footer-collision",
+      "text-image-collision",
+      "page-scroll-overflow",
+      "image-fit-and-visible-ratio",
+      "mobile-font-size",
+      "title-orphan-line"
+    ],
     "forbiddenLooks": [
       "presentation-slide",
       "product-ui-card",

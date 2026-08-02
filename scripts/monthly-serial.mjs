@@ -294,7 +294,9 @@ export async function appendEpisode(root, rawEpisode) {
     recordedAt: rawEpisode.recordedAt,
     eventDate: rawEpisode.eventDate ?? rawEpisode.recordedAt,
     placement: rawEpisode.placement ?? "event-date",
-    visualStatus: rawEpisode.visualStatus ?? "ready"
+    visualStatus: rawEpisode.visualStatus ?? "ready",
+    coverDirection: rawEpisode.coverDirection ?? null,
+    visualLayout: rawEpisode.visualLayout ?? null
   };
   if (!episode.bookId || !episode.idempotencyKey || !episode.recordedAt) {
     throw new Error("bookId, idempotencyKey and recordedAt are required");

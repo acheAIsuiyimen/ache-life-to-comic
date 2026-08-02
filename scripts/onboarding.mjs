@@ -121,7 +121,7 @@ export function profileFromOnboarding(state, {
   return {
     schemaVersion: "1.1.0",
     onboardingVersion: ONBOARDING_VERSION,
-    designSystemVersion: "ache-design-system/1.1.0",
+    designSystemVersion: "ache-design-system/1.2.0",
     bookId,
     title,
     style: {

@@ -2,8 +2,8 @@
 
 ## Current result
 
-- Skill files: 53
-- Automated tests: 55 / 55
+- Skill files: 54
+- Automated tests: 62 / 62
 - Desktop render: PASS
 - Mobile render: PASS
 - Required images and console: PASS
