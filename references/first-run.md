@@ -72,7 +72,7 @@
 {
   "schemaVersion": "1.1.0",
   "onboardingVersion": "ache-onboarding/1.1.0",
-  "designSystemVersion": "ache-design-system/1.2.0",
+  "designSystemVersion": "ache-design-system/1.3.0",
   "bookId": "stable-book-id",
   "title": "我的漫画人生",
   "style": {

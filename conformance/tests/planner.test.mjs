@@ -17,7 +17,7 @@ test("every recordable entry receives one stable content-derived cover", () => {
   assert.equal(first.cover.required, true);
   assert.equal(first.cover.grammar, second.cover.grammar);
   assert.equal(first.totalPageCount, first.bodyPageCount + 1);
-  assert.equal(first.designSystemVersion, "ache-design-system/1.2.0");
+  assert.equal(first.designSystemVersion, "ache-design-system/1.3.0");
   assert.equal(first.layout.canvas.background, "#FFFFFF");
 });
 
@@ -47,7 +47,7 @@ test("route and density heuristics cover S P K M L", () => {
   assert.equal(photo.bodyPageCount, 1);
   assert.equal(photo.preservation.originalPhoto, true);
   assert.equal(photo.layout.templateId, "B-photo-window-vertical-relay");
-  assert.equal(photo.visualLayout, "hero-plus-two");
+  assert.equal(photo.visualLayout, "auto");
   assert.equal(photo.cover.photoSemanticCoverRequired, true);
   assert.equal(photo.cover.photoRestyleForbidden, true);
   assert.equal(photo.cover.semantics.coreObject, "圆窗");
@@ -175,9 +175,21 @@ test("S panel plan deterministically balances zero to eight beats", () => {
     assert.equal(plan.panelPlan.readingDirection, "top-to-bottom");
     assert.equal(
       plan.panelPlan.generationStrategy,
-      "one-composite-visual-per-body-page"
+      "isolated-cells-or-independent-assets"
     );
   }
+});
+
+test("cover grammar never repeats the immediately previous grammar", () => {
+  const first = planEntry({idempotencyKey: "cover-sequence", kind: "daily"});
+  const second = planEntry(
+    {idempotencyKey: "cover-sequence", kind: "daily"},
+    {recentCoverGrammars: [first.cover.grammar]}
+  );
+  assert.notEqual(first.cover.grammar, second.cover.grammar);
+  assert.equal(second.cover.targetAspectRatio, "3:4");
+  assert.equal(second.cover.independentAssetRequired, true);
+  assert.equal(second.generationBudget.aestheticRecoveryCallsMax, 2);
 });
 
 test("S panel plan preserves source beat order without multiplying image calls", () => {

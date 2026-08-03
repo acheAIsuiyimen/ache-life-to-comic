@@ -17,6 +17,19 @@ function photoTemplate(count) {
   return "group-before-layout";
 }
 
+function imageAspect(value) {
+  if (!value || typeof value === "string") return "unknown";
+  if (value.aspectClass) return value.aspectClass;
+  const width = Number(value.width ?? value.intrinsicWidth ?? 0);
+  const height = Number(value.height ?? value.intrinsicHeight ?? 0);
+  if (!width || !height) return "unknown";
+  const ratio = width / height;
+  if (ratio < .9) return "portrait";
+  if (ratio <= 1.12) return "square";
+  if (ratio <= 1.62) return "landscape";
+  return "landscape-wide";
+}
+
 function bodyTemplate(route, input) {
   if (route === "P") return photoTemplate(input.images?.length ?? 0);
   if (["K", "M", "L"].includes(route)) return "C-handwritten-archive";
@@ -49,6 +62,13 @@ export function planLayout({route, input = {}, previousTemplates = []}) {
       generatedImageText: "forbidden",
       materialGroupCountMax: 2
     },
+    imageGeometry: {
+      aspectClasses: (input.images ?? []).map(imageAspect),
+      preserveCompleteFrame: route === "P",
+      selectRecipeFromIntrinsicRatio: true,
+      arbitraryFractionCropForbidden: true,
+      isolatedSheetCellsRequireSafeGutter: true
+    },
     promptConstraints: [
       "dominant crisp pure white #FFFFFF page ground",
       "white page area must occupy 70 to 85 percent",
@@ -59,7 +79,11 @@ export function planLayout({route, input = {}, previousTemplates = []}) {
     validation: {
       requiredViewports: BASELINE.quality.requiredViewports,
       forbiddenLooks: BASELINE.quality.forbiddenLooks,
-      rejectWarmGround: true
+      rejectWarmGround: true,
+      measuredDensityBands: 4,
+      activeCompositionRatioMin: .75,
+      correctionLadder: ["nudge", "local-compaction", "rhythm-adjustment", "switch-recipe-or-paginate"],
+      shrinkBodyTextFirst: false
     }
   };
 }

@@ -126,7 +126,7 @@ for (const viewport of [
       && metrics.imageOutOfPageCount === 0
       && metrics.cropWithoutOptInCount === 0
       && (viewport.name !== "mobile" || metrics.minimumBodyFont >= 12)
-      && metrics.designSystem === "ache-design-system/1.2.0"
+      && metrics.designSystem === "ache-design-system/1.3.0"
       && consoleErrors.length === 0
   });
   await page.close();
