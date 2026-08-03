@@ -8,8 +8,8 @@ const skillRoot = path.resolve(scriptDirectory, "..");
 const pageCssPath = path.join(skillRoot, "assets", "templates", "page-system.css");
 const fontDirectory = path.join(skillRoot, "assets", "fonts");
 
-export const DESIGN_SYSTEM_VERSION = "ache-design-system/1.3.0";
-export const MONTHLY_RENDERER_VERSION = "ache-monthly-renderer/2.1.0";
+export const DESIGN_SYSTEM_VERSION = "ache-design-system/1.4.0";
+export const MONTHLY_RENDERER_VERSION = "ache-monthly-renderer/2.2.0";
 
 export function escapeHtml(value = "") {
   return String(value)
@@ -89,12 +89,56 @@ function textCapacity(route, hasVisual) {
   // Capacities are calibrated against the narrowest supported 390px viewport.
   // Meeting bullets consume more vertical rhythm than prose, so they must not
   // reuse long-form character capacity.
-  const base = {K: 300, M: 245, L: 330}[route] ?? 290;
-  const visualCost = {K: 82, M: 72, L: 82}[route] ?? 72;
+  const base = {K: 300, M: 345, L: 460}[route] ?? 290;
+  const visualCost = {K: 36, M: 28, L: 42}[route] ?? 36;
   // Sparse illustrations occupy a side column, not a full reading page. Keep
   // enough text on the same page to avoid isolated tails, then let browser QA
   // reject any viewport that would actually overflow.
   return Math.max(160, base - (hasVisual ? visualCost : 0));
+}
+
+function trimTerminal(value) {
+  return String(value ?? "").trim().replace(/[；;。！？!?]+$/u, "").trim();
+}
+
+export function structureKnowledgeText(value) {
+  const source = String(value ?? "").replace(/[ \t]+/gu, " ").trim();
+  if (!source) return {mode: "prose", intro: "", steps: [], reflection: ""};
+  const colon = source.search(/[：:]/u);
+  if (colon < 0) return {mode: "prose", intro: source, steps: [], reflection: ""};
+
+  const intro = trimTerminal(source.slice(0, colon));
+  const tail = source.slice(colon + 1).trim();
+  const firstStop = tail.search(/[。！？!?]/u);
+  const sequence = firstStop >= 0 ? tail.slice(0, firstStop) : tail;
+  const reflection = firstStop >= 0 ? tail.slice(firstStop + 1).trim() : "";
+  const steps = sequence.split(/[；;]/u).map(trimTerminal).filter(Boolean);
+  if (steps.length < 2) return {mode: "prose", intro: source, steps: [], reflection: ""};
+  return {mode: "sequence", intro, steps, reflection: trimTerminal(reflection)};
+}
+
+export function planTextComposition(value, route, bodyAssets = []) {
+  const chunks = paginateText(value, route, bodyAssets);
+  const knowledge = route === "K" ? structureKnowledgeText(value) : null;
+  return {
+    route,
+    recipe: route === "K" && knowledge?.mode === "sequence"
+      ? "knowledge-sequence-journal"
+      : route === "M"
+        ? "meeting-editorial-ledger"
+        : route === "L"
+          ? "longform-balanced-reading"
+          : "text-journal",
+    pageCount: chunks.length,
+    chunks,
+    knowledge,
+    preflight: {
+      semanticUnitsIntact: route !== "K" || knowledge?.mode !== "sequence" || knowledge.steps.length >= 2,
+      targetFillRange: [0.62, 0.88],
+      bottomDeadZoneMaximum: 0.25,
+      illustrationGroupsMaximum: Math.ceil(Math.max(1, chunks.length) / 3)
+    }
+  };
 }
 
 function paginateLongform(value, firstCapacity, laterCapacity) {
@@ -167,9 +211,7 @@ function paginateText(value, route, bodyAssets = []) {
   let pageIndex = 0;
   for (const unit of units) {
     const capacity = pageIndex === 0 ? firstCapacity : laterCapacity;
-    const maxUnits = route === "M"
-      ? (pageIndex === 0 && firstPageHasVisual ? 7 : 9)
-      : Number.POSITIVE_INFINITY;
+    const maxUnits = Number.POSITIVE_INFINITY;
     const candidate = [...current, unit].join("\n\n");
     if (current.length > 0 && (characterWeight(candidate) > capacity || current.length >= maxUnits)) {
       pages.push(current.join("\n\n"));
@@ -192,6 +234,21 @@ function paginateText(value, route, bodyAssets = []) {
         pages[pages.length - 1] = `${moved}\n\n${last}`;
         if (!pages[pages.length - 2].trim()) pages.splice(pages.length - 2, 1);
       }
+    }
+  }
+  if (route === "M" && pages.length > 1) {
+    for (let index = 0; index < pages.length - 1; index += 1) {
+      const left = sentences(pages[index]);
+      const right = sentences(pages[index + 1]);
+      while (left.length > 1 && characterWeight(left.join("\n\n")) > characterWeight(right.join("\n\n")) * 1.12) {
+        const moved = left.at(-1);
+        const nextRight = [moved, ...right];
+        if (characterWeight(nextRight.join("\n\n")) > laterCapacity * 1.08) break;
+        left.pop();
+        right.unshift(moved);
+      }
+      pages[index] = left.join("\n\n");
+      pages[index + 1] = right.join("\n\n");
     }
   }
   return pages;
@@ -300,6 +357,14 @@ function visualBodySheet(episode, assets, pageNumber, notes, pageIndex, pageCoun
 }
 
 function paragraphMarkup(text, route) {
+  if (route === "K") {
+    const structured = structureKnowledgeText(text);
+    if (structured.mode === "sequence") {
+      return `<div class="ache-knowledge-intro"><span>看见的方法</span><p>${escapeHtml(structured.intro)}。</p></div>
+        <ol class="ache-knowledge-steps">${structured.steps.map((step, index) => `<li><span>${String(index + 1).padStart(2, "0")}</span><p>${escapeHtml(step)}</p></li>`).join("")}</ol>
+        ${structured.reflection ? `<p class="ache-knowledge-reflection">${escapeHtml(structured.reflection)}。</p>` : ""}`;
+    }
+  }
   if (route === "L") {
     return String(text ?? "")
       .split(/\n{2,}/u)
@@ -330,7 +395,7 @@ function textBodySheet(episode, text, pageNumber, pageIndex, pageCount, asset = 
     <section class="ache-page ache-text-page ache-route-${escapeHtml(episode.route.toLowerCase())} ${asset ? "ache-text-page--with-visual" : ""} ${densityClass(text, episode.route, Boolean(asset))}" data-page-role="body" data-route="${escapeHtml(episode.route)}" data-density="${densityClass(text, episode.route, Boolean(asset)).replace("ache-density-", "")}">
       <div class="ache-page-inner">
         ${pageHeaderMarkup(episode, {pageIndex, pageCount})}
-        <main class="ache-text-layout" data-layout-zone="text-body">
+        <main class="ache-text-layout ache-text-recipe-${escapeHtml(planTextComposition(episode.text, episode.route, episode.visualAssets ?? []).recipe)}" data-layout-zone="text-body" data-layout-content>
           <div class="ache-text-column">${paragraphMarkup(text, episode.route)}</div>
           ${asset ? `<figure class="ache-inline-visual"><div class="ache-paper-mat">${imageMarkup(asset)}</div><figcaption>${escapeHtml(side)}</figcaption></figure>` : `<p class="ache-text-side">${escapeHtml(side)}</p>`}
         </main>
@@ -388,7 +453,8 @@ export function renderEpisodeSheets(episode, startPageNumber = 1) {
     return {html: pages.join("\n"), pageCount: pages.length};
   }
 
-  const textChunks = paginateText(episode.text, episode.route, bodyAssets);
+  const textPlan = planTextComposition(episode.text, episode.route, bodyAssets);
+  const textChunks = textPlan.chunks;
   textChunks.forEach((text, index) => {
     pages.push(textBodySheet(
       episode,

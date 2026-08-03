@@ -84,7 +84,7 @@ test("canonical design baseline is versioned and referenced by the skill", async
     path.join(skillRoot, "assets/layout-system/design-baseline.json"),
     "utf8"
   ));
-  assert.equal(baseline.schemaVersion, "ache-design-system/1.3.0");
+  assert.equal(baseline.schemaVersion, "ache-design-system/1.4.0");
   assert.equal(baseline.canvas.background, "#FFFFFF");
   assert.deepEqual(baseline.canvas.whiteAreaRatio, [0.7, 0.85]);
   assert.equal(baseline.typography.body.handwritingForbidden, true);

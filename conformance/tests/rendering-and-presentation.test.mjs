@@ -9,7 +9,9 @@ import {
   resolvePresentationMode
 } from "../../scripts/presentation.mjs";
 import {
-  renderMonthlyDocument
+  planTextComposition,
+  renderMonthlyDocument,
+  structureKnowledgeText
 } from "../../scripts/page-renderer.mjs";
 import {
   appendEpisode
@@ -91,6 +93,32 @@ test("meeting renderer exposes editorial decision risk and action rhythm", () =>
   assert.match(html, /ache-meeting-action/u);
 });
 
+test("knowledge workflow remains one semantic sequence instead of punctuation fragments", () => {
+  const source = "看了一段视频，它讲的输出方法是：先口述一遍；AI 只清理，不润色；放进提词器；直接开录。这周我也试试。";
+  const structure = structureKnowledgeText(source);
+  assert.equal(structure.mode, "sequence");
+  assert.deepEqual(structure.steps, ["先口述一遍", "AI 只清理，不润色", "放进提词器", "直接开录"]);
+  const html = renderMonthlyDocument(
+    {title: "一本书"},
+    {month: "2026-07", episodes: [sampleEpisode({route: "K", text: source})]}
+  );
+  assert.equal((html.match(/class="ache-knowledge-steps"/gu) ?? []).length, 1);
+  assert.equal((html.match(/ache-knowledge-steps[\s\S]*?<li>/gu) ?? []).length > 0, true);
+  assert.match(html, /ache-knowledge-reflection/u);
+});
+
+test("meeting and longform preflight choose balanced text recipes before rendering", () => {
+  const meeting = "背景：复盘本月进度。议题：对齐需求与排期。讨论：前端与后端各自补齐方案。风险：通知链路仍不稳定。决议：先灰度。待办：周二提交清单。".repeat(5);
+  const longform = "这是一段需要保留原始顺序的正文。".repeat(42);
+  const meetingPlan = planTextComposition(meeting, "M", [{}]);
+  const longPlan = planTextComposition(longform, "L", []);
+  assert.equal(meetingPlan.recipe, "meeting-editorial-ledger");
+  assert.equal(longPlan.recipe, "longform-balanced-reading");
+  assert.ok(meetingPlan.pageCount >= 2);
+  assert.ok(longPlan.pageCount >= 2);
+  assert.deepEqual(longPlan.preflight.targetFillRange, [0.62, 0.88]);
+});
+
 test("long text paginates instead of shrinking mobile typography", () => {
   const longText = Array.from({length: 24}, (_, index) =>
     `第${index + 1}段保留完整事实与阅读顺序，内容超出时沿语义边界进入下一页。`
@@ -99,7 +127,7 @@ test("long text paginates instead of shrinking mobile typography", () => {
     {title: "一本书"},
     {month: "2026-07", episodes: [sampleEpisode({route: "L", text: longText})]}
   );
-  assert.ok((html.match(/class="ache-page ache-text-page/gu) ?? []).length >= 3);
+  assert.ok((html.match(/class="ache-page ache-text-page/gu) ?? []).length >= 2);
   assert.doesNotMatch(html, /font-size:\s*(?:9|10|11)(?:px|\.\d+px)/u);
 });
 
