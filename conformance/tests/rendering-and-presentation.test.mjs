@@ -195,3 +195,23 @@ test("committed monthly edition installs local fonts and deterministic renderer"
   );
   assert.ok((await readFile(font)).byteLength > 1_000_000);
 });
+
+test("monthly cover is a first-class 3:4 page before chapter pages", () => {
+  const html = renderMonthlyDocument(
+    {title: "一本会长大的书"},
+    {
+      month: "2026-07",
+      coverAsset: {
+        src: "assets/monthly-cover/2026-07.png",
+        alt: "七月月封",
+        role: "monthly-cover",
+        aspectClass: "portrait"
+      },
+      episodes: [sampleEpisode()]
+    }
+  );
+  const monthlyIndex = html.indexOf('<div class="ache-monthly-cover-wrap">');
+  const chapterIndex = html.indexOf('<article class="ache-episode"');
+  assert.ok(monthlyIndex > 0 && monthlyIndex < chapterIndex);
+  assert.match(html, /data-asset-role="monthly-cover"/u);
+});

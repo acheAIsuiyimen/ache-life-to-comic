@@ -11,7 +11,7 @@
 ```
 
 - 章节：一次可记录提交，内部保留 UUID、来源、页面和回执。
-- 月册：同一自然月唯一连续阅读主入口。
+- 月册：同一自然月唯一连续阅读主入口，并在第一章之前拥有一张独立月封。
 - 部：连续三个月册的索引与部封面。
 - 年度合辑：四部或十二月册的索引与装订导出。
 
@@ -50,6 +50,7 @@ books/<book-id>/
 ├── monthly-volumes/<yyyy-mm>/continuous-edition/
 │   ├── index.html
 │   └── assets/
+│       └── monthly-cover/<yyyy-mm>.png
 └── share-exports/
     ├── manifest.json
     └── <unit>-<key>-<mode>-<digest>.html

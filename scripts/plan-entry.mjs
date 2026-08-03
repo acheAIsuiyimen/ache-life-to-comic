@@ -16,7 +16,7 @@ const ROUTE_CONTRACTS = {
   S: {
     coverSource: "one-real-moment-or-emotion",
     bodyMode: "one-to-three-top-to-bottom-comic-panels",
-    imagePolicy: "one-composite-visual-per-body-page",
+    imagePolicy: "isolated-cells-or-independent-assets-only",
     preservation: "source-beat-order"
   },
   P: {
@@ -49,11 +49,16 @@ function countText(text = "") {
   return Array.from(String(text).trim()).length;
 }
 
-function coverGrammar(idempotencyKey = "") {
+function coverGrammar(idempotencyKey = "", recent = []) {
   const digest = createHash("sha256").update(idempotencyKey).digest();
-  return digest[0] % 2 === 0
+  const initial = digest[0] % 2 === 0
     ? "environment-transformation"
     : "typography-in-scene";
+  const previous = recent.at(-1);
+  if (previous !== initial) return initial;
+  return initial === "environment-transformation"
+    ? "typography-in-scene"
+    : "environment-transformation";
 }
 
 function routeFor(input) {
@@ -154,7 +159,7 @@ function panelPlan(input, route, bodyPageCount) {
   return {
     readingDirection: "top-to-bottom",
     layout: "unequal-editorial",
-    generationStrategy: "one-composite-visual-per-body-page",
+    generationStrategy: "isolated-cells-or-independent-assets",
     totalPanels: counts.reduce((sum, count) => sum + count, 0),
     pages,
     constraints: [
@@ -163,6 +168,9 @@ function panelPlan(input, route, bodyPageCount) {
       "no-triangle-stack",
       "no-unrelated-illustrations",
       "vary-camera-or-state"
+      ,"complete-subject-inside-each-cell"
+      ,"safe-gutter-between-cells"
+      ,"arbitrary-fraction-crop-forbidden"
     ]
   };
 }
@@ -172,13 +180,26 @@ function imageBudget(route, bodyPageCount) {
   return 1;
 }
 
+function generationBudget(route, bodyPageCount) {
+  const base = imageBudget(route, bodyPageCount);
+  return {
+    baseCalls: base,
+    aestheticRecoveryCallsMax: 2,
+    recoveryReasons: [
+      "subject-integrity-failure",
+      "cover-semantic-mismatch",
+      "layout-density-failure",
+      "character-anchor-drift"
+    ]
+  };
+}
+
 function visualLayout(route, input) {
   const count = route === "P"
     ? (input.images?.length ?? 0)
     : (input.beats?.length ?? 0);
-  if (count === 2) return "scrapbook-pair";
-  if (count === 3) return "hero-plus-two";
-  return "vertical-relay";
+  if (route === "S") return count === 2 ? "cinematic-pair" : count === 3 ? "vertical-relay" : "single-scene";
+  return "auto";
 }
 
 export function planEntry(input, profile = {}) {
@@ -196,13 +217,16 @@ export function planEntry(input, profile = {}) {
   const coverSemantics = input.coverDirection ?? input.coverSemantics ?? null;
   return {
     schemaVersion: "1.1.0",
-    ruleVersion: "ache-route-1.2.0",
+    ruleVersion: "ache-route-1.3.0",
     designSystemVersion: layout.designSystemVersion,
     route,
     routeContract: ROUTE_CONTRACTS[route],
     cover: {
       required: true,
-      grammar: coverGrammar(input.idempotencyKey),
+      grammar: coverGrammar(input.idempotencyKey, profile.recentCoverGrammars ?? []),
+      targetAspectRatio: "3:4",
+      independentAssetRequired: true,
+      bodyAssetReuseForbidden: true,
       directionRequired: true,
       semantics: coverSemantics,
       requiredSemanticFields: ["coreObject", "emotionVerb", "smallContrast", "grammar"],
@@ -213,6 +237,7 @@ export function planEntry(input, profile = {}) {
     totalPageCount: bodyPageCount + 1,
     requiresLayoutMeasure: route === "L",
     imageBudget: imageBudget(route, bodyPageCount),
+    generationBudget: generationBudget(route, bodyPageCount),
     layout,
     visualLayout: input.visualLayout ?? visualLayout(route, input),
     panelPlan: panelPlan(input, route, bodyPageCount),

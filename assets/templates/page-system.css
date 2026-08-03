@@ -44,9 +44,18 @@ img{display:block;max-width:100%}
 .ache-visual-layout-scrapbook-pair .ache-panel-count-2{grid-template-rows:repeat(2,minmax(0,1fr));padding:1.5% 0}
 .ache-visual-layout-scrapbook-pair .ache-panel:first-child{width:91%;justify-self:start}
 .ache-visual-layout-scrapbook-pair .ache-panel:nth-child(2){width:91%;justify-self:end}
+.ache-visual-layout-cinematic-pair .ache-panel-count-2{grid-template-rows:repeat(2,minmax(0,1fr));gap:4%}
+.ache-visual-layout-single-scene .ache-panel-stack,.ache-visual-layout-single-journal .ache-panel-stack{grid-template-rows:1fr}
+.ache-visual-layout-journal-stagger .ache-panel-count-3{grid-template:repeat(2,minmax(0,1fr))/repeat(2,minmax(0,1fr));gap:3%}
+.ache-visual-layout-journal-stagger .ache-panel:first-child{grid-row:1/3}
+.ache-visual-layout-journal-columns .ache-panel-count-3{grid-template:repeat(2,minmax(0,1fr))/minmax(0,1.08fr) minmax(0,.92fr);gap:3%}
+.ache-visual-layout-journal-columns .ache-panel:first-child{grid-row:1/3}
+.ache-visual-layout-evidence-strip .ache-panel-stack{grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:1fr}
 .ache-panel{position:relative;min-height:0;margin:0;padding:clamp(5px,1.2cqw,10px);display:grid;place-items:center;background:#fff;border:1px solid rgba(120,168,220,.32);box-shadow:0 8px 20px rgba(43,73,105,.07)}
 .ache-panel:nth-child(2),.ache-panel:nth-child(3){transform:none}
 .ache-panel img{width:100%;height:100%;min-width:0;min-height:0;object-fit:contain}
+.ache-route-p .ache-panel:has(.ache-image-portrait),.ache-route-p .ache-panel:has(.ache-image-portrait-soft){border-radius:48% 45% 42% 46%/4% 5% 4% 6%;padding:2.2cqw;background:linear-gradient(150deg,#fff 0 82%,rgba(219,233,247,.38))}
+.ache-route-p .ache-panel:has(.ache-image-landscape),.ache-route-p .ache-panel:has(.ache-image-landscape-wide){border-radius:2% 5% 3% 4%/5% 3% 6% 2%}
 .ache-note-strip{align-self:stretch;display:flex;flex-direction:column;justify-content:space-around;gap:3%;padding:3% 0}
 .ache-note-strip p{margin:0;color:var(--ache-ink);font-family:var(--ache-note);font-size:clamp(12px,2.15cqw,19px);line-height:1.45}
 .ache-note-strip p span{display:block;margin-bottom:.25em;color:var(--ache-ice);font-family:var(--ache-display);font-size:.72em;letter-spacing:.08em}
@@ -61,6 +70,11 @@ img{display:block;max-width:100%}
 .ache-text-column ul{margin:0;padding:0;list-style:none}
 .ache-text-column li{position:relative;margin:0 0 .62em;padding-left:1.25em}
 .ache-text-column li::before{content:"";position:absolute;left:0;top:.72em;width:.52em;height:2px;border-radius:99px;background:var(--ache-ice);transform:rotate(-7deg)}
+.ache-density-short .ache-text-layout{align-content:center}
+.ache-density-short .ache-text-column{font-size:clamp(16px,2.55cqw,23px);line-height:1.72;max-width:92%}
+.ache-density-short.ache-text-page--with-visual .ache-text-layout{align-content:center}
+.ache-density-regular .ache-text-column{font-size:clamp(14px,2.18cqw,20px);line-height:1.68}
+.ache-density-dense .ache-text-column{font-size:clamp(13px,1.92cqw,18px);line-height:1.58}
 .ache-route-k .ache-text-column p:first-child{padding:.72em .85em .72em 1em;border-left:3px solid var(--ache-ice);background:linear-gradient(90deg,rgba(219,233,247,.55),rgba(255,255,255,0) 82%)}
 .ache-route-m .ache-text-column ul{display:grid;gap:.18em}
 .ache-route-m .ache-meeting-item{margin:0;padding:.42em .3em .52em 1.35em;border-bottom:1px solid rgba(120,168,220,.14)}
@@ -78,6 +92,14 @@ img{display:block;max-width:100%}
 .ache-empty-visual{display:grid;place-items:center;width:100%;height:100%;min-height:180px;color:var(--ache-ink-soft);font-family:var(--ache-note);background:radial-gradient(circle at 48% 42%,rgba(120,168,220,.16),transparent 21%),#fff}
 .ache-precomposed-page{display:block;border-color:transparent}
 .ache-precomposed-page>img{position:absolute;inset:0;width:100%;height:100%;min-width:0;min-height:0;object-fit:contain}
+.ache-monthly-cover-wrap{width:min(100%,760px);margin:0 auto 38px}
+.ache-monthly-cover-page{border:0;background:#fff}
+.ache-monthly-cover-image{position:absolute;inset:0;display:grid;place-items:center}
+.ache-monthly-cover-image img{width:100%;height:100%;object-fit:contain}
+.ache-monthly-cover-type{position:absolute;left:6.6%;right:6.6%;top:5.6%;z-index:3;color:var(--ache-ink);pointer-events:none}
+.ache-monthly-cover-type p{margin:0 0 .35em;font-family:var(--ache-note);font-size:clamp(11px,1.7cqw,16px);letter-spacing:.08em}
+.ache-monthly-cover-type h1{max-width:72%;margin:0;font-family:var(--ache-display);font-size:clamp(34px,7cqw,58px);font-weight:400;line-height:1.02}
+.ache-monthly-cover-type span{position:absolute;right:0;top:.3em;color:var(--ache-ink-soft);font-family:var(--ache-note);font-size:clamp(10px,1.5cqw,14px)}
 .ache-pending{width:min(100%,760px);margin:-12px auto 20px;padding:10px 14px;border:1px dashed var(--ache-ice);color:var(--ache-ink-soft);font-family:var(--ache-note);font-size:14px}
-@media(max-width:520px){.ache-volume{padding:22px 10px 56px}.ache-volume-head{margin-bottom:22px;padding-inline:8px}.ache-volume-head p{display:none}.ache-page-shell{margin-bottom:16px}.ache-page{border-inline:0}.ache-episode{margin-bottom:48px}.ache-page-inner{padding:5.3% 5.8% 4%}.ache-visual-content{grid-template-columns:minmax(0,1fr) minmax(92px,26%);gap:3%}.ache-text-page--with-visual .ache-text-layout{grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto;align-content:start}.ache-text-page--with-visual .ache-inline-visual{width:36%;max-height:96px;justify-self:end}.ache-text-page--with-visual .ache-inline-visual img{max-height:70px}.ache-text-page--with-visual .ache-inline-visual figcaption{display:none}.ache-text-column{font-size:13px;line-height:1.48}.ache-note-strip p{font-size:12px;line-height:1.35}}
+@media(max-width:520px){.ache-volume{padding:22px 10px 56px}.ache-volume-head{margin-bottom:22px;padding-inline:8px}.ache-volume-head p{display:none}.ache-page-shell{margin-bottom:16px}.ache-page{border-inline:0}.ache-episode{margin-bottom:48px}.ache-page-inner{padding:5.3% 5.8% 4%}.ache-visual-content{grid-template-columns:minmax(0,1fr) minmax(92px,26%);gap:3%}.ache-text-page--with-visual .ache-text-layout{grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);align-content:start}.ache-text-page--with-visual .ache-inline-visual{width:48%;max-height:150px;justify-self:end}.ache-text-page--with-visual .ache-inline-visual img{max-height:124px}.ache-text-page--with-visual .ache-inline-visual figcaption{display:none}.ache-text-column{font-size:13px;line-height:1.5}.ache-density-short .ache-text-column{font-size:15px;line-height:1.62}.ache-route-m .ache-text-column{font-size:12.5px;line-height:1.42}.ache-route-m .ache-meeting-item{margin-bottom:.22em;padding-top:.24em;padding-bottom:.3em}.ache-note-strip p{font-size:12px;line-height:1.35}}
 @media print{body{background:#fff}.ache-volume{width:auto;padding:0}.ache-volume-head,.ache-episode-label{display:none}.ache-page-shell{width:1080px;height:1440px;margin:0;break-after:page}.ache-page{width:1080px;height:1440px;border:0}}

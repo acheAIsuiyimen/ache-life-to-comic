@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "ache-design-system/1.2.0",
+  "schemaVersion": "ache-design-system/1.3.0",
   "id": "ache-comic-journal-white-1",
   "source": {
     "canonicalHandbook": "漫画人生-喜茶近三月插画排版手册-v0.1/设计排版手册.md",
@@ -165,8 +165,20 @@
       "page-scroll-overflow",
       "image-fit-and-visible-ratio",
       "mobile-font-size",
-      "title-orphan-line"
+      "title-orphan-line",
+      "four-band-density",
+      "unexplained-bottom-empty-band",
+      "asset-lineage-and-subject-integrity",
+      "monthly-cover-exists"
     ],
+    "measuredCorrectionLadder": {
+      "1-40px": "nudge-local-spacing",
+      "41-90px": "compact-local-zone",
+      "91-160px": "adjust-title-or-paragraph-rhythm",
+      "161px+": "switch-layout-recipe-or-paginate",
+      "bodyTextShrinkAsFirstFix": false
+    },
+    "activeCompositionRatioMin": 0.75,
     "forbiddenLooks": [
       "presentation-slide",
       "product-ui-card",

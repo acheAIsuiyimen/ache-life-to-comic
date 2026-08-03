@@ -8,8 +8,8 @@ const skillRoot = path.resolve(scriptDirectory, "..");
 const pageCssPath = path.join(skillRoot, "assets", "templates", "page-system.css");
 const fontDirectory = path.join(skillRoot, "assets", "fonts");
 
-export const DESIGN_SYSTEM_VERSION = "ache-design-system/1.2.0";
-export const MONTHLY_RENDERER_VERSION = "ache-monthly-renderer/2.0.0";
+export const DESIGN_SYSTEM_VERSION = "ache-design-system/1.3.0";
+export const MONTHLY_RENDERER_VERSION = "ache-monthly-renderer/2.1.0";
 
 export function escapeHtml(value = "") {
   return String(value)
@@ -86,8 +86,11 @@ function splitLongUnitExact(unit, capacity) {
 }
 
 function textCapacity(route, hasVisual) {
-  const base = {K: 320, M: 330, L: 340}[route] ?? 300;
-  const visualCost = {K: 90, M: 100, L: 90}[route] ?? 80;
+  // Capacities are calibrated against the narrowest supported 390px viewport.
+  // Meeting bullets consume more vertical rhythm than prose, so they must not
+  // reuse long-form character capacity.
+  const base = {K: 300, M: 245, L: 330}[route] ?? 290;
+  const visualCost = {K: 82, M: 72, L: 82}[route] ?? 72;
   // Sparse illustrations occupy a side column, not a full reading page. Keep
   // enough text on the same page to avoid isolated tails, then let browser QA
   // reject any viewport that would actually overflow.
@@ -102,7 +105,10 @@ function paginateLongform(value, firstCapacity, laterCapacity) {
     .filter((item) => item.length > 0);
   if (paragraphs.length === 0) return [""];
 
-  const unitCapacity = Math.min(firstCapacity, laterCapacity);
+  // A semantic unit must stay substantially smaller than a page. Otherwise a
+  // single long paragraph becomes one almost-page-sized record and strands a
+  // short opening paragraph on an empty page.
+  const unitCapacity = Math.min(150, firstCapacity, laterCapacity);
   const records = paragraphs.flatMap((paragraph, paragraphIndex) => {
     const semanticPieces = paragraph.split(/(?<=[。！？!?；;])/u).filter(Boolean);
     const chunks = [];
@@ -210,7 +216,33 @@ function titleMarkup(value) {
 function imageMarkup(asset, className = "") {
   if (!asset?.src) return `<div class="ache-empty-visual">这一页的画面还在路上</div>`;
   const fit = asset.fit === "cover" && asset.allowCrop === true ? "cover" : "contain";
-  return `<img class="${escapeHtml(className)}" src="${escapeHtml(asset.src)}" alt="${escapeHtml(asset.alt ?? "")}" data-required-image data-image-fit="${fit}">`;
+  const ratio = asset.aspectClass ?? "unknown";
+  return `<img class="${escapeHtml(className)} ache-image-${escapeHtml(ratio)}" src="${escapeHtml(asset.src)}" alt="${escapeHtml(asset.alt ?? "")}" data-required-image data-image-fit="${fit}" data-asset-role="${escapeHtml(asset.role ?? "body-visual")}" data-aspect-class="${escapeHtml(ratio)}">`;
+}
+
+function densityClass(text, route, hasVisual = false) {
+  const weight = characterWeight(text);
+  const denominator = textCapacity(route, hasVisual);
+  const ratio = denominator > 0 ? weight / denominator : 0;
+  if (ratio < 0.34) return "ache-density-short";
+  if (ratio > 0.78) return "ache-density-dense";
+  return "ache-density-regular";
+}
+
+function adaptiveVisualLayout(route, assets, requested) {
+  if (requested && requested !== "auto") return requested;
+  if (route === "S") return assets.length === 3 ? "vertical-relay" : assets.length === 2 ? "cinematic-pair" : "single-scene";
+  if (assets.length === 1) return "single-journal";
+  const ratios = assets.map((asset) => asset.aspectClass ?? "unknown");
+  const landscapeCount = ratios.filter((value) => value.startsWith("landscape")).length;
+  const portraitCount = ratios.filter((value) => value.startsWith("portrait")).length;
+  if (assets.length === 2) return landscapeCount === 2 ? "cinematic-pair" : "scrapbook-pair";
+  if (assets.length === 3) {
+    if (landscapeCount >= 2) return "vertical-relay";
+    if (portraitCount >= 2) return "journal-columns";
+    return "journal-stagger";
+  }
+  return "evidence-strip";
 }
 
 function pageHeaderMarkup(episode, {pageIndex = 0, pageCount = 1, role = "body"} = {}) {
@@ -248,11 +280,12 @@ function coverSheet(episode, asset, pageNumber) {
 
 function visualBodySheet(episode, assets, pageNumber, notes, pageIndex, pageCount, visualLayout) {
   const safeAssets = assets.slice(0, 3);
+  const resolvedLayout = adaptiveVisualLayout(episode.route, safeAssets, visualLayout);
   return `<div class="ache-page-shell">
     <section class="ache-page ache-visual-page ache-route-${escapeHtml(episode.route.toLowerCase())}" data-page-role="body" data-route="${escapeHtml(episode.route)}">
       <div class="ache-page-inner">
         ${pageHeaderMarkup(episode, {pageIndex, pageCount})}
-        <main class="ache-visual-content ache-visual-layout-${escapeHtml(visualLayout)}" data-layout-zone="visual-body" data-visual-layout="${escapeHtml(visualLayout)}">
+        <main class="ache-visual-content ache-visual-layout-${escapeHtml(resolvedLayout)}" data-layout-zone="visual-body" data-visual-layout="${escapeHtml(resolvedLayout)}">
           <div class="ache-panel-stack ache-panel-count-${safeAssets.length}">
             ${safeAssets.map((asset, index) => `<figure class="ache-panel ache-panel-${index + 1}">${imageMarkup(asset)}</figure>`).join("")}
           </div>
@@ -294,7 +327,7 @@ function textBodySheet(episode, text, pageNumber, pageIndex, pageCount, asset = 
       ? "正文先读懂，图只解释关系"
       : "原文按原来的顺序留下";
   return `<div class="ache-page-shell">
-    <section class="ache-page ache-text-page ache-route-${escapeHtml(episode.route.toLowerCase())} ${asset ? "ache-text-page--with-visual" : ""}" data-page-role="body" data-route="${escapeHtml(episode.route)}">
+    <section class="ache-page ache-text-page ache-route-${escapeHtml(episode.route.toLowerCase())} ${asset ? "ache-text-page--with-visual" : ""} ${densityClass(text, episode.route, Boolean(asset))}" data-page-role="body" data-route="${escapeHtml(episode.route)}" data-density="${densityClass(text, episode.route, Boolean(asset)).replace("ache-density-", "")}">
       <div class="ache-page-inner">
         ${pageHeaderMarkup(episode, {pageIndex, pageCount})}
         <main class="ache-text-layout" data-layout-zone="text-body">
@@ -341,8 +374,7 @@ export function renderEpisodeSheets(episode, startPageNumber = 1) {
     for (let index = 0; index < usable.length; index += 3) groups.push(usable.slice(index, index + 3));
     const notes = noteLines(episode.text, Math.max(3, usable.length));
     groups.forEach((group, index) => {
-      const visualLayout = episode.visualLayout
-        ?? (group.length === 2 ? "scrapbook-pair" : group.length === 3 ? "hero-plus-two" : "vertical-relay");
+      const visualLayout = episode.visualLayout ?? "auto";
       pages.push(visualBodySheet(
         episode,
         group,
@@ -371,7 +403,7 @@ export function renderEpisodeSheets(episode, startPageNumber = 1) {
 }
 
 export function renderMonthlyDocument(book, volume) {
-  let nextPageNumber = 1;
+  let nextPageNumber = volume.coverAsset ? 2 : 1;
   const episodes = volume.episodes.map((episode) => {
     const rendered = renderEpisodeSheets(episode, nextPageNumber);
     nextPageNumber += rendered.pageCount;
@@ -383,6 +415,12 @@ export function renderMonthlyDocument(book, volume) {
     </article>`;
   }).join("\n");
   const css = readFileSync(pageCssPath, "utf8");
+  const monthlyCover = volume.coverAsset ? `<div class="ache-monthly-cover-wrap">
+    <section class="ache-page ache-monthly-cover-page" data-page-role="monthly-cover">
+      <div class="ache-monthly-cover-image">${imageMarkup(volume.coverAsset)}</div>
+      <div class="ache-monthly-cover-type"><p>${escapeHtml(book.title)}</p><h1>${escapeHtml(readableMonth(volume.month))}</h1><span>${volume.episodes.length} 章 · 持续生长中</span></div>
+    </section>
+  </div>` : "";
   return `<!doctype html>
 <html lang="zh-CN">
 <head>
@@ -396,6 +434,7 @@ export function renderMonthlyDocument(book, volume) {
 <body>
   <main class="ache-volume">
     <header class="ache-volume-head"><h1>${escapeHtml(readableMonth(volume.month))}</h1><p>${escapeHtml(book.title)} · ${volume.episodes.length} 章</p></header>
+    ${monthlyCover}
     ${episodes}
   </main>
 </body>

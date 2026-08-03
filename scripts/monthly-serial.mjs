@@ -3,6 +3,7 @@ import path from "node:path";
 import {randomUUID} from "node:crypto";
 import {atomicWriteJson, atomicWriteText, ensureDir, readJsonIfExists} from "./io.mjs";
 import {installRendererAssets, renderMonthlyDocument} from "./page-renderer.mjs";
+import {assertAssetContract, normalizeAsset, readImageSize} from "./asset-contract.mjs";
 import {preparePortableSharePrompt} from "./portable-export.mjs";
 
 const wait = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
@@ -342,9 +343,10 @@ export async function appendEpisode(root, rawEpisode) {
       for (const [index, page] of suppliedVisuals.entries()) {
         const source = typeof page === "string" ? page : page.path;
         if (!source) throw new Error(`Missing page path at index ${index}`);
+        const intrinsic = await readImageSize(source);
         const filename = `${String(index + 1).padStart(2, "0")}${safeImageExtension(source)}`;
         await copyFile(source, path.join(stagedAssetDirectory, filename));
-        pageAssets.push({
+        const normalized = normalizeAsset({
           src: path.posix.join("assets", episode.episodeId, filename),
           alt: typeof page === "string"
             ? `${episode.title} 第 ${index + 1} 页`
@@ -354,8 +356,13 @@ export async function appendEpisode(root, rawEpisode) {
             : page.role ?? (index === 0 ? "cover-visual" : "body-visual"),
           kind: typeof page === "string"
             ? (suppliedAsVisuals ? "textless-visual" : "rendered-page")
-            : page.kind ?? (suppliedAsVisuals ? "textless-visual" : "rendered-page")
-        });
+            : page.kind ?? (suppliedAsVisuals ? "textless-visual" : "rendered-page"),
+          ...(typeof page === "string" ? {} : page)
+        }, intrinsic, {assetId: `${episode.episodeId}-${index + 1}`});
+        normalized.src = path.posix.join("assets", episode.episodeId, filename);
+        delete normalized.path;
+        assertAssetContract(normalized);
+        pageAssets.push(normalized);
       }
       await rename(stagedAssetDirectory, finalAssetDirectory);
     } catch (error) {
@@ -381,6 +388,23 @@ export async function appendEpisode(root, rawEpisode) {
       month: placement.month,
       episodes: []
     });
+    if (rawEpisode.monthlyCover?.path) {
+      const source = rawEpisode.monthlyCover.path;
+      const intrinsic = await readImageSize(source);
+      const monthCoverDirectory = path.join(assetRoot, "monthly-cover");
+      await ensureDir(monthCoverDirectory);
+      const filename = `${placement.month}${safeImageExtension(source)}`;
+      await copyFile(source, path.join(monthCoverDirectory, filename));
+      volume.coverAsset = normalizeAsset({
+        ...rawEpisode.monthlyCover,
+        src: path.posix.join("assets", "monthly-cover", filename),
+        role: "monthly-cover",
+        independent: true,
+        allowCrop: false
+      }, intrinsic, {assetId: `monthly-cover-${placement.month}`});
+      delete volume.coverAsset.path;
+      assertAssetContract(volume.coverAsset);
+    }
     volume.episodes = sortEpisodes([...volume.episodes, committed]);
     volume.updatedAt = committed.committedAt;
     await atomicWriteJson(volumeLocations.manifest, volume);
