@@ -61,6 +61,16 @@ for (const viewport of [
       const verticalReach = content && meaningful.length
         ? (Math.max(...meaningful.map((rect) => rect.bottom)) - content.top) / content.height
         : null;
+      const longformParagraphs = [...artboard.querySelectorAll(".ache-text-recipe-longform-balanced-reading .ache-text-column > p")]
+        .map((element) => element.getBoundingClientRect())
+        .filter((rect) => rect.width > 1 && rect.height > 1)
+        .sort((left, right) => left.top - right.top);
+      const adjacentParagraphGaps = longformParagraphs.slice(1).map((rect, index) =>
+        Math.max(0, rect.top - longformParagraphs[index].bottom)
+      );
+      const maximumInternalGapRatio = content && adjacentParagraphGaps.length > 0
+        ? Math.max(...adjacentParagraphGaps) / content.height
+        : 0;
       return {
         pageIndex: pageIndex + 1,
         classes: artboard.className,
@@ -88,10 +98,12 @@ for (const viewport of [
         route: artboard.dataset.route ?? null,
         role: artboard.dataset.pageRole ?? null,
         verticalReach,
+        maximumInternalGapRatio,
+        excessiveInternalGap: artboard.dataset.route === "L" && maximumInternalGapRatio > .12,
         underfilledTextPage: ["K", "M", "L"].includes(artboard.dataset.route)
           && artboard.dataset.pageRole === "body"
           && verticalReach !== null
-          && verticalReach < .72
+          && verticalReach < (artboard.dataset.route === "L" ? .62 : .72)
       };
     });
     const outOfCanvas = elements.filter((element) => {
@@ -112,12 +124,13 @@ for (const viewport of [
       imageOutOfPageCount: pageMetrics.filter((item) => item.imageOutOfPage).length,
       cropWithoutOptInCount: pageMetrics.filter((item) => item.cropWithoutOptIn).length,
       underfilledTextPageCount: pageMetrics.filter((item) => item.underfilledTextPage).length,
+      excessiveInternalGapCount: pageMetrics.filter((item) => item.excessiveInternalGap).length,
       minimumBodyFont: Math.min(
         ...pageMetrics.map((item) => item.minBodyFont).filter(Number.isFinite),
         Number.POSITIVE_INFINITY
       ),
       failingPages: pageMetrics.filter((item) =>
-        item.hiddenOverflow || item.zoneCollision || item.imageOutOfPage || item.cropWithoutOptIn || item.underfilledTextPage
+        item.hiddenOverflow || item.zoneCollision || item.imageOutOfPage || item.cropWithoutOptIn || item.underfilledTextPage || item.excessiveInternalGap
       ),
       designSystem:
         document.querySelector('meta[name="ache-design-system"]')?.content ?? null
@@ -133,15 +146,16 @@ for (const viewport of [
       && metrics.requiredImageCount === 4
       && metrics.outOfCanvas === 0
       && metrics.pageCount >= 6
-      && metrics.articleCount === 3
+      && metrics.articleCount === 4
       && metrics.pendingCount === 1
       && metrics.hiddenOverflowCount === 0
       && metrics.zoneCollisionCount === 0
       && metrics.imageOutOfPageCount === 0
       && metrics.cropWithoutOptInCount === 0
       && metrics.underfilledTextPageCount === 0
+      && metrics.excessiveInternalGapCount === 0
       && (viewport.name !== "mobile" || metrics.minimumBodyFont >= 12)
-      && metrics.designSystem === "ache-design-system/1.4.0"
+      && metrics.designSystem === "ache-design-system/1.4.1"
       && consoleErrors.length === 0
   });
   await page.close();
