@@ -129,6 +129,8 @@ test("Feishu is blocked unless a verified personal account is authorized", () =>
   });
   assert.equal(ready.status, "ready");
   assert.equal(ready.externalWrite, true);
+  assert.equal(ready.renderMode, "continuous-page-images");
+  assert.equal(ready.imageEditionVersion, "feishu-image-edition/1.0.0");
 });
 
 test("GitHub without verified authorization falls back to local package", () => {
