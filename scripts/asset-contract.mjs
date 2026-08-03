@@ -4,6 +4,7 @@ export const ASSET_CONTRACT_VERSION = "ache-visual-asset/1.0.0";
 
 const COVER_ROLES = new Set(["cover-visual", "monthly-cover"]);
 const ORIGINAL_ROLES = new Set(["body-photo"]);
+const COMPONENT_ROLES = new Set(["explanatory-vignette", "decorative-component"]);
 
 function pngSize(buffer) {
   if (buffer.length < 24 || buffer.toString("hex", 0, 8) !== "89504e470d0a1a0a") return null;
@@ -45,7 +46,7 @@ export function normalizeAsset(asset, intrinsic = null, defaults = {}) {
   const role = asset.role ?? defaults.role ?? "body-visual";
   const width = Number(asset.intrinsicWidth ?? intrinsic?.width ?? 0) || null;
   const height = Number(asset.intrinsicHeight ?? intrinsic?.height ?? 0) || null;
-  const independent = asset.independent ?? COVER_ROLES.has(role);
+  const independent = asset.independent ?? (COVER_ROLES.has(role) || COMPONENT_ROLES.has(role));
   const cropAllowed = ORIGINAL_ROLES.has(role) ? false : asset.allowCrop === true;
   return {
     ...asset,
@@ -76,6 +77,12 @@ export function validateAssetContract(asset) {
   }
   if (ORIGINAL_ROLES.has(asset?.role) && asset.allowCrop === true) {
     failures.push("original-photo-crop-forbidden");
+  }
+  if (COMPONENT_ROLES.has(asset?.role)) {
+    if (asset.independent !== true) failures.push("supporting-component-not-independent");
+    if (["sheet-crop", "fraction-crop"].includes(asset.generationMode)) {
+      failures.push("supporting-component-crop-forbidden");
+    }
   }
   if (asset?.generationMode === "sheet-crop") {
     if (asset.sheetLayout !== "isolated-cells") failures.push("sheet-crop-not-isolated");

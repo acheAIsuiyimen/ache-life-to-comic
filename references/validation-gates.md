@@ -34,6 +34,7 @@
 - 当前结果引用 `ache-design-system/1.3.0`，不是临时重建版式
 - 封面与月封均为独立 3:4 资产；不得从正文图、照片或连续场景中裁一块充当封面
 - 资产来源通过 `asset-contract`：禁止 `fraction-crop`；sheet crop 必须声明 `isolated-cells`、安全间隔和精确单元格边界
+- 知识、会议和长文的解释插图以完整独立组件整图使用；`explanatory-vignette` 与 `decorative-component` 禁止任何 sheet crop
 - 页面分为四个水平密度带检查；有效构图低于 75%、底部出现无意义空带或局部拥挤时不得通过
 - 纠偏按 `轻移位 → 局部压缩 → 标题/段落节奏调整 → 换配方或分页`，不得先缩正文
 - HTML 由 `scripts/page-renderer.mjs` 生成，存在清晰的 3:4 `.ache-page` 页面边界
