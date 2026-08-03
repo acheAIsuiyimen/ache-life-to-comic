@@ -10,10 +10,10 @@ const FORBIDDEN_SIGNATURES = [
 
 export function validateRenderedHtmlText(html) {
   const failures = [];
-  if (!/<meta name="ache-design-system" content="ache-design-system\/1\.4\.0">/u.test(html)) {
+  if (!/<meta name="ache-design-system" content="ache-design-system\/1\.4\.1">/u.test(html)) {
     failures.push("missing-design-system-meta");
   }
-  if (!/<meta name="ache-renderer" content="ache-monthly-renderer\/2\.2\.0">/u.test(html)) {
+  if (!/<meta name="ache-renderer" content="ache-monthly-renderer\/2\.2\.1">/u.test(html)) {
     failures.push("missing-renderer-meta");
   }
   if (!html.includes('class="ache-page ')) failures.push("missing-page-artboards");
@@ -25,6 +25,9 @@ export function validateRenderedHtmlText(html) {
     failures.push("forced-title-nowrap");
   }
   if (html.includes("ache-text-token")) failures.push("tiny-decoration-token-regression");
+  if (/\.ache-text-recipe-longform-balanced-reading\s+\.ache-text-column\s*\{[^}]*justify-content:\s*space-between/gu.test(html)) {
+    failures.push("longform-forced-space-between");
+  }
   for (const [failure, signature] of FORBIDDEN_SIGNATURES) {
     if (html.includes(signature)) failures.push(failure);
   }

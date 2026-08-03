@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "ache-design-system/1.4.0",
+  "schemaVersion": "ache-design-system/1.4.1",
   "id": "ache-comic-journal-white-1",
   "source": {
     "canonicalHandbook": "漫画人生-喜茶近三月插画排版手册-v0.1/设计排版手册.md",
@@ -171,6 +171,7 @@
       "title-orphan-line",
       "four-band-density",
       "unexplained-bottom-empty-band",
+      "excessive-internal-paragraph-gap",
       "asset-lineage-and-subject-integrity",
       "monthly-cover-exists"
     ],
@@ -178,7 +179,7 @@
       "semantic-unit-integrity",
       "route-recipe-selected-before-generation",
       "page-count-derived-from-content-capacity",
-      "meaningful-content-reaches-lower-three-quarters",
+      "meaningful-content-reaches-planned-natural-range",
       "no-punctuation-fragment-as-standalone-paragraph",
       "approved-case-aesthetic-regression"
     ],
@@ -192,6 +193,7 @@
     "activeCompositionRatioMin": 0.75,
     "textPageTargetFillRange": [0.62, 0.88],
     "bottomDeadZoneRatioMax": 0.25,
+    "longformInternalGapRatioMax": 0.12,
     "forbiddenLooks": [
       "presentation-slide",
       "product-ui-card",

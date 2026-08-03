@@ -42,7 +42,7 @@ test("onboarding asks exactly one human-sized question at a time", () => {
   const profile = profileFromOnboarding(result.state, {bookId: "life"});
   assert.equal(profile.style.id, "02-snow-pastel");
   assert.equal(profile.publication.primary, "local-html");
-  assert.equal(profile.designSystemVersion, "ache-design-system/1.4.0");
+  assert.equal(profile.designSystemVersion, "ache-design-system/1.4.1");
 });
 
 test("onboarding never exposes production jargon in the visible prompts", () => {

@@ -17,7 +17,7 @@ test("every recordable entry receives one stable content-derived cover", () => {
   assert.equal(first.cover.required, true);
   assert.equal(first.cover.grammar, second.cover.grammar);
   assert.equal(first.totalPageCount, first.bodyPageCount + 1);
-  assert.equal(first.designSystemVersion, "ache-design-system/1.4.0");
+  assert.equal(first.designSystemVersion, "ache-design-system/1.4.1");
   assert.equal(first.layout.canvas.background, "#FFFFFF");
   assert.equal(first.compositionPlan.lockedBeforeVisualGeneration, true);
   assert.deepEqual(first.compositionPlan.targetFillRange, [0.62, 0.88]);

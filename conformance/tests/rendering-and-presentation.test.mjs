@@ -155,6 +155,24 @@ test("long-form rendering preserves every source character in order", () => {
   assert.equal(renderedText, source.replace(/\s+/gu, ""));
 });
 
+test("long-form paragraphs keep natural flow and short quotations become intentional pull quotes", () => {
+  const source = [
+    "第一段自然往下阅读，不依赖强制拉伸填满页面。",
+    "“这是一句需要轻轻停顿的引语。”",
+    "第三段紧接着继续，不在引语上下制造巨大空洞。"
+  ].join("\n\n");
+  const html = renderMonthlyDocument(
+    {title: "一本书"},
+    {month: "2026-07", episodes: [sampleEpisode({route: "L", text: source})]}
+  );
+  assert.match(html, /class="ache-longform-pullquote"/u);
+  assert.doesNotMatch(
+    html,
+    /\.ache-text-recipe-longform-balanced-reading\s+\.ache-text-column\s*\{[^}]*justify-content:\s*space-between/gu
+  );
+  assert.equal(validateRenderedHtmlText(html).status, "PASS");
+});
+
 test("titles wrap naturally and photos are never crop fitted", () => {
   const html = renderMonthlyDocument(
     {title: "一本书"},

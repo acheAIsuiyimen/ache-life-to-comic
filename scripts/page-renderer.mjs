@@ -8,8 +8,8 @@ const skillRoot = path.resolve(scriptDirectory, "..");
 const pageCssPath = path.join(skillRoot, "assets", "templates", "page-system.css");
 const fontDirectory = path.join(skillRoot, "assets", "fonts");
 
-export const DESIGN_SYSTEM_VERSION = "ache-design-system/1.4.0";
-export const MONTHLY_RENDERER_VERSION = "ache-monthly-renderer/2.2.0";
+export const DESIGN_SYSTEM_VERSION = "ache-design-system/1.4.1";
+export const MONTHLY_RENDERER_VERSION = "ache-monthly-renderer/2.2.1";
 
 export function escapeHtml(value = "") {
   return String(value)
@@ -369,7 +369,12 @@ function paragraphMarkup(text, route) {
     return String(text ?? "")
       .split(/\n{2,}/u)
       .filter((unit) => unit.length > 0)
-      .map((unit) => `<p>${escapeHtml(unit).replaceAll("\n", "<br>")}</p>`)
+      .map((unit) => {
+        const trimmed = unit.trim();
+        const isPullquote = [...trimmed].length <= 64 && /^(?:[“"'‘]).*(?:[”"'’])$/su.test(trimmed);
+        const className = isPullquote ? ' class="ache-longform-pullquote"' : "";
+        return `<p${className}>${escapeHtml(unit).replaceAll("\n", "<br>")}</p>`;
+      })
       .join("");
   }
   const units = sentences(text);
