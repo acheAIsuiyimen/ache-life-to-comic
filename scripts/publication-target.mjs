@@ -58,6 +58,8 @@ export function resolvePublicationTarget({
       status: "ready",
       target,
       primary: "feishu",
+      renderMode: "continuous-page-images",
+      imageEditionVersion: "feishu-image-edition/1.0.0",
       externalWrite: true,
       monthlyUnit: true
     };
