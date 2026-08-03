@@ -10,10 +10,10 @@ const FORBIDDEN_SIGNATURES = [
 
 export function validateRenderedHtmlText(html) {
   const failures = [];
-  if (!/<meta name="ache-design-system" content="ache-design-system\/1\.3\.0">/u.test(html)) {
+  if (!/<meta name="ache-design-system" content="ache-design-system\/1\.4\.0">/u.test(html)) {
     failures.push("missing-design-system-meta");
   }
-  if (!/<meta name="ache-renderer" content="ache-monthly-renderer\/2\.1\.0">/u.test(html)) {
+  if (!/<meta name="ache-renderer" content="ache-monthly-renderer\/2\.2\.0">/u.test(html)) {
     failures.push("missing-renderer-meta");
   }
   if (!html.includes('class="ache-page ')) failures.push("missing-page-artboards");

@@ -17,8 +17,10 @@ test("every recordable entry receives one stable content-derived cover", () => {
   assert.equal(first.cover.required, true);
   assert.equal(first.cover.grammar, second.cover.grammar);
   assert.equal(first.totalPageCount, first.bodyPageCount + 1);
-  assert.equal(first.designSystemVersion, "ache-design-system/1.3.0");
+  assert.equal(first.designSystemVersion, "ache-design-system/1.4.0");
   assert.equal(first.layout.canvas.background, "#FFFFFF");
+  assert.equal(first.compositionPlan.lockedBeforeVisualGeneration, true);
+  assert.deepEqual(first.compositionPlan.targetFillRange, [0.62, 0.88]);
 });
 
 test("route and density heuristics cover S P K M L", () => {
@@ -52,6 +54,7 @@ test("route and density heuristics cover S P K M L", () => {
   assert.equal(photo.cover.photoRestyleForbidden, true);
   assert.equal(photo.cover.semantics.coreObject, "圆窗");
   assert.equal(photo.routeContract.coverSource, "semantic-recomposition-from-visible-evidence");
+  assert.deepEqual(photo.compositionPlan.contentDuties, ["independent-semantic-cover", "byte-identical-original-photos", "nearby-captions"]);
 
   const knowledge = planEntry({
     idempotencyKey: "k",
@@ -63,6 +66,7 @@ test("route and density heuristics cover S P K M L", () => {
   assert.equal(knowledge.imageBudget, 1);
   assert.equal(knowledge.layout.templateId, "C-handwritten-archive");
   assert.equal(knowledge.routeContract.imagePolicy, "one-visual-breathing-point-per-one-to-three-pages");
+  assert.equal(knowledge.compositionPlan.genericBlogOrCardLayoutForbidden, true);
 
   const meeting = planEntry({
     idempotencyKey: "m",
@@ -73,6 +77,7 @@ test("route and density heuristics cover S P K M L", () => {
   assert.equal(meeting.bodyPageCount, 2);
   assert.equal(meeting.imageBudget, 1);
   assert.equal(meeting.routeContract.bodyMode, "structured-notes-with-light-illustration");
+  assert.match(meeting.compositionPlan.recipe, /handwritten|meeting/u);
 
   const longform = planEntry({
     idempotencyKey: "l",
@@ -85,6 +90,7 @@ test("route and density heuristics cover S P K M L", () => {
   assert.equal(longform.preservation.exactOriginalText, true);
   assert.equal(longform.panelPlan, null);
   assert.equal(longform.routeContract.preservation, "exact-text-paragraphs-and-order");
+  assert.equal(longform.compositionPlan.recipe, "longform-balanced-reading");
 });
 
 test("all five routes expose the same mandatory cover director card", () => {

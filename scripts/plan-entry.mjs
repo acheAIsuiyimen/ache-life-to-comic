@@ -1,5 +1,6 @@
 import {createHash} from "node:crypto";
 import {planLayout} from "./layout-plan.mjs";
+import {planTextComposition} from "./page-renderer.mjs";
 
 const ROUTE_BY_KIND = {
   daily: "S",
@@ -106,21 +107,72 @@ function bodyPages(input, route) {
     return 3;
   }
   if (route === "K") {
+    if (String(input.text ?? "").trim()) {
+      return planTextComposition(input.text, route, input.bodyVisualCount > 0 ? [{}] : []).pageCount;
+    }
     const points = input.knowledgePoints?.length ?? 0;
     if (points <= 3) return 1;
     if (points <= 8) return 2;
     return 3;
   }
   if (route === "M") {
+    if (String(input.text ?? "").trim()) {
+      return planTextComposition(input.text, route, input.bodyVisualCount > 0 ? [{}] : []).pageCount;
+    }
     const fields = input.meetingFields?.length ?? 0;
     if (fields <= 8) return 1;
     if (fields <= 18) return 2;
     return 3;
   }
-  if (route === "L") return 1;
+  if (route === "L") {
+    if (String(input.text ?? "").trim()) return planTextComposition(input.text, route, []).pageCount;
+    return 1;
+  }
 
   const count = beatIds(input).length;
   return Math.max(1, Math.ceil(count / 3));
+}
+
+function compositionPlan(input, route, bodyPageCount, panelPlanValue, layout) {
+  const shared = {
+    lockedBeforeVisualGeneration: true,
+    bodyPageCount,
+    targetFillRange: [0.62, 0.88],
+    bottomDeadZoneMaximum: 0.25,
+    whiteBackgroundRequired: true,
+    journalReadingFlowRequired: true,
+    genericBlogOrCardLayoutForbidden: true
+  };
+  if (route === "S") return {
+    ...shared,
+    recipe: panelPlanValue?.pages?.some((page) => page.panelCount > 1) ? "top-to-bottom-comic-beats" : "single-moment-object-theatre",
+    contentDuties: ["real-beats", "state-or-camera-change", "source-order"],
+    visualDuties: ["complete-subjects", "unequal-editorial-panels", "one-main-surprise"]
+  };
+  if (route === "P") return {
+    ...shared,
+    recipe: layout.templateId,
+    contentDuties: ["independent-semantic-cover", "byte-identical-original-photos", "nearby-captions"],
+    visualDuties: ["complete-photo-frame", "journal-paper-window", "top-to-bottom-reading"]
+  };
+  const textPlan = String(input.text ?? "").trim()
+    ? planTextComposition(input.text, route, input.bodyVisualCount > 0 ? [{}] : [])
+    : null;
+  return {
+    ...shared,
+    recipe: textPlan?.recipe ?? layout.templateId,
+    semanticPlan: textPlan?.knowledge ?? null,
+    contentDuties: route === "K"
+      ? ["context", "complete-relation-or-sequence", "facts", "user-reflection"]
+      : route === "M"
+        ? ["context-and-agenda", "discussion", "decision-and-risk", "actions-and-next-meeting"]
+        : ["exact-original-text", "paragraph-order", "balanced-natural-breaks"],
+    visualDuties: route === "K"
+      ? ["text-first", "one-independent-explanatory-breathing-point"]
+      : route === "M"
+        ? ["editorial-ledger-not-ui-cards", "zero-or-one-independent-vignette"]
+        : ["long-reading-rhythm", "zero-or-one-margin-vignette-per-one-to-three-pages"]
+  };
 }
 
 function balancedPanelCounts(beatCount, pageCount) {
@@ -215,9 +267,10 @@ export function planEntry(input, profile = {}) {
     previousTemplates: profile.recentTemplates ?? []
   });
   const coverSemantics = input.coverDirection ?? input.coverSemantics ?? null;
+  const panelPlanValue = panelPlan(input, route, bodyPageCount);
   return {
     schemaVersion: "1.1.0",
-    ruleVersion: "ache-route-1.3.0",
+    ruleVersion: "ache-route-1.4.0",
     designSystemVersion: layout.designSystemVersion,
     route,
     routeContract: ROUTE_CONTRACTS[route],
@@ -240,7 +293,8 @@ export function planEntry(input, profile = {}) {
     generationBudget: generationBudget(route, bodyPageCount),
     layout,
     visualLayout: input.visualLayout ?? visualLayout(route, input),
-    panelPlan: panelPlan(input, route, bodyPageCount),
+    panelPlan: panelPlanValue,
+    compositionPlan: compositionPlan(input, route, bodyPageCount, panelPlanValue, layout),
     characterMode: input.characterMode ?? profile.character?.mode ?? "none",
     style: profile.style ?? {
       id: "02-snow-pastel",

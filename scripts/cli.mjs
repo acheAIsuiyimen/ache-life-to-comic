@@ -172,7 +172,7 @@ async function main() {
     const profile = {
       schemaVersion: "1.1.0",
       onboardingVersion: "ache-onboarding/1.1.0",
-      designSystemVersion: "ache-design-system/1.3.0",
+      designSystemVersion: "ache-design-system/1.4.0",
       bookId,
       title: args.title ?? "我的漫画人生",
       style: {

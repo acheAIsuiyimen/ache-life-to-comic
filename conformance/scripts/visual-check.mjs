@@ -55,6 +55,12 @@ for (const viewport of [
       const artboardRect = artboard.getBoundingClientRect();
       const imageBounds = [...artboard.querySelectorAll("img[data-required-image]")]
         .map((element) => element.getBoundingClientRect());
+      const meaningful = [...artboard.querySelectorAll(".ache-text-column > p,.ache-text-column > ul,.ache-text-column > div,.ache-text-column > ol,.ache-inline-visual,.ache-panel,.ache-note-strip p")]
+        .map((element) => element.getBoundingClientRect())
+        .filter((rect) => rect.width > 1 && rect.height > 1);
+      const verticalReach = content && meaningful.length
+        ? (Math.max(...meaningful.map((rect) => rect.bottom)) - content.top) / content.height
+        : null;
       return {
         pageIndex: pageIndex + 1,
         classes: artboard.className,
@@ -78,7 +84,14 @@ for (const viewport of [
             element.dataset.imageFit !== "cover"
             && getComputedStyle(element).objectFit !== "contain"
           ),
-        minBodyFont: textSizes.length > 0 ? Math.min(...textSizes) : null
+        minBodyFont: textSizes.length > 0 ? Math.min(...textSizes) : null,
+        route: artboard.dataset.route ?? null,
+        role: artboard.dataset.pageRole ?? null,
+        verticalReach,
+        underfilledTextPage: ["K", "M", "L"].includes(artboard.dataset.route)
+          && artboard.dataset.pageRole === "body"
+          && verticalReach !== null
+          && verticalReach < .72
       };
     });
     const outOfCanvas = elements.filter((element) => {
@@ -98,12 +111,13 @@ for (const viewport of [
       zoneCollisionCount: pageMetrics.filter((item) => item.zoneCollision).length,
       imageOutOfPageCount: pageMetrics.filter((item) => item.imageOutOfPage).length,
       cropWithoutOptInCount: pageMetrics.filter((item) => item.cropWithoutOptIn).length,
+      underfilledTextPageCount: pageMetrics.filter((item) => item.underfilledTextPage).length,
       minimumBodyFont: Math.min(
         ...pageMetrics.map((item) => item.minBodyFont).filter(Number.isFinite),
         Number.POSITIVE_INFINITY
       ),
       failingPages: pageMetrics.filter((item) =>
-        item.hiddenOverflow || item.zoneCollision || item.imageOutOfPage || item.cropWithoutOptIn
+        item.hiddenOverflow || item.zoneCollision || item.imageOutOfPage || item.cropWithoutOptIn || item.underfilledTextPage
       ),
       designSystem:
         document.querySelector('meta[name="ache-design-system"]')?.content ?? null
@@ -125,8 +139,9 @@ for (const viewport of [
       && metrics.zoneCollisionCount === 0
       && metrics.imageOutOfPageCount === 0
       && metrics.cropWithoutOptInCount === 0
+      && metrics.underfilledTextPageCount === 0
       && (viewport.name !== "mobile" || metrics.minimumBodyFont >= 12)
-      && metrics.designSystem === "ache-design-system/1.3.0"
+      && metrics.designSystem === "ache-design-system/1.4.0"
       && consoleErrors.length === 0
   });
   await page.close();
