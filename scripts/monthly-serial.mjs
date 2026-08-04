@@ -3,7 +3,7 @@ import path from "node:path";
 import {randomUUID} from "node:crypto";
 import {atomicWriteJson, atomicWriteText, ensureDir, readJsonIfExists} from "./io.mjs";
 import {installRendererAssets, renderMonthlyDocument} from "./page-renderer.mjs";
-import {assertAssetContract, normalizeAsset, readImageSize} from "./asset-contract.mjs";
+import {assertAssetContract, inspectImageAsset, normalizeAsset} from "./asset-contract.mjs";
 import {preparePortableSharePrompt} from "./portable-export.mjs";
 import {validateRenderedHtmlText} from "./validate-rendered-html.mjs";
 
@@ -348,7 +348,7 @@ export async function appendEpisode(root, rawEpisode) {
       for (const [index, page] of suppliedVisuals.entries()) {
         const source = typeof page === "string" ? page : page.path;
         if (!source) throw new Error(`Missing page path at index ${index}`);
-        const intrinsic = await readImageSize(source);
+        const intrinsic = await inspectImageAsset(source);
         const filename = `${String(index + 1).padStart(2, "0")}${safeImageExtension(source)}`;
         await copyFile(source, path.join(stagedAssetDirectory, filename));
         const normalized = normalizeAsset({
@@ -362,7 +362,9 @@ export async function appendEpisode(root, rawEpisode) {
           kind: typeof page === "string"
             ? (suppliedAsVisuals ? "textless-visual" : "rendered-page")
             : page.kind ?? (suppliedAsVisuals ? "textless-visual" : "rendered-page"),
-          ...(typeof page === "string" ? {} : page)
+          ...(typeof page === "string" ? {} : page),
+          detectedFormat: intrinsic.format,
+          transparencyStatus: intrinsic.transparencyStatus
         }, intrinsic, {assetId: `${episode.episodeId}-${index + 1}`});
         normalized.src = path.posix.join("assets", episode.episodeId, filename);
         delete normalized.path;
@@ -395,7 +397,7 @@ export async function appendEpisode(root, rawEpisode) {
     });
     if (rawEpisode.monthlyCover?.path) {
       const source = rawEpisode.monthlyCover.path;
-      const intrinsic = await readImageSize(source);
+      const intrinsic = await inspectImageAsset(source);
       const monthCoverDirectory = path.join(assetRoot, "monthly-cover");
       await ensureDir(monthCoverDirectory);
       const filename = `${placement.month}${safeImageExtension(source)}`;
@@ -405,7 +407,9 @@ export async function appendEpisode(root, rawEpisode) {
         src: path.posix.join("assets", "monthly-cover", filename),
         role: "monthly-cover",
         independent: true,
-        allowCrop: false
+        allowCrop: false,
+        detectedFormat: intrinsic.format,
+        transparencyStatus: intrinsic.transparencyStatus
       }, intrinsic, {assetId: `monthly-cover-${placement.month}`});
       delete volume.coverAsset.path;
       assertAssetContract(volume.coverAsset);

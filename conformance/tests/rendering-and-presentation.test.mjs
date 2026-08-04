@@ -119,6 +119,8 @@ test("supporting illustrations render as transparent die-cut components without 
           alt: "关系插图",
           role: "explanatory-vignette",
           backgroundMode: "svg-vector",
+          detectedFormat: "svg",
+          transparencyStatus: "verified-transparent",
           edgeTreatment: "die-cut-transparent",
           intrinsicWidth: 480,
           intrinsicHeight: 480,
@@ -217,7 +219,7 @@ test("long-form rendering preserves every source character in order", () => {
     {title: "一本书"},
     {month: "2026-07", episodes: [sampleEpisode({route: "L", text: source})]}
   );
-  const renderedText = [...html.matchAll(/<div class="ache-text-column">([\s\S]*?)<\/div>/gu)]
+  const renderedText = [...html.matchAll(/<div class="ache-text-column(?: [^"]*)?">([\s\S]*?)<\/div>/gu)]
     .map((match) => match[1])
     .join("")
     .replaceAll("&amp;", "&")
@@ -249,6 +251,70 @@ test("long-form paragraphs keep natural flow and short quotations become intenti
   assert.equal(validateRenderedHtmlText(html).status, "PASS");
 });
 
+test("longform illustrations breathe between paragraphs instead of taking a side column", () => {
+  const source = [
+    "第一段先把事实完整说清楚。",
+    "第二段继续沿原来的顺序展开。",
+    "第三段在插图之后自然接回正文。"
+  ].join("\n\n");
+  const html = renderMonthlyDocument(
+    {title: "一本书"},
+    {month: "2026-07", episodes: [sampleEpisode({
+      route: "L",
+      text: source,
+      pageAssets: [
+        {src: "assets/sample/cover.png", alt: "封面", role: "cover-visual"},
+        {
+          src: "assets/sample/vignette.svg",
+          alt: "段间插图",
+          role: "explanatory-vignette",
+          backgroundMode: "svg-vector",
+          detectedFormat: "svg",
+          transparencyStatus: "verified-transparent",
+          edgeTreatment: "die-cut-transparent",
+          intrinsicWidth: 480,
+          intrinsicHeight: 360,
+          frameContentWidth: 480,
+          frameContentHeight: 360,
+          frameFitStatus: "matched"
+        }
+      ]
+    })]}
+  );
+  assert.match(html, /data-supporting-visual-placement="between-paragraphs"/u);
+  assert.match(html, /ache-longform-segment[\s\S]*ache-longform-flow-visual[\s\S]*ache-longform-segment--continuation/u);
+  assert.doesNotMatch(html, /ache-route-l[^>]*data-supporting-visual-placement="side-column"/u);
+  assert.equal(validateRenderedHtmlText(html).status, "PASS");
+});
+
+test("authorized crop reaches CSS cover fitting and carries safe-subject evidence", () => {
+  const html = renderMonthlyDocument(
+    {title: "一本书"},
+    {month: "2026-07", episodes: [sampleEpisode({
+      pageAssets: [
+        {src: "assets/sample/cover.png", alt: "封面", role: "cover-visual"},
+        {
+          src: "assets/sample/scene.png",
+          alt: "安全背景边缘可裁",
+          role: "scene-panel",
+          allowCrop: true,
+          fitPolicy: "cover-allowed",
+          safeSubjectBounds: {left: .2, top: .15, right: .8, bottom: .85},
+          intrinsicWidth: 720,
+          intrinsicHeight: 420,
+          frameContentWidth: 720,
+          frameContentHeight: 420,
+          frameFitStatus: "matched",
+          edgeTreatment: "organic-window"
+        }
+      ]
+    })]}
+  );
+  assert.match(html, /data-image-fit="cover" data-crop-safe-subject="declared"/u);
+  assert.match(html, /img\[data-image-fit="cover"\][^}]*object-fit:cover/u);
+  assert.equal(validateRenderedHtmlText(html).status, "PASS");
+});
+
 test("titles wrap naturally and photos are never crop fitted", () => {
   const html = renderMonthlyDocument(
     {title: "一本书"},
@@ -259,7 +325,7 @@ test("titles wrap naturally and photos are never crop fitted", () => {
   );
   assert.match(html, /ache-title--long/u);
   assert.doesNotMatch(html, /ache-title-line/u);
-  assert.doesNotMatch(html, /data-image-fit="cover"/u);
+  assert.doesNotMatch(html, /<img\b[^>]*data-image-fit="cover"/u);
 });
 
 test("photo route never promotes an original body photo into the cover", () => {

@@ -158,7 +158,7 @@ for (const viewport of [
       && metrics.underfilledTextPageCount === 0
       && metrics.excessiveInternalGapCount === 0
       && (viewport.name !== "mobile" || metrics.minimumBodyFont >= 12)
-      && metrics.designSystem === "ache-design-system/1.5.0"
+      && metrics.designSystem === "ache-design-system/1.6.0"
       && metrics.runtimeLayoutStatus === "PASS"
       && consoleErrors.length === 0
   });
