@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "ache-design-system/1.5.0",
+  "schemaVersion": "ache-design-system/1.6.0",
   "id": "ache-comic-journal-white-1",
   "source": {
     "canonicalHandbook": "漫画人生-喜茶近三月插画排版手册-v0.1/设计排版手册.md",
@@ -103,8 +103,10 @@
     "generatedVisualMustMatchPlannedSlotRatio": true,
     "frameContentMustMatchImageRatioWithin": 0.025,
     "supportingComponentMustBeTransparentRasterOrSvg": true,
+    "supportingComponentTransparencyMustBeFileVerified": true,
     "irregularMaskRequiresSafeSubjectBounds": true,
     "imageCropRequiresExplicitOptIn": true,
+    "longformVisualPlacement": "between-paragraphs-normal-flow",
     "compositionPlanRequiredBeforeVisualGeneration": true,
     "routeRecipeLockedBeforeRendering": true,
     "punctuationOnlyPaginationForbidden": true

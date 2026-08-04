@@ -9,8 +9,8 @@ const skillRoot = path.resolve(scriptDirectory, "..");
 const pageCssPath = path.join(skillRoot, "assets", "templates", "page-system.css");
 const fontDirectory = path.join(skillRoot, "assets", "fonts");
 
-export const DESIGN_SYSTEM_VERSION = "ache-design-system/1.5.0";
-export const MONTHLY_RENDERER_VERSION = "ache-monthly-renderer/2.3.0";
+export const DESIGN_SYSTEM_VERSION = "ache-design-system/1.6.0";
+export const MONTHLY_RENDERER_VERSION = "ache-monthly-renderer/2.4.0";
 
 export function escapeHtml(value = "") {
   return String(value)
@@ -273,12 +273,15 @@ function titleMarkup(value) {
 
 function imageMarkup(asset, className = "") {
   if (!asset?.src) return `<div class="ache-empty-visual">这一页的画面还在路上</div>`;
-  const fit = asset.fit === "cover" && asset.allowCrop === true ? "cover" : "contain";
+  const fit = asset.allowCrop === true && ["cover", "cover-allowed"].includes(asset.fit ?? asset.fitPolicy)
+    ? "cover"
+    : "contain";
   const ratio = asset.aspectClass ?? "unknown";
   const width = Number(asset.intrinsicWidth ?? asset.targetWidth ?? 0);
   const height = Number(asset.intrinsicHeight ?? asset.targetHeight ?? 0);
   const dimensions = width && height ? ` width="${width}" height="${height}"` : "";
-  return `<img class="${escapeHtml(className)} ache-image-${escapeHtml(ratio)}" src="${escapeHtml(asset.src)}" alt="${escapeHtml(asset.alt ?? "")}"${dimensions} data-required-image data-image-fit="${fit}" data-asset-role="${escapeHtml(asset.role ?? "body-visual")}" data-aspect-class="${escapeHtml(ratio)}" data-background-mode="${escapeHtml(asset.backgroundMode ?? "opaque")}">`;
+  const cropSafety = fit === "cover" && asset.safeSubjectBounds ? "declared" : "not-applicable";
+  return `<img class="${escapeHtml(className)} ache-image-${escapeHtml(ratio)}" src="${escapeHtml(asset.src)}" alt="${escapeHtml(asset.alt ?? "")}"${dimensions} data-required-image data-image-fit="${fit}" data-crop-safe-subject="${cropSafety}" data-asset-role="${escapeHtml(asset.role ?? "body-visual")}" data-aspect-class="${escapeHtml(ratio)}" data-background-mode="${escapeHtml(asset.backgroundMode ?? "opaque")}" data-transparency-status="${escapeHtml(asset.transparencyStatus ?? "unknown")}" data-detected-format="${escapeHtml(asset.detectedFormat ?? "unknown")}">`;
 }
 
 function assetFrameAttributes(asset = {}) {
@@ -425,19 +428,40 @@ function paragraphMarkup(text, route) {
   return units.map((unit) => `<p>${escapeHtml(unit)}</p>`).join("");
 }
 
+function longformFlowMarkup(text, asset, side) {
+  const units = String(text ?? "")
+    .split(/\n{2,}/u)
+    .filter((unit) => unit.length > 0);
+  const insertAt = Math.max(1, Math.ceil(units.length / 2));
+  const before = units.slice(0, insertAt).join("\n\n");
+  const after = units.slice(insertAt).join("\n\n");
+  return `<div class="ache-text-column ache-longform-segment">${paragraphMarkup(before, "L")}</div>
+    <figure class="ache-inline-visual ache-longform-flow-visual">${framedAssetMarkup(asset, {inline: true})}<figcaption>${escapeHtml(side)}</figcaption></figure>
+    ${after ? `<div class="ache-text-column ache-longform-segment ache-longform-segment--continuation">${paragraphMarkup(after, "L")}</div>` : ""}`;
+}
+
 function textBodySheet(episode, text, pageNumber, pageIndex, pageCount, asset = null) {
   const side = episode.route === "M"
     ? "决定、风险与还没解决的事"
     : episode.route === "K"
       ? "正文先读懂，图只解释关系"
       : "原文按原来的顺序留下";
+  const isLongformFlow = episode.route === "L" && Boolean(asset);
+  const recipe = planTextComposition(
+    episode.text,
+    episode.route,
+    episode.visualAssets ?? episode.pageAssets ?? []
+  ).recipe;
+  const body = isLongformFlow
+    ? longformFlowMarkup(text, asset, side)
+    : `<div class="ache-text-column">${paragraphMarkup(text, episode.route)}</div>
+          ${asset ? `<figure class="ache-inline-visual">${framedAssetMarkup(asset, {inline: true})}<figcaption>${escapeHtml(side)}</figcaption></figure>` : `<p class="ache-text-side">${escapeHtml(side)}</p>`}`;
   return `<div class="ache-page-shell">
-    <section class="ache-page ache-text-page ache-route-${escapeHtml(episode.route.toLowerCase())} ${asset ? "ache-text-page--with-visual" : ""} ${densityClass(text, episode.route, Boolean(asset))}" data-page-role="body" data-route="${escapeHtml(episode.route)}" data-density="${densityClass(text, episode.route, Boolean(asset)).replace("ache-density-", "")}" ${themeAttributes(episode)}>
+    <section class="ache-page ache-text-page ache-route-${escapeHtml(episode.route.toLowerCase())} ${asset ? "ache-text-page--with-visual" : ""} ${isLongformFlow ? "ache-text-page--flow-visual" : ""} ${densityClass(text, episode.route, Boolean(asset))}" data-page-role="body" data-route="${escapeHtml(episode.route)}" data-supporting-visual-placement="${isLongformFlow ? "between-paragraphs" : asset ? "side-column" : "none"}" data-density="${densityClass(text, episode.route, Boolean(asset)).replace("ache-density-", "")}" ${themeAttributes(episode)}>
       <div class="ache-page-inner">
         ${pageHeaderMarkup(episode, {pageIndex, pageCount})}
-        <main class="ache-text-layout ache-text-recipe-${escapeHtml(planTextComposition(episode.text, episode.route, episode.visualAssets ?? []).recipe)}" data-layout-zone="text-body" data-layout-content>
-          <div class="ache-text-column">${paragraphMarkup(text, episode.route)}</div>
-          ${asset ? `<figure class="ache-inline-visual">${framedAssetMarkup(asset, {inline: true})}<figcaption>${escapeHtml(side)}</figcaption></figure>` : `<p class="ache-text-side">${escapeHtml(side)}</p>`}
+        <main class="ache-text-layout ache-text-recipe-${escapeHtml(recipe)}" data-layout-zone="text-body" data-layout-content>
+          ${body}
         </main>
         ${footerMarkup({episode, pageNumber, pageRole: "正文"})}
       </div>
@@ -535,7 +559,9 @@ export function renderMonthlyDocument(book, volume) {
         if (page.scrollWidth > page.clientWidth + 1 || page.scrollHeight > page.clientHeight + 1) failures.push('overflow:' + (index + 1));
       });
       if (document.querySelector('[data-frame-fit="mismatch"],[data-frame-fit="unknown"]')) failures.push('frame-fit');
-      if (document.querySelector('[data-asset-role="explanatory-vignette"][data-background-mode="opaque"],[data-asset-role="decorative-component"][data-background-mode="opaque"]')) failures.push('opaque-component');
+      if (document.querySelector('[data-asset-role="explanatory-vignette"]:not([data-transparency-status="verified-transparent"]),[data-asset-role="decorative-component"]:not([data-transparency-status="verified-transparent"])')) failures.push('unverified-transparent-component');
+      if (document.querySelector('[data-image-fit="cover"]:not([data-crop-safe-subject="declared"])')) failures.push('unsafe-crop');
+      if (document.querySelector('.ache-route-l.ache-text-page--with-visual:not([data-supporting-visual-placement="between-paragraphs"])')) failures.push('longform-visual-flow');
       document.documentElement.dataset.acheLayoutStatus = failures.length ? 'FAIL' : 'PASS';
       document.documentElement.dataset.acheLayoutFailures = failures.join(',');
       if (failures.length) console.error('[ache-layout-guard]', failures.join(','));

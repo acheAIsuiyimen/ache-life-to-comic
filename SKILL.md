@@ -82,7 +82,7 @@ description: 把用户持续发送的日常、照片、知识笔记、会议纪�
 
 知识、会议和长文的页边解释图属于独立组件：必须单独生成透明 PNG/WebP 或 SVG，并像贴纸、线稿或物件一样直接落在白纸上；禁止带白色长方形底、默认相框或假透明底。不得从共享大图、素材表或连续场景中裁出局部。只有 S 多格主体允许使用声明了安全间隔与精确边界的 `isolated-cells` 素材表。
 
-平台不得手写替代版 HTML。能运行 Node 时必须调用本 Skill 的 `monthly-serial.mjs` 与 `page-renderer.mjs`；不能运行时只能交付完整 3:4 成品页或标记 `render-blocked`，不能自行发明博客、固定相框或 `overflow:hidden` 截字版。输出缺少 `ache-design-system/1.5.0`、`ache-monthly-renderer/2.3.0`、主题契约或框图匹配标记时，视为非正式产物。跨平台交付后可运行 `node scripts/cli.mjs validate-html --input <index.html>`；不是 `PASS` 就不得作为正式月册。
+平台不得手写替代版 HTML。能运行 Node 时必须调用本 Skill 的 `monthly-serial.mjs` 与 `page-renderer.mjs`；不能运行时只能交付完整 3:4 成品页或标记 `render-blocked`，不能自行发明博客、固定相框或 `overflow:hidden` 截字版。输出缺少 `ache-design-system/1.6.0`、`ache-monthly-renderer/2.4.0`、主题契约或框图匹配标记时，视为非正式产物。跨平台交付后可运行 `node scripts/cli.mjs validate-html --input <index.html>`；不是 `PASS` 就不得作为正式月册。
 
 ## 完成后的便携分享
 
