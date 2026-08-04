@@ -12,9 +12,28 @@ const golden = path.join(
   projectRoot,
   "assets/presets/02-snow-pastel/golden"
 );
+const generated = path.join(reviewRoot, "generated-assets");
 
 await rm(reviewRoot, {recursive: true, force: true});
 await mkdir(reviewRoot, {recursive: true});
+await mkdir(generated, {recursive: true});
+
+const pixelCover = path.join(generated, "pixel-cover.svg");
+const pixelScene = path.join(generated, "pixel-scene.svg");
+const pixelSticker = path.join(generated, "pixel-sticker.svg");
+await writeFile(pixelCover, `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1440">
+  <rect width="1080" height="1440" fill="#fff"/><path fill="#25155f" d="M80 1040h920v170H80zM150 880h760v160H150zM260 720h560v160H260zM390 560h300v160H390z"/>
+  <path fill="#7458d8" d="M120 310h80v80h-80zm90-80h80v80h-80zm90 80h80v80h-80zm600 10h80v80h-80zm-90-90h80v80h-80z"/>
+  <circle cx="520" cy="1050" r="92" fill="#f2c7db"/><path fill="#fff" d="M465 1010h35v35h-35zm75 0h35v35h-35z"/>
+</svg>`);
+await writeFile(pixelScene, `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 760">
+  <rect width="720" height="760" fill="#fff"/><path fill="#190d4b" d="M50 590h620v100H50zM120 490h500v100H120zM200 390h340v100H200zM290 290h160v100H290z"/>
+  <path fill="#7458d8" d="M70 120h95v95H70zm500 25h85v85h-85zM255 80h65v65h-65z"/><circle cx="160" cy="550" r="72" fill="#f4c6dc"/>
+</svg>`);
+await writeFile(pixelSticker, `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 480">
+  <path fill="#7458d8" d="M240 30l45 120 125 5-98 78 34 122-106-70-106 70 34-122-98-78 125-5z"/>
+  <circle cx="240" cy="225" r="72" fill="#f2c7db"/><circle cx="214" cy="212" r="10" fill="#25155f"/><circle cx="266" cy="212" r="10" fill="#25155f"/>
+</svg>`);
 
 const photo = await appendEpisode(library, {
   bookId: "visual-book",
@@ -85,11 +104,37 @@ const longform = await appendEpisode(library, {
   recordedAt: "2026-07-25T21:00:00+08:00"
 });
 
+const pixel = await appendEpisode(library, {
+  bookId: "visual-book",
+  bookTitle: "Ache life-to-comic skill 测试月册",
+  idempotencyKey: "visual-pixel",
+  episodeId: "visual-pixel",
+  title: "周一提前到站",
+  text: "今天的心情像一段紫色台阶，慢慢从夜里走回亮处。",
+  route: "S",
+  styleId: "custom-pixel",
+  palette: {
+    paper: "#FFFFFF",
+    ink: "#20183F",
+    muted: "#665E86",
+    ice: "#E8E1FF",
+    blue: "#7458D8",
+    red: "#D96A91"
+  },
+  paletteSource: "reference-image",
+  recordedAt: "2026-07-27T08:00:00+08:00",
+  visuals: [
+    {path: pixelCover, role: "cover-visual", backgroundMode: "opaque", edgeTreatment: "flush"},
+    {path: pixelScene, role: "scene-panel", backgroundMode: "opaque", edgeTreatment: "organic-window", safeSubjectBounds: {left: .08, top: .08, right: .92, bottom: .92}},
+    {path: pixelSticker, role: "decorative-component", backgroundMode: "svg-vector", edgeTreatment: "die-cut-transparent"}
+  ]
+});
+
 const report = {
   status: "fixture-ready",
   monthlyIndex: photo.monthlyIndex,
   seriesIndex: photo.seriesIndex,
-  episodes: [photo.episodeId, knowledge.episodeId, pending.episodeId, longform.episodeId],
+  episodes: [photo.episodeId, knowledge.episodeId, pending.episodeId, longform.episodeId, pixel.episodeId],
   externalWritesPerformed: false
 };
 await writeFile(

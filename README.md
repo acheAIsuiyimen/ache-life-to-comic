@@ -174,7 +174,8 @@ npx skills add https://github.com/acheAIsuiyimen/ache-life-to-comic-skill --skil
 - `scripts/page-renderer.mjs` 负责 3:4 页面和月册装订；
 - `assets/templates/page-system.css` 负责字体、留白、异形窗口与响应式；
 - `assets/layout-system/design-baseline.json` 是唯一设计基线；
-- `scripts/validate-rendered-html.mjs` 拦截通栏博客、连续大图堆叠、裸会议段落和工具 JSON 泄漏。
+- `scripts/theme-system.mjs` 让白纸保持不变，但章节点睛色随画风、参考图与情绪变化；
+- `scripts/validate-rendered-html.mjs` 拦截通栏博客、图框比例失配、白底假透明、文字截断和工具 JSON 泄漏。
 
 不同平台只负责提供文字、原图和无字画面，不能各自重新发明 HTML。图片生成与图片展示也分开探测：如果当前环境没有生图能力，会引导启用原生能力、使用轻插画方案，或先进入待补图队列；不会直接拒绝，也不会假装图片已经出现。
 
@@ -201,13 +202,15 @@ books/
 - 页面默认纯白，不用米黄或牛皮纸铺满背景；
 - 中文标题主动平衡换行，不留单字孤行；
 - 照片完整保留，外框可以变化，照片本身不被重绘；
+- 生成图按实际版位尺寸出图，图与框比例误差不得超过 2.5%；
+- 不规则窗口必须预留主体安全区，页边小插画使用透明底位图或 SVG；
 - 已经排好的成品页原样装订，不再缩进另一个页面；
 - 知识、会议和长文以文字为主，图片少而有用；
 - 每章封面跟随这次内容，不复用一个固定构图；
 - 桌面、手机、原尺寸和缩略图都要检查；
 - 并发追加使用 UUID、书级锁、幂等键和原子写入，避免页码重复或文件损坏。
 
-当前自动化回归为 **62 / 62**。验收内容见 [docs/verification.md](./docs/verification.md)。
+当前自动化回归为 **84 / 84**。验收内容见 [docs/verification.md](./docs/verification.md)。
 
 ## 仓库里有什么
 

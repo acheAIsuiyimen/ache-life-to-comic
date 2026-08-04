@@ -1,5 +1,6 @@
 import {readFileSync} from "node:fs";
 import {fileURLToPath} from "node:url";
+import {resolveThemePalette} from "./theme-system.mjs";
 
 const baselinePath = fileURLToPath(new URL(
   "../assets/layout-system/design-baseline.json",
@@ -37,13 +38,39 @@ function bodyTemplate(route, input) {
   return "A-white-object-theatre";
 }
 
+function visualTargets(route, input) {
+  if (route === "P") return [];
+  if (["K", "M", "L"].includes(route)) {
+    return [{role: "explanatory-vignette", width: 480, height: 480, backgroundMode: "transparent-raster-or-svg"}];
+  }
+  const panelCount = Math.min(3, Math.max(1, input.imageCount ?? input.beats?.length ?? input.images?.length ?? 1));
+  const sizes = panelCount === 1
+    ? [[720, 760]]
+    : panelCount === 2
+      ? [[720, 420], [720, 340]]
+      : [[720, 330], [720, 285], [720, 285]];
+  return sizes.map(([width, height], index) => ({
+    role: "scene-panel",
+    panel: index + 1,
+    width,
+    height,
+    backgroundMode: "opaque-or-transparent",
+    edgeTreatment: "flush-or-matched-paper-frame"
+  }));
+}
+
 export function planLayout({route, input = {}, previousTemplates = []}) {
   const templateId = bodyTemplate(route, input);
   const previousTwo = previousTemplates.slice(-2);
   const requiresVariant = previousTwo.length === 2 &&
     previousTwo.every((value) => value === templateId);
+  const theme = resolveThemePalette({
+    styleId: input.styleId ?? input.style?.id ?? "02-snow-pastel",
+    palette: input.palette ?? null,
+    source: input.paletteSource ?? null
+  });
   return {
-    schemaVersion: "ache-layout-plan/1.0.0",
+    schemaVersion: "ache-layout-plan/1.1.0",
     designSystemVersion: BASELINE.schemaVersion,
     templateId,
     variantPolicy: requiresVariant
@@ -54,6 +81,7 @@ export function planLayout({route, input = {}, previousTemplates = []}) {
       background: "#FFFFFF"
     },
     typography: BASELINE.typography,
+    theme,
     zones: BASELINE.pageZones,
     composition: {
       oneVisualSurprise: true,
@@ -67,7 +95,12 @@ export function planLayout({route, input = {}, previousTemplates = []}) {
       preserveCompleteFrame: route === "P",
       selectRecipeFromIntrinsicRatio: true,
       arbitraryFractionCropForbidden: true,
-      isolatedSheetCellsRequireSafeGutter: true
+      isolatedSheetCellsRequireSafeGutter: true,
+      generationTargets: visualTargets(route, input),
+      frameContentMustMatchImageRatioWithin: 0.025,
+      framePaddingRatioMaximum: 0.07,
+      irregularEdgesRequireSafeSubjectArea: true,
+      supportingComponentsRequireTransparentRasterOrSvg: true
     },
     promptConstraints: [
       "dominant crisp pure white #FFFFFF page ground",
@@ -98,6 +131,10 @@ export function validateLayoutPlan(plan) {
     failures.push("triangle-stack-not-forbidden");
   }
   if (!plan.designSystemVersion) failures.push("missing-design-system-version");
+  if (plan.theme?.colors?.paper !== "#FFFFFF") failures.push("theme-paper-not-white");
+  if (plan.imageGeometry?.frameContentMustMatchImageRatioWithin !== 0.025) {
+    failures.push("frame-ratio-contract-missing");
+  }
   return {
     status: failures.length === 0 ? "PASS" : "FAIL",
     failures

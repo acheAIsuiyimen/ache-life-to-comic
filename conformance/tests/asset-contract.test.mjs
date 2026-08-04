@@ -1,9 +1,13 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import {mkdtemp, writeFile} from "node:fs/promises";
+import os from "node:os";
+import path from "node:path";
 
 import {
   aspectClass,
   normalizeAsset,
+  readImageSize,
   validateAssetContract
 } from "../../scripts/asset-contract.mjs";
 
@@ -36,7 +40,8 @@ test("supporting illustrations are whole independent components, never sheet cro
   const component = normalizeAsset({
     role: "explanatory-vignette",
     intrinsicWidth: 1080,
-    intrinsicHeight: 1440
+    intrinsicHeight: 1440,
+    backgroundMode: "transparent-raster"
   });
   assert.equal(component.independent, true);
   assert.equal(component.generationMode, "independent");
@@ -53,10 +58,71 @@ test("supporting illustrations are whole independent components, never sheet cro
   const failures = validateAssetContract(croppedComponent);
   assert.ok(failures.includes("supporting-component-not-independent"));
   assert.ok(failures.includes("supporting-component-crop-forbidden"));
+  assert.ok(failures.includes("supporting-component-background-not-transparent"));
+});
+
+test("frames are derived from the image ratio instead of acting as generic boxes", () => {
+  const matched = normalizeAsset({
+    role: "scene-panel",
+    intrinsicWidth: 720,
+    intrinsicHeight: 420,
+    targetWidth: 720,
+    targetHeight: 420,
+    frameContentWidth: 720,
+    frameContentHeight: 420,
+    edgeTreatment: "paper-mat"
+  });
+  assert.equal(matched.frameFitStatus, "matched");
+  assert.deepEqual(validateAssetContract(matched), []);
+
+  const hardPasted = normalizeAsset({
+    role: "scene-panel",
+    intrinsicWidth: 720,
+    intrinsicHeight: 420,
+    frameContentWidth: 500,
+    frameContentHeight: 700,
+    edgeTreatment: "paper-mat"
+  });
+  assert.equal(hardPasted.frameFitStatus, "mismatch");
+  assert.ok(validateAssetContract(hardPasted).includes("frame-image-ratio-mismatch"));
+});
+
+test("irregular windows protect originals and require a declared safe subject", () => {
+  const original = normalizeAsset({
+    role: "body-photo",
+    intrinsicWidth: 1200,
+    intrinsicHeight: 800,
+    edgeTreatment: "organic-window"
+  });
+  assert.ok(validateAssetContract(original).includes("original-photo-mask-forbidden"));
+
+  const unsafeGenerated = normalizeAsset({
+    role: "scene-panel",
+    intrinsicWidth: 720,
+    intrinsicHeight: 420,
+    edgeTreatment: "organic-window"
+  });
+  assert.ok(validateAssetContract(unsafeGenerated).includes("irregular-window-safe-subject-missing"));
+
+  const safeGenerated = normalizeAsset({
+    role: "scene-panel",
+    intrinsicWidth: 720,
+    intrinsicHeight: 420,
+    edgeTreatment: "organic-window",
+    safeSubjectBounds: {left: 0.08, top: 0.08, right: 0.92, bottom: 0.92}
+  });
+  assert.deepEqual(validateAssetContract(safeGenerated), []);
 });
 
 test("intrinsic aspect classes drive recipe selection", () => {
   assert.equal(aspectClass(1080, 1440), "portrait-soft");
   assert.equal(aspectClass(1600, 900), "landscape-wide");
   assert.equal(aspectClass(1000, 1000), "square");
+});
+
+test("transparent SVG components expose deterministic intrinsic geometry", async () => {
+  const directory = await mkdtemp(path.join(os.tmpdir(), "ache-svg-size-"));
+  const file = path.join(directory, "vignette.svg");
+  await writeFile(file, '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 360"><path d="M0 0h1v1z"/></svg>');
+  assert.deepEqual(await readImageSize(file), {width: 480, height: 360});
 });

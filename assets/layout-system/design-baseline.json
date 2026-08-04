@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "ache-design-system/1.4.1",
+  "schemaVersion": "ache-design-system/1.5.0",
   "id": "ache-comic-journal-white-1",
   "source": {
     "canonicalHandbook": "漫画人生-喜茶近三月插画排版手册-v0.1/设计排版手册.md",
@@ -19,7 +19,10 @@
   "color": {
     "inkAreaRatio": [0.08, 0.15],
     "contentColorAreaRatio": [0.05, 0.15],
-    "contentColorCount": 1,
+    "contentColorCount": 2,
+    "pageGroundLockedWhite": true,
+    "chapterPaletteMayFollowStyleAndTheme": true,
+    "paletteSourcePriority": ["user", "reference", "photo-extraction", "chapter-theme", "style-default"],
     "forbiddenPageGrounds": [
       "#F5E6C8",
       "#F1DFC0",
@@ -97,6 +100,10 @@
     "normalFlowForPrimaryZones": true,
     "absolutePositioningForTextForbidden": true,
     "precomposedPageMustNotBeReframed": true,
+    "generatedVisualMustMatchPlannedSlotRatio": true,
+    "frameContentMustMatchImageRatioWithin": 0.025,
+    "supportingComponentMustBeTransparentRasterOrSvg": true,
+    "irregularMaskRequiresSafeSubjectBounds": true,
     "imageCropRequiresExplicitOptIn": true,
     "compositionPlanRequiredBeforeVisualGeneration": true,
     "routeRecipeLockedBeforeRendering": true,
@@ -173,6 +180,9 @@
       "unexplained-bottom-empty-band",
       "excessive-internal-paragraph-gap",
       "asset-lineage-and-subject-integrity",
+      "frame-image-ratio-match",
+      "supporting-component-transparency",
+      "theme-palette-contract",
       "monthly-cover-exists"
     ],
     "blockingCompositionChecks": [

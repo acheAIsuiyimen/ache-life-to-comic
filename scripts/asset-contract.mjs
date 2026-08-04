@@ -1,10 +1,18 @@
 import {readFile} from "node:fs/promises";
 
-export const ASSET_CONTRACT_VERSION = "ache-visual-asset/1.0.0";
+export const ASSET_CONTRACT_VERSION = "ache-visual-asset/1.1.0";
 
 const COVER_ROLES = new Set(["cover-visual", "monthly-cover"]);
 const ORIGINAL_ROLES = new Set(["body-photo"]);
 const COMPONENT_ROLES = new Set(["explanatory-vignette", "decorative-component"]);
+const TRANSPARENT_COMPONENT_MODES = new Set(["transparent-raster", "svg-vector"]);
+const EDGE_TREATMENTS = new Set([
+  "flush",
+  "paper-mat",
+  "torn-paper-frame",
+  "organic-window",
+  "die-cut-transparent"
+]);
 
 function pngSize(buffer) {
   if (buffer.length < 24 || buffer.toString("hex", 0, 8) !== "89504e470d0a1a0a") return null;
@@ -27,9 +35,19 @@ function jpegSize(buffer) {
   return null;
 }
 
+function svgSize(buffer) {
+  const text = buffer.toString("utf8", 0, Math.min(buffer.length, 16_384));
+  if (!/<svg\b/iu.test(text)) return null;
+  const width = Number(text.match(/\bwidth=["']([0-9.]+)(?:px)?["']/iu)?.[1] ?? 0);
+  const height = Number(text.match(/\bheight=["']([0-9.]+)(?:px)?["']/iu)?.[1] ?? 0);
+  if (width && height) return {width, height};
+  const viewBox = text.match(/\bviewBox=["']\s*[-0-9.]+\s+[-0-9.]+\s+([0-9.]+)\s+([0-9.]+)\s*["']/iu);
+  return viewBox ? {width: Number(viewBox[1]), height: Number(viewBox[2])} : null;
+}
+
 export async function readImageSize(file) {
   const buffer = await readFile(file);
-  return pngSize(buffer) ?? jpegSize(buffer) ?? null;
+  return pngSize(buffer) ?? jpegSize(buffer) ?? svgSize(buffer) ?? null;
 }
 
 export function aspectClass(width, height) {
@@ -48,6 +66,22 @@ export function normalizeAsset(asset, intrinsic = null, defaults = {}) {
   const height = Number(asset.intrinsicHeight ?? intrinsic?.height ?? 0) || null;
   const independent = asset.independent ?? (COVER_ROLES.has(role) || COMPONENT_ROLES.has(role));
   const cropAllowed = ORIGINAL_ROLES.has(role) ? false : asset.allowCrop === true;
+  const targetWidth = Number(asset.targetWidth ?? width ?? 0) || null;
+  const targetHeight = Number(asset.targetHeight ?? height ?? 0) || null;
+  const frameContentWidth = Number(asset.frameContentWidth ?? targetWidth ?? 0) || null;
+  const frameContentHeight = Number(asset.frameContentHeight ?? targetHeight ?? 0) || null;
+  const imageRatio = width && height ? width / height : null;
+  const frameRatio = frameContentWidth && frameContentHeight
+    ? frameContentWidth / frameContentHeight
+    : null;
+  const frameRatioDelta = imageRatio && frameRatio
+    ? Math.abs(imageRatio - frameRatio) / imageRatio
+    : null;
+  const defaultEdgeTreatment = COMPONENT_ROLES.has(role)
+    ? "die-cut-transparent"
+    : ORIGINAL_ROLES.has(role)
+      ? "torn-paper-frame"
+      : "flush";
   return {
     ...asset,
     schemaVersion: ASSET_CONTRACT_VERSION,
@@ -58,9 +92,22 @@ export function normalizeAsset(asset, intrinsic = null, defaults = {}) {
     independent,
     intrinsicWidth: width,
     intrinsicHeight: height,
+    targetWidth,
+    targetHeight,
+    frameContentWidth,
+    frameContentHeight,
+    frameRatioDelta,
+    frameFitStatus: frameRatioDelta === null
+      ? "unknown"
+      : frameRatioDelta <= 0.025
+        ? "matched"
+        : "mismatch",
     aspectClass: asset.aspectClass ?? aspectClass(width, height),
     fitPolicy: cropAllowed ? "cover-allowed" : "contain-complete",
-    allowCrop: cropAllowed
+    allowCrop: cropAllowed,
+    edgeTreatment: asset.edgeTreatment ?? defaultEdgeTreatment,
+    framePaddingRatio: Number(asset.framePaddingRatio ?? (ORIGINAL_ROLES.has(role) ? 0.035 : 0.02)),
+    backgroundMode: asset.backgroundMode ?? (COMPONENT_ROLES.has(role) ? "unknown" : "opaque")
   };
 }
 
@@ -78,10 +125,29 @@ export function validateAssetContract(asset) {
   if (ORIGINAL_ROLES.has(asset?.role) && asset.allowCrop === true) {
     failures.push("original-photo-crop-forbidden");
   }
+  if (!EDGE_TREATMENTS.has(asset?.edgeTreatment)) failures.push("unknown-edge-treatment");
+  if (asset?.frameRatioDelta === null || asset?.frameRatioDelta === undefined) {
+    failures.push("frame-ratio-unmeasured");
+  } else if (asset.frameRatioDelta > 0.025) {
+    failures.push("frame-image-ratio-mismatch");
+  }
+  if (Number(asset?.framePaddingRatio ?? 0) > 0.07) failures.push("frame-padding-too-large");
+  if (ORIGINAL_ROLES.has(asset?.role) && ["organic-window", "die-cut-transparent"].includes(asset.edgeTreatment)) {
+    failures.push("original-photo-mask-forbidden");
+  }
+  if (asset?.edgeTreatment === "organic-window" && !asset.safeSubjectBounds && !TRANSPARENT_COMPONENT_MODES.has(asset.backgroundMode)) {
+    failures.push("irregular-window-safe-subject-missing");
+  }
   if (COMPONENT_ROLES.has(asset?.role)) {
     if (asset.independent !== true) failures.push("supporting-component-not-independent");
     if (["sheet-crop", "fraction-crop"].includes(asset.generationMode)) {
       failures.push("supporting-component-crop-forbidden");
+    }
+    if (!TRANSPARENT_COMPONENT_MODES.has(asset.backgroundMode)) {
+      failures.push("supporting-component-background-not-transparent");
+    }
+    if (!asset.edgeTreatment || asset.edgeTreatment !== "die-cut-transparent") {
+      failures.push("supporting-component-not-die-cut");
     }
   }
   if (asset?.generationMode === "sheet-crop") {

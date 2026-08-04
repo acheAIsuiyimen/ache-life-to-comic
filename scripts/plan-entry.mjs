@@ -261,9 +261,15 @@ export function planEntry(input, profile = {}) {
     throw new Error(`Unsupported route: ${route}`);
   }
   const bodyPageCount = bodyPages(input, route);
+  const planningInput = {
+    ...input,
+    style: input.style ?? profile.style ?? null,
+    palette: input.palette ?? profile.palette ?? null,
+    paletteSource: input.paletteSource ?? (input.palette ? "chapter-theme" : null)
+  };
   const layout = planLayout({
     route,
-    input,
+    input: planningInput,
     previousTemplates: profile.recentTemplates ?? []
   });
   const coverSemantics = input.coverDirection ?? input.coverSemantics ?? null;

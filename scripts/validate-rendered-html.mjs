@@ -10,10 +10,10 @@ const FORBIDDEN_SIGNATURES = [
 
 export function validateRenderedHtmlText(html) {
   const failures = [];
-  if (!/<meta name="ache-design-system" content="ache-design-system\/1\.4\.1">/u.test(html)) {
+  if (!/<meta name="ache-design-system" content="ache-design-system\/1\.5\.0">/u.test(html)) {
     failures.push("missing-design-system-meta");
   }
-  if (!/<meta name="ache-renderer" content="ache-monthly-renderer\/2\.2\.1">/u.test(html)) {
+  if (!/<meta name="ache-renderer" content="ache-monthly-renderer\/2\.3\.0">/u.test(html)) {
     failures.push("missing-renderer-meta");
   }
   if (!html.includes('class="ache-page ')) failures.push("missing-page-artboards");
@@ -25,6 +25,13 @@ export function validateRenderedHtmlText(html) {
     failures.push("forced-title-nowrap");
   }
   if (html.includes("ache-text-token")) failures.push("tiny-decoration-token-regression");
+  if (!html.includes('data-theme-source="')) failures.push("missing-theme-contract");
+  if (!html.includes('data-ache-layout-guard="1"')) failures.push("missing-runtime-layout-guard");
+  if (/<[^>]+data-frame-fit="mismatch"[^>]*>/gu.test(html)) failures.push("frame-image-ratio-mismatch");
+  if (/<[^>]+data-frame-fit="unknown"[^>]*>/gu.test(html)) failures.push("frame-image-ratio-unmeasured");
+  if (/<[^>]+data-asset-role="(?:explanatory-vignette|decorative-component)"[^>]*data-background-mode="(?:opaque|unknown)"[^>]*>/gu.test(html)) {
+    failures.push("supporting-component-background-not-transparent");
+  }
   if (/\.ache-text-recipe-longform-balanced-reading\s+\.ache-text-column\s*\{[^}]*justify-content:\s*space-between/gu.test(html)) {
     failures.push("longform-forced-space-between");
   }

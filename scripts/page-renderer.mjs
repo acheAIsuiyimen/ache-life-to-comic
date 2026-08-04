@@ -2,14 +2,15 @@ import {copyFile, mkdir} from "node:fs/promises";
 import {readFileSync} from "node:fs";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
+import {resolveThemePalette, themeStyleAttribute} from "./theme-system.mjs";
 
 const scriptDirectory = path.dirname(fileURLToPath(import.meta.url));
 const skillRoot = path.resolve(scriptDirectory, "..");
 const pageCssPath = path.join(skillRoot, "assets", "templates", "page-system.css");
 const fontDirectory = path.join(skillRoot, "assets", "fonts");
 
-export const DESIGN_SYSTEM_VERSION = "ache-design-system/1.4.1";
-export const MONTHLY_RENDERER_VERSION = "ache-monthly-renderer/2.2.1";
+export const DESIGN_SYSTEM_VERSION = "ache-design-system/1.5.0";
+export const MONTHLY_RENDERER_VERSION = "ache-monthly-renderer/2.3.0";
 
 export function escapeHtml(value = "") {
   return String(value)
@@ -274,7 +275,38 @@ function imageMarkup(asset, className = "") {
   if (!asset?.src) return `<div class="ache-empty-visual">这一页的画面还在路上</div>`;
   const fit = asset.fit === "cover" && asset.allowCrop === true ? "cover" : "contain";
   const ratio = asset.aspectClass ?? "unknown";
-  return `<img class="${escapeHtml(className)} ache-image-${escapeHtml(ratio)}" src="${escapeHtml(asset.src)}" alt="${escapeHtml(asset.alt ?? "")}" data-required-image data-image-fit="${fit}" data-asset-role="${escapeHtml(asset.role ?? "body-visual")}" data-aspect-class="${escapeHtml(ratio)}">`;
+  const width = Number(asset.intrinsicWidth ?? asset.targetWidth ?? 0);
+  const height = Number(asset.intrinsicHeight ?? asset.targetHeight ?? 0);
+  const dimensions = width && height ? ` width="${width}" height="${height}"` : "";
+  return `<img class="${escapeHtml(className)} ache-image-${escapeHtml(ratio)}" src="${escapeHtml(asset.src)}" alt="${escapeHtml(asset.alt ?? "")}"${dimensions} data-required-image data-image-fit="${fit}" data-asset-role="${escapeHtml(asset.role ?? "body-visual")}" data-aspect-class="${escapeHtml(ratio)}" data-background-mode="${escapeHtml(asset.backgroundMode ?? "opaque")}">`;
+}
+
+function assetFrameAttributes(asset = {}) {
+  const width = Number(asset.frameContentWidth ?? asset.targetWidth ?? asset.intrinsicWidth ?? 0);
+  const height = Number(asset.frameContentHeight ?? asset.targetHeight ?? asset.intrinsicHeight ?? 0);
+  const edge = asset.edgeTreatment ?? (asset.role === "body-photo" ? "torn-paper-frame" : "flush");
+  const ratio = width && height ? `${width} / ${height}` : "auto";
+  const matched = asset.frameFitStatus ?? (width && height ? "matched" : "unknown");
+  return {
+    className: `ache-frame ache-frame-${edge}`,
+    attributes: `data-edge-treatment="${escapeHtml(edge)}" data-frame-fit="${escapeHtml(matched)}" style="--ache-media-ratio:${escapeHtml(ratio)}"`
+  };
+}
+
+function framedAssetMarkup(asset, {inline = false} = {}) {
+  const frame = assetFrameAttributes(asset);
+  const isTransparent = ["transparent-raster", "svg-vector"].includes(asset?.backgroundMode);
+  const classes = `${frame.className}${inline ? " ache-frame-inline" : ""}${isTransparent ? " ache-frame-transparent" : ""}`;
+  return `<div class="${classes}" ${frame.attributes}>${imageMarkup(asset)}</div>`;
+}
+
+function themeAttributes(subject = {}) {
+  const theme = resolveThemePalette({
+    styleId: subject.styleId ?? subject.style?.id ?? "02-snow-pastel",
+    palette: subject.palette ?? null,
+    source: subject.paletteSource ?? null
+  });
+  return `data-theme-source="${escapeHtml(theme.source)}" data-style-id="${escapeHtml(theme.styleId)}" style="${escapeHtml(themeStyleAttribute(theme))}"`;
 }
 
 function densityClass(text, route, hasVisual = false) {
@@ -322,11 +354,11 @@ function footerMarkup({episode, pageNumber, pageRole}) {
 function coverSheet(episode, asset, pageNumber) {
   const visualState = asset ? "has-visual" : "no-visual";
   return `<div class="ache-page-shell">
-    <section class="ache-page ache-cover-page ache-route-${escapeHtml(episode.route.toLowerCase())}" data-page-role="cover" data-route="${escapeHtml(episode.route)}">
+    <section class="ache-page ache-cover-page ache-route-${escapeHtml(episode.route.toLowerCase())}" data-page-role="cover" data-route="${escapeHtml(episode.route)}" ${themeAttributes(episode)}>
       <div class="ache-page-inner">
         ${pageHeaderMarkup(episode, {role: "cover"})}
-        <main class="ache-cover-content ${visualState}">
-          <div class="ache-cover-visual"><div class="ache-paper-mat">${imageMarkup(asset)}</div></div>
+        <main class="ache-cover-content ${visualState}" data-layout-zone="cover-background">
+          <div class="ache-cover-visual">${imageMarkup(asset)}</div>
           <span class="ache-cover-stitch" aria-hidden="true"></span>
         </main>
         ${footerMarkup({episode, pageNumber, pageRole: "章节封面"})}
@@ -339,12 +371,15 @@ function visualBodySheet(episode, assets, pageNumber, notes, pageIndex, pageCoun
   const safeAssets = assets.slice(0, 3);
   const resolvedLayout = adaptiveVisualLayout(episode.route, safeAssets, visualLayout);
   return `<div class="ache-page-shell">
-    <section class="ache-page ache-visual-page ache-route-${escapeHtml(episode.route.toLowerCase())}" data-page-role="body" data-route="${escapeHtml(episode.route)}">
+    <section class="ache-page ache-visual-page ache-route-${escapeHtml(episode.route.toLowerCase())}" data-page-role="body" data-route="${escapeHtml(episode.route)}" ${themeAttributes(episode)}>
       <div class="ache-page-inner">
         ${pageHeaderMarkup(episode, {pageIndex, pageCount})}
         <main class="ache-visual-content ache-visual-layout-${escapeHtml(resolvedLayout)}" data-layout-zone="visual-body" data-visual-layout="${escapeHtml(resolvedLayout)}">
           <div class="ache-panel-stack ache-panel-count-${safeAssets.length}">
-            ${safeAssets.map((asset, index) => `<figure class="ache-panel ache-panel-${index + 1}">${imageMarkup(asset)}</figure>`).join("")}
+            ${safeAssets.map((asset, index) => {
+              const frame = assetFrameAttributes(asset);
+              return `<figure class="ache-panel ache-panel-${index + 1} ${frame.className}" ${frame.attributes}>${imageMarkup(asset)}</figure>`;
+            }).join("")}
           </div>
           <div class="ache-note-strip">
             ${notes.slice(0, Math.max(1, safeAssets.length)).map((note, index) => `<p><span>${String(index + 1).padStart(2, "0")}</span>${escapeHtml(note)}</p>`).join("")}
@@ -397,12 +432,12 @@ function textBodySheet(episode, text, pageNumber, pageIndex, pageCount, asset = 
       ? "正文先读懂，图只解释关系"
       : "原文按原来的顺序留下";
   return `<div class="ache-page-shell">
-    <section class="ache-page ache-text-page ache-route-${escapeHtml(episode.route.toLowerCase())} ${asset ? "ache-text-page--with-visual" : ""} ${densityClass(text, episode.route, Boolean(asset))}" data-page-role="body" data-route="${escapeHtml(episode.route)}" data-density="${densityClass(text, episode.route, Boolean(asset)).replace("ache-density-", "")}">
+    <section class="ache-page ache-text-page ache-route-${escapeHtml(episode.route.toLowerCase())} ${asset ? "ache-text-page--with-visual" : ""} ${densityClass(text, episode.route, Boolean(asset))}" data-page-role="body" data-route="${escapeHtml(episode.route)}" data-density="${densityClass(text, episode.route, Boolean(asset)).replace("ache-density-", "")}" ${themeAttributes(episode)}>
       <div class="ache-page-inner">
         ${pageHeaderMarkup(episode, {pageIndex, pageCount})}
         <main class="ache-text-layout ache-text-recipe-${escapeHtml(planTextComposition(episode.text, episode.route, episode.visualAssets ?? []).recipe)}" data-layout-zone="text-body" data-layout-content>
           <div class="ache-text-column">${paragraphMarkup(text, episode.route)}</div>
-          ${asset ? `<figure class="ache-inline-visual"><div class="ache-paper-mat">${imageMarkup(asset)}</div><figcaption>${escapeHtml(side)}</figcaption></figure>` : `<p class="ache-text-side">${escapeHtml(side)}</p>`}
+          ${asset ? `<figure class="ache-inline-visual">${framedAssetMarkup(asset, {inline: true})}<figcaption>${escapeHtml(side)}</figcaption></figure>` : `<p class="ache-text-side">${escapeHtml(side)}</p>`}
         </main>
         ${footerMarkup({episode, pageNumber, pageRole: "正文"})}
       </div>
@@ -416,7 +451,7 @@ export function renderEpisodeSheets(episode, startPageNumber = 1) {
   if (precomposedPages.length > 0) {
     return {
       html: precomposedPages.map((asset, index) => `<div class="ache-page-shell">
-        <section class="ache-page ache-precomposed-page" data-page-role="${index === 0 ? "cover" : "body"}" data-route="${escapeHtml(episode.route)}">
+        <section class="ache-page ache-precomposed-page" data-page-role="${index === 0 ? "cover" : "body"}" data-route="${escapeHtml(episode.route)}" ${themeAttributes(episode)}>
           ${imageMarkup(asset)}
         </section>
       </div>`).join("\n"),
@@ -487,13 +522,30 @@ export function renderMonthlyDocument(book, volume) {
   }).join("\n");
   const css = readFileSync(pageCssPath, "utf8");
   const monthlyCover = volume.coverAsset ? `<div class="ache-monthly-cover-wrap">
-    <section class="ache-page ache-monthly-cover-page" data-page-role="monthly-cover">
+    <section class="ache-page ache-monthly-cover-page" data-page-role="monthly-cover" ${themeAttributes(volume)}>
       <div class="ache-monthly-cover-image">${imageMarkup(volume.coverAsset)}</div>
       <div class="ache-monthly-cover-type"><p>${escapeHtml(book.title)}</p><h1>${escapeHtml(readableMonth(volume.month))}</h1><span>${volume.episodes.length} 章 · 持续生长中</span></div>
     </section>
   </div>` : "";
+  const runtimeGuard = `<script data-ache-layout-guard="1">
+  (() => {
+    const inspect = () => {
+      const failures = [];
+      document.querySelectorAll('.ache-page').forEach((page, index) => {
+        if (page.scrollWidth > page.clientWidth + 1 || page.scrollHeight > page.clientHeight + 1) failures.push('overflow:' + (index + 1));
+      });
+      if (document.querySelector('[data-frame-fit="mismatch"],[data-frame-fit="unknown"]')) failures.push('frame-fit');
+      if (document.querySelector('[data-asset-role="explanatory-vignette"][data-background-mode="opaque"],[data-asset-role="decorative-component"][data-background-mode="opaque"]')) failures.push('opaque-component');
+      document.documentElement.dataset.acheLayoutStatus = failures.length ? 'FAIL' : 'PASS';
+      document.documentElement.dataset.acheLayoutFailures = failures.join(',');
+      if (failures.length) console.error('[ache-layout-guard]', failures.join(','));
+    };
+    if (document.readyState === 'complete') requestAnimationFrame(inspect);
+    else window.addEventListener('load', () => requestAnimationFrame(inspect), {once: true});
+  })();
+  </script>`;
   return `<!doctype html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-ache-layout-status="PENDING">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -508,6 +560,7 @@ export function renderMonthlyDocument(book, volume) {
     ${monthlyCover}
     ${episodes}
   </main>
+  ${runtimeGuard}
 </body>
 </html>`;
 }
