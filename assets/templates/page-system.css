@@ -14,7 +14,7 @@ img{display:block;max-width:100%}
 .ache-episode-label{display:flex;align-items:center;gap:13px;width:min(100%,760px);margin:0 auto 16px;color:var(--ache-ink-soft);font-family:var(--ache-note);font-size:15px}
 .ache-episode-label::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,var(--ache-ice),transparent);transform:rotate(-.25deg)}
 .ache-page-shell{width:min(100%,760px);margin:0 auto 26px}
-.ache-page{position:relative;aspect-ratio:3/4;overflow:hidden;container-type:inline-size;background:radial-gradient(circle at 13% 14%,rgba(120,168,220,.035),transparent 25%),radial-gradient(circle at 86% 81%,rgba(201,99,85,.025),transparent 20%),#fff;border:1px solid #e3ebf4;color:var(--ache-ink);isolation:isolate}
+.ache-page{position:relative;aspect-ratio:3/4;overflow:hidden;container-type:inline-size;background:radial-gradient(circle at 13% 14%,color-mix(in srgb,var(--ache-ice) 4%,transparent),transparent 25%),radial-gradient(circle at 86% 81%,color-mix(in srgb,var(--ache-coral) 3%,transparent),transparent 20%),#fff;border:1px solid color-mix(in srgb,var(--ache-ice-pale) 82%,#fff);color:var(--ache-ink);isolation:isolate}
 .ache-page::after{content:"";position:absolute;inset:0;z-index:9;pointer-events:none;opacity:.1;background-image:radial-gradient(circle at 20% 30%,#aab7c4 0 .6px,transparent .8px),radial-gradient(circle at 70% 65%,#aab7c4 0 .45px,transparent .7px);background-size:29px 31px,37px 41px;mix-blend-mode:multiply}
 .ache-page-inner{position:absolute;inset:0;z-index:2;display:grid;grid-template-rows:auto minmax(0,1fr) auto;gap:2.5%;padding:5.6% 6.6% 4.2%}
 .ache-page-head{min-width:0}
@@ -26,10 +26,10 @@ img{display:block;max-width:100%}
 .ache-title-mark{width:28%;height:clamp(3px,.55cqw,6px);margin-top:1.5%;border-radius:99px;background:var(--ache-ice);transform:rotate(-1.2deg);opacity:.72}
 .ache-footer{position:relative;display:flex;justify-content:space-between;align-items:center;min-height:18px;color:var(--ache-ink-soft);font-family:var(--ache-note);font-size:clamp(9px,1.45cqw,13px)}
 .ache-footer::before{content:"";position:absolute;left:0;right:0;top:-8px;height:1px;background:linear-gradient(90deg,var(--ache-ice-pale),transparent 88%)}
-.ache-cover-content{position:relative;min-height:0;display:grid;place-items:center;padding:1% 1% 2%}
+.ache-cover-page .ache-page-head,.ache-cover-page .ache-footer{position:relative;z-index:4}
+.ache-cover-content{position:absolute;inset:0;z-index:1;display:grid;place-items:center;padding:0}
 .ache-cover-visual{width:100%;height:100%;min-width:0;min-height:0;display:grid;place-items:center}
 .ache-paper-mat{position:relative;width:fit-content;max-width:94%;height:fit-content;max-height:100%;padding:clamp(6px,1.4cqw,13px);background:#fff;border:1px solid rgba(120,168,220,.28);box-shadow:0 12px 30px rgba(43,73,105,.08);transform:rotate(-.35deg)}
-.ache-cover-visual .ache-paper-mat{width:94%;height:94%;min-width:0;min-height:0;display:grid;place-items:center}
 .ache-paper-mat::before{content:"";position:absolute;inset:-5px;z-index:-1;border:1px dashed rgba(120,168,220,.3);transform:rotate(.5deg)}
 .ache-cover-visual img{width:100%;height:100%;min-width:0;min-height:0;max-width:100%;max-height:100%;object-fit:contain}
 .ache-cover-content.no-visual .ache-paper-mat{width:76%;height:70%}
@@ -51,17 +51,24 @@ img{display:block;max-width:100%}
 .ache-visual-layout-journal-columns .ache-panel-count-3{grid-template:repeat(2,minmax(0,1fr))/minmax(0,1.08fr) minmax(0,.92fr);gap:3%}
 .ache-visual-layout-journal-columns .ache-panel:first-child{grid-row:1/3}
 .ache-visual-layout-evidence-strip .ache-panel-stack{grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:1fr}
-.ache-panel{position:relative;min-height:0;margin:0;padding:clamp(5px,1.2cqw,10px);display:grid;place-items:center;background:#fff;border:1px solid rgba(120,168,220,.32);box-shadow:0 8px 20px rgba(43,73,105,.07)}
+.ache-panel{position:relative;min-width:0;min-height:0;margin:0;padding:0;display:grid;place-items:center;background:transparent;border:0;box-shadow:none}
 .ache-panel:nth-child(2),.ache-panel:nth-child(3){transform:none}
 .ache-panel img{width:100%;height:100%;min-width:0;min-height:0;object-fit:contain}
-.ache-route-p .ache-panel:has(.ache-image-portrait),.ache-route-p .ache-panel:has(.ache-image-portrait-soft){border-radius:48% 45% 42% 46%/4% 5% 4% 6%;padding:2.2cqw;background:linear-gradient(150deg,#fff 0 82%,rgba(219,233,247,.38))}
-.ache-route-p .ache-panel:has(.ache-image-landscape),.ache-route-p .ache-panel:has(.ache-image-landscape-wide){border-radius:2% 5% 3% 4%/5% 3% 6% 2%}
+.ache-frame{position:relative;overflow:visible;background:transparent}
+.ache-frame-flush{padding:0;border:0;box-shadow:none}
+.ache-frame-paper-mat,.ache-frame-torn-paper-frame{padding:clamp(4px,.75cqw,8px);background:#fff;box-shadow:0 7px 16px color-mix(in srgb,var(--ache-ink) 7%,transparent)}
+.ache-frame-paper-mat{border:1px solid color-mix(in srgb,var(--ache-ice) 28%,transparent)}
+.ache-frame-torn-paper-frame{border:0;clip-path:polygon(1% 2%,12% .4%,24% 1.6%,37% .2%,51% 1.4%,65% .3%,79% 1.7%,91% .5%,99% 2%,98.6% 14%,99.4% 28%,98.7% 43%,99.5% 59%,98.8% 74%,99.3% 89%,98% 99%,84% 98.7%,70% 99.4%,55% 98.6%,41% 99.3%,27% 98.5%,13% 99.2%,1% 98%,1.5% 84%,.6% 69%,1.4% 53%,.5% 38%,1.3% 21%)}
+.ache-frame-organic-window{overflow:hidden;border-radius:48% 45% 42% 46%/6% 8% 5% 7%;box-shadow:none}
+.ache-frame-die-cut-transparent{padding:0;background:transparent;border:0;box-shadow:none;overflow:visible}
+.ache-frame-transparent img{background:transparent}
+.ache-route-p .ache-panel:has(.ache-image-portrait),.ache-route-p .ache-panel:has(.ache-image-portrait-soft){padding:clamp(4px,.75cqw,8px)}
 .ache-note-strip{align-self:stretch;display:flex;flex-direction:column;justify-content:space-around;gap:3%;padding:3% 0}
 .ache-note-strip p{margin:0;color:var(--ache-ink);font-family:var(--ache-note);font-size:clamp(12px,2.15cqw,19px);line-height:1.45}
 .ache-note-strip p span{display:block;margin-bottom:.25em;color:var(--ache-ice);font-family:var(--ache-display);font-size:.72em;letter-spacing:.08em}
 .ache-note-strip p::after{content:"";display:block;width:54%;height:2px;margin-top:.55em;background:var(--ache-ice);transform:rotate(-2deg);opacity:.5}
 .ache-route-p .ache-visual-content{grid-template-columns:minmax(0,1fr) minmax(110px,24%)}
-.ache-route-p .ache-panel{border:0;padding:clamp(8px,1.8cqw,15px);outline:1px dashed rgba(102,116,135,.28);outline-offset:-4px}
+.ache-route-p .ache-panel{border:0;outline:0}
 .ache-route-p .ache-panel img{object-fit:contain}
 .ache-text-layout{min-height:0;display:grid;grid-template-columns:minmax(0,1fr);gap:3%;align-content:start}
 .ache-text-page--with-visual .ache-text-layout{grid-template-columns:minmax(0,1.5fr) minmax(150px,.72fr);align-items:start;align-content:stretch}
@@ -106,7 +113,7 @@ img{display:block;max-width:100%}
 .ache-text-recipe-longform-balanced-reading .ache-longform-pullquote{width:fit-content;max-width:88%;margin:1.25em 0 1.4em!important;padding:.72em 1em .68em!important;border-left:2px solid var(--ache-coral)!important;background:linear-gradient(90deg,rgba(219,233,247,.42),rgba(255,255,255,0) 92%);font-size:1.08em;line-height:1.66;text-align:left!important}
 .ache-text-side{align-self:end;max-width:58%;margin:0 0 2% auto;color:var(--ache-ink-soft);font-family:var(--ache-note);font-size:clamp(11px,1.8cqw,16px);line-height:1.45;border-bottom:2px solid var(--ache-ice-pale)}
 .ache-inline-visual{align-self:end;min-width:0;margin:0}
-.ache-inline-visual .ache-paper-mat{max-width:100%;max-height:none;padding:clamp(5px,1cqw,9px);transform:rotate(.4deg)}
+.ache-inline-visual .ache-frame{max-width:100%;max-height:none}
 .ache-inline-visual img{width:100%;height:auto;max-height:34cqw;object-fit:contain}
 .ache-inline-visual figcaption{margin-top:8px;color:var(--ache-ink-soft);font-family:var(--ache-note);font-size:clamp(10px,1.55cqw,14px);line-height:1.4}
 .ache-empty-visual{display:grid;place-items:center;width:100%;height:100%;min-height:180px;color:var(--ache-ink-soft);font-family:var(--ache-note);background:radial-gradient(circle at 48% 42%,rgba(120,168,220,.16),transparent 21%),#fff}

@@ -27,6 +27,7 @@ import {
   inspectPortableShares,
   preparePortableSharePrompt
 } from "./portable-export.mjs";
+import {validateRenderedHtml} from "./validate-rendered-html.mjs";
 
 function parseArgs(argv) {
   const [command, ...rest] = argv;
@@ -157,6 +158,11 @@ async function main() {
     return;
   }
 
+  if (command === "validate-html") {
+    print(await validateRenderedHtml(path.resolve(args.input)));
+    return;
+  }
+
   if (command === "init-book") {
     const library = path.resolve(args.library);
     const bookId = safeSegment(args["book-id"], "bookId");
@@ -172,7 +178,7 @@ async function main() {
     const profile = {
       schemaVersion: "1.1.0",
       onboardingVersion: "ache-onboarding/1.1.0",
-      designSystemVersion: "ache-design-system/1.4.1",
+      designSystemVersion: "ache-design-system/1.5.0",
       bookId,
       title: args.title ?? "我的漫画人生",
       style: {
@@ -209,7 +215,10 @@ async function main() {
     const plan = raw.plan ?? planEntry(raw, profile);
     print(await appendEpisode(library, {
       ...raw,
-      route: plan.route
+      route: plan.route,
+      style: raw.style ?? profile.style ?? null,
+      palette: raw.palette ?? plan.layout?.theme?.colors ?? profile.palette ?? null,
+      paletteSource: raw.paletteSource ?? plan.layout?.theme?.source ?? (raw.palette ? "chapter-theme" : "style-default")
     }));
     return;
   }

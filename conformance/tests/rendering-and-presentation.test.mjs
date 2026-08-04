@@ -37,7 +37,16 @@ function sampleEpisode(overrides = {}) {
     visualStatus: "ready",
     pageAssets: [
       {src: "assets/sample/01.png", alt: "雨后窗台", role: "cover-visual"},
-      {src: "assets/sample/02.png", alt: "亮起来的杯子", role: "body-visual"}
+      {
+        src: "assets/sample/02.png",
+        alt: "亮起来的杯子",
+        role: "body-visual",
+        intrinsicWidth: 720,
+        intrinsicHeight: 760,
+        frameContentWidth: 720,
+        frameContentHeight: 760,
+        frameFitStatus: "matched"
+      }
     ],
     ...overrides
   };
@@ -57,6 +66,73 @@ test("monthly renderer owns fixed page artboards instead of generic blog HTML", 
   assert.doesNotMatch(html, /ache-text-token/u);
   assert.doesNotMatch(html, /\.ache-title[^}]*white-space:\s*nowrap/u);
   assert.match(html, /data-image-fit="contain"/u);
+  assert.match(html, /data-theme-source="style-default"/u);
+  assert.doesNotMatch(html, /ache-cover-visual"><div class="ache-paper-mat"/u);
+});
+
+test("renderer carries matched frame geometry and chapter-specific palette tokens", () => {
+  const html = renderMonthlyDocument(
+    {title: "我的漫画人生"},
+    {month: "2026-07", episodes: [sampleEpisode({
+      styleId: "custom-pixel",
+      paletteSource: "reference",
+      palette: {
+        ink: "#1B2040",
+        soft: "#665F8B",
+        primary: "#6D5DDF",
+        pale: "#E8E4FF",
+        accent: "#E04FA3"
+      },
+      pageAssets: [
+        {src: "assets/sample/01.png", alt: "封面", role: "cover-visual", intrinsicWidth: 1080, intrinsicHeight: 1440},
+        {
+          src: "assets/sample/02.png",
+          alt: "一格漫画",
+          role: "body-visual",
+          intrinsicWidth: 720,
+          intrinsicHeight: 420,
+          frameContentWidth: 720,
+          frameContentHeight: 420,
+          frameFitStatus: "matched",
+          edgeTreatment: "paper-mat"
+        }
+      ]
+    })]}
+  );
+  assert.equal(validateRenderedHtmlText(html).status, "PASS");
+  assert.match(html, /--ache-ice:#6D5DDF/u);
+  assert.match(html, /data-theme-source="reference"/u);
+  assert.match(html, /data-frame-fit="matched"/u);
+  assert.match(html, /--ache-media-ratio:720 \/ 420/u);
+});
+
+test("supporting illustrations render as transparent die-cut components without a generic paper mat", () => {
+  const html = renderMonthlyDocument(
+    {title: "一本书"},
+    {month: "2026-07", episodes: [sampleEpisode({
+      route: "K",
+      text: "先理解背景，再观察关系，最后写下自己的理解。",
+      pageAssets: [
+        {src: "assets/sample/cover.png", alt: "封面", role: "cover-visual"},
+        {
+          src: "assets/sample/vignette.svg",
+          alt: "关系插图",
+          role: "explanatory-vignette",
+          backgroundMode: "svg-vector",
+          edgeTreatment: "die-cut-transparent",
+          intrinsicWidth: 480,
+          intrinsicHeight: 480,
+          frameContentWidth: 480,
+          frameContentHeight: 480,
+          frameFitStatus: "matched"
+        }
+      ]
+    })]}
+  );
+  assert.equal(validateRenderedHtmlText(html).status, "PASS");
+  assert.match(html, /ache-frame-die-cut-transparent/u);
+  assert.match(html, /data-background-mode="svg-vector"/u);
+  assert.doesNotMatch(html, /ache-inline-visual"><div class="ache-paper-mat"/u);
 });
 
 test("text-first routes keep cover and readable body pages with sparse illustration", () => {

@@ -33,6 +33,7 @@ for (const viewport of [
   });
   page.on("pageerror", (error) => consoleErrors.push(error.message));
   await page.goto(`file://${fixture.monthlyIndex}`, {waitUntil: "load"});
+  await page.waitForFunction(() => document.documentElement.dataset.acheLayoutStatus !== "PENDING");
   await page.screenshot({
     path: path.join(screenshots, `${viewport.name}.png`),
     fullPage: true
@@ -48,7 +49,7 @@ for (const viewport of [
     );
     const pageMetrics = [...document.querySelectorAll(".ache-page")].map((artboard, pageIndex) => {
       const header = artboard.querySelector(".ache-page-head")?.getBoundingClientRect();
-      const content = artboard.querySelector("main[data-layout-zone],.ache-cover-content")?.getBoundingClientRect();
+      const content = artboard.querySelector('main[data-layout-zone]:not([data-layout-zone="cover-background"])')?.getBoundingClientRect();
       const footer = artboard.querySelector(".ache-footer")?.getBoundingClientRect();
       const textSizes = [...artboard.querySelectorAll(".ache-text-column")]
         .map((element) => Number.parseFloat(getComputedStyle(element).fontSize));
@@ -133,7 +134,9 @@ for (const viewport of [
         item.hiddenOverflow || item.zoneCollision || item.imageOutOfPage || item.cropWithoutOptIn || item.underfilledTextPage || item.excessiveInternalGap
       ),
       designSystem:
-        document.querySelector('meta[name="ache-design-system"]')?.content ?? null
+        document.querySelector('meta[name="ache-design-system"]')?.content ?? null,
+      runtimeLayoutStatus: document.documentElement.dataset.acheLayoutStatus ?? null,
+      runtimeLayoutFailures: document.documentElement.dataset.acheLayoutFailures ?? null
     };
   });
   results.push({
@@ -143,10 +146,10 @@ for (const viewport of [
     pass:
       !metrics.horizontalOverflow
       && metrics.missingImages === 0
-      && metrics.requiredImageCount === 4
+      && metrics.requiredImageCount === 7
       && metrics.outOfCanvas === 0
       && metrics.pageCount >= 6
-      && metrics.articleCount === 4
+      && metrics.articleCount === 5
       && metrics.pendingCount === 1
       && metrics.hiddenOverflowCount === 0
       && metrics.zoneCollisionCount === 0
@@ -155,7 +158,8 @@ for (const viewport of [
       && metrics.underfilledTextPageCount === 0
       && metrics.excessiveInternalGapCount === 0
       && (viewport.name !== "mobile" || metrics.minimumBodyFont >= 12)
-      && metrics.designSystem === "ache-design-system/1.4.1"
+      && metrics.designSystem === "ache-design-system/1.5.0"
+      && metrics.runtimeLayoutStatus === "PASS"
       && consoleErrors.length === 0
   });
   await page.close();

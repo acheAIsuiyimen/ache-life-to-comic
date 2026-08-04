@@ -5,6 +5,7 @@ import {atomicWriteJson, atomicWriteText, ensureDir, readJsonIfExists} from "./i
 import {installRendererAssets, renderMonthlyDocument} from "./page-renderer.mjs";
 import {assertAssetContract, normalizeAsset, readImageSize} from "./asset-contract.mjs";
 import {preparePortableSharePrompt} from "./portable-export.mjs";
+import {validateRenderedHtmlText} from "./validate-rendered-html.mjs";
 
 const wait = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
 
@@ -37,7 +38,7 @@ function safeSegment(value, label) {
 
 function safeImageExtension(source) {
   const extension = path.extname(source).toLowerCase();
-  if (![".png", ".jpg", ".jpeg", ".webp", ".gif", ".avif"].includes(extension)) {
+  if (![".png", ".jpg", ".jpeg", ".webp", ".gif", ".avif", ".svg"].includes(extension)) {
     throw new Error(`Unsupported page image extension: ${extension || "(none)"}`);
   }
   return extension;
@@ -297,7 +298,11 @@ export async function appendEpisode(root, rawEpisode) {
     placement: rawEpisode.placement ?? "event-date",
     visualStatus: rawEpisode.visualStatus ?? "ready",
     coverDirection: rawEpisode.coverDirection ?? null,
-    visualLayout: rawEpisode.visualLayout ?? null
+    visualLayout: rawEpisode.visualLayout ?? null,
+    style: rawEpisode.style ?? null,
+    styleId: rawEpisode.styleId ?? rawEpisode.style?.id ?? "02-snow-pastel",
+    palette: rawEpisode.palette ?? null,
+    paletteSource: rawEpisode.paletteSource ?? null
   };
   if (!episode.bookId || !episode.idempotencyKey || !episode.recordedAt) {
     throw new Error("bookId, idempotencyKey and recordedAt are required");
@@ -404,6 +409,9 @@ export async function appendEpisode(root, rawEpisode) {
       }, intrinsic, {assetId: `monthly-cover-${placement.month}`});
       delete volume.coverAsset.path;
       assertAssetContract(volume.coverAsset);
+      volume.styleId = rawEpisode.monthlyCover.styleId ?? episode.styleId;
+      volume.palette = rawEpisode.monthlyCover.palette ?? episode.palette;
+      volume.paletteSource = rawEpisode.monthlyCover.paletteSource ?? episode.paletteSource;
     }
     volume.episodes = sortEpisodes([...volume.episodes, committed]);
     volume.updatedAt = committed.committedAt;
@@ -414,10 +422,12 @@ export async function appendEpisode(root, rawEpisode) {
       episodes: volume.episodes
     });
     await installRendererAssets(volumeLocations.edition);
-    await atomicWriteText(
-      volumeLocations.index,
-      renderMonthlyDocument({title: series.title}, volume)
-    );
+    const renderedHtml = renderMonthlyDocument({title: series.title}, volume);
+    const renderedValidation = validateRenderedHtmlText(renderedHtml);
+    if (renderedValidation.status !== "PASS") {
+      throw new Error(`Rendered HTML rejected: ${renderedValidation.failures.join(",")}`);
+    }
+    await atomicWriteText(volumeLocations.index, renderedHtml);
 
     const monthRecord = {
       month: placement.month,

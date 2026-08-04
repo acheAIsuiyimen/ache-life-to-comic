@@ -3,9 +3,10 @@
 ## Current result
 
 - Skill files: 54
-- Automated tests: 62 / 62
+- Automated tests: 84 / 84
 - Desktop render: PASS
 - Mobile render: PASS
+- Visual stress fixture: 5 routes / 10 pages / 7 required visuals; zero overflow, collision, crop, missing image or console error
 - Required images and console: PASS
 - README effect showcase, book scene, static hero and animation: PASS
 - README HD assets: hero 2400×1260; showcase 3600×2000; book scene 3600×2250; six route sheets 3600×1920
@@ -29,12 +30,18 @@
 9. A separate presentation contract; required visuals need a real `displayed` receipt.
 10. Balanced Chinese title wrapping and explicit handling for precomposed pages.
 11. Default editable `HTML + assets` plus explicit light / faithful / skip portable export choices at four completion levels.
+12. Image-aware frames: generated slots use exact target geometry; frame/image ratio drift above 2.5% fails closed.
+13. HeyTea-like irregular edges only protect safe generated subjects; original photos use outer paper treatments without destructive masks.
+14. Supporting illustrations require transparent raster or SVG; white rectangular pseudo-transparency is rejected.
+15. Chapter palettes can follow style, reference and mood while the page ground stays pure white.
+16. Every official monthly HTML carries a runtime layout guard and can be rechecked with `validate-html` after cross-platform delivery.
 
 ## Commands
 
 ```bash
 node --test conformance/tests/*.test.mjs
 node scripts/cli.mjs onboarding-start
+node scripts/cli.mjs validate-html --input path/to/index.html
 ```
 
 The Skill package intentionally contains no provider credentials, local user data, `.env`, or provider-specific image configuration.
