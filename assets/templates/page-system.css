@@ -71,20 +71,27 @@ img{display:block;max-width:100%}
 .ache-route-p .ache-visual-content{grid-template-columns:minmax(0,1fr) minmax(110px,24%)}
 .ache-route-p .ache-panel{border:0;outline:0}
 .ache-route-p .ache-panel img{object-fit:contain}
-.ache-text-layout{min-height:0;display:grid;grid-template-columns:minmax(0,1fr);gap:3%;align-content:start}
-.ache-text-page--with-visual .ache-text-layout{grid-template-columns:minmax(0,1.5fr) minmax(150px,.72fr);align-items:start;align-content:stretch}
-.ache-text-column{min-width:0;font-family:var(--ache-reading);font-size:clamp(13px,2.05cqw,19px);line-height:1.65}
-.ache-text-column p{margin:0 0 .85em}
-.ache-text-column ul{margin:0;padding:0;list-style:none}
-.ache-text-column li{position:relative;margin:0 0 .62em;padding-left:1.25em}
-.ache-text-column li::before{content:"";position:absolute;left:0;top:.72em;width:.52em;height:2px;border-radius:99px;background:var(--ache-ice);transform:rotate(-7deg)}
-.ache-density-short .ache-text-layout{align-content:center}
-.ache-density-short .ache-text-column{font-size:clamp(16px,2.55cqw,23px);line-height:1.72;max-width:92%}
-.ache-density-short.ache-text-page--with-visual .ache-text-layout{align-content:center}
-.ache-density-regular .ache-text-column{font-size:clamp(14px,2.18cqw,20px);line-height:1.68}
-.ache-density-dense .ache-text-column{font-size:clamp(13px,1.92cqw,18px);line-height:1.58}
-.ache-text-recipe-knowledge-sequence-journal{height:100%;grid-template-columns:minmax(0,1.28fr) minmax(170px,.72fr);align-content:stretch;align-items:stretch}
-.ache-text-recipe-knowledge-sequence-journal .ache-text-column{height:100%;display:flex;flex-direction:column;padding:1.5% 0 2%}
+/* 文字页主区：纵向 flex——上面是 100% 宽度的规律排版文字，
+   下面是"留白区"（flex:1 的真实排版空间），贴纸只活在留白区里 */
+.ache-text-layout{min-height:0;display:flex;flex-direction:column;gap:0}
+/* ———————————————————————————————————————————————————————————
+   留白区贴纸 (whitespace-zone sticker): 文字先按 100% 宽度规律排版，
+   贴纸只放在正文之后的留白区里。留白区是排版流中的真实空间，
+   所以贴纸原理上不可能遮字、不可能飞出页面。
+   尺寸与留白区高度随文字密度自适应：字少贴大、字多贴小。
+   ——————————————————————————————————————————————————————————— */
+
+/* 文字容器：始终 100% 宽度，正常排版 */
+.ache-text-full{min-width:0;width:100%;flex:0 1 auto;min-height:0;font-family:var(--ache-reading);font-size:clamp(13px,2.05cqw,19px);line-height:1.65}
+.ache-text-full p{margin:0 0 .85em}
+.ache-text-full ul{margin:0;padding:0;list-style:none}
+/* 通用小横线标记只给普通列表；会议条目自带圆圈/勾选/短横标记，
+   不套用——否则每个会议条目都是"双标记" */
+.ache-text-full li:not(.ache-meeting-li){position:relative;margin:0 0 .62em;padding-left:1.25em}
+.ache-text-full li:not(.ache-meeting-li)::before{content:"";position:absolute;left:0;top:.72em;width:.52em;height:2px;border-radius:99px;background:var(--ache-ice);transform:rotate(-7deg)}
+
+/* K 知识页样式 */
+.ache-text-recipe-knowledge-sequence-journal{height:auto;align-content:start}
 .ache-knowledge-intro{padding:.82em 1em .9em;border-left:3px solid var(--ache-ice);background:linear-gradient(90deg,rgba(219,233,247,.58),rgba(255,255,255,0) 88%)}
 .ache-knowledge-intro span{display:block;margin-bottom:.38em;color:var(--ache-ice);font-family:var(--ache-note);font-size:.72em;letter-spacing:.08em}
 .ache-knowledge-intro p{margin:0!important}
@@ -94,34 +101,109 @@ img{display:block;max-width:100%}
 .ache-knowledge-steps li>span{color:var(--ache-ice);font-family:var(--ache-display);font-size:.72em;letter-spacing:.08em}
 .ache-knowledge-steps li p{margin:0!important;font-size:1.06em}
 .ache-knowledge-reflection{width:fit-content;max-width:92%;margin:auto 0 0!important;padding:.58em .2em .35em;color:var(--ache-ink);font-family:var(--ache-note);font-size:1.08em;border-bottom:2px solid var(--ache-coral);transform:rotate(-.7deg)}
-.ache-route-k .ache-inline-visual{align-self:end;margin-bottom:8%;transform:translateX(-2%) rotate(.6deg)}
-.ache-route-m .ache-text-column ul{display:grid;gap:.18em}
-.ache-route-m .ache-meeting-item{margin:0;padding:.42em .3em .52em 1.35em;border-bottom:1px solid rgba(120,168,220,.14)}
-.ache-route-m .ache-meeting-item::before{top:1.12em;width:.48em;height:.48em;border-radius:50%;background:var(--ache-ice);transform:none}
-.ache-route-m .ache-meeting-decision::before{background:var(--ache-coral)}
-.ache-route-m .ache-meeting-risk{border-bottom-color:rgba(201,99,85,.26)}
-.ache-route-m .ache-meeting-risk::before{background:transparent;border:1.5px solid var(--ache-coral)}
-.ache-route-m .ache-meeting-action{padding-left:1.55em}
-.ache-route-m .ache-meeting-action::before{width:.7em;height:2px;border:0;border-radius:99px;background:var(--ache-ice);transform:rotate(-7deg)}
-.ache-text-recipe-meeting-editorial-ledger{height:100%;grid-template-rows:minmax(0,1fr) auto;align-content:stretch}
-.ache-text-recipe-meeting-editorial-ledger .ache-text-column{min-height:0;height:100%}
-.ache-text-recipe-meeting-editorial-ledger .ache-text-column ul{height:100%;align-content:space-between;gap:.2em}
-.ache-text-page--with-visual .ache-text-recipe-meeting-editorial-ledger{grid-template-columns:minmax(0,1.6fr) minmax(150px,.58fr);grid-template-rows:minmax(0,1fr)}
-.ache-text-recipe-longform-balanced-reading{height:100%;grid-template-rows:auto auto;align-content:start}
-.ache-text-recipe-longform-balanced-reading .ache-text-column{height:auto;display:block;max-width:78%;padding:1.5% 0 2.5%;font-size:clamp(16px,2.35cqw,21px);line-height:1.8}
-.ache-text-page--flow-visual .ache-text-recipe-longform-balanced-reading{grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto auto;gap:1%;align-content:start}
-.ache-text-page--flow-visual .ache-text-recipe-longform-balanced-reading .ache-text-column{max-width:100%;padding-bottom:0}
-.ache-text-page--flow-visual .ache-longform-segment--continuation{padding-top:0}
-.ache-text-page--flow-visual .ache-longform-flow-visual{width:min(42%,320px);max-height:24cqw;justify-self:end;align-self:start;margin:.1em 3% .8em 0}
-.ache-text-page--flow-visual .ache-longform-flow-visual img{max-height:20cqw}
-.ache-text-recipe-longform-balanced-reading .ache-text-column p{margin:0 0 1.05em;text-align:justify;text-justify:inter-ideograph}
-.ache-text-recipe-longform-balanced-reading .ache-text-column p:first-child{padding-left:1em;border-left:3px solid var(--ache-ice)}
+
+/* M 会议页样式 */
+.ache-meeting-meta{display:flex;flex-wrap:wrap;gap:0 1.2em;margin-bottom:.9em;font-family:var(--ache-note);font-size:.88em;color:var(--ache-ink-soft)}
+.ache-meeting-meta span{display:inline-flex;gap:.35em;align-items:baseline}
+.ache-meeting-meta b{color:var(--ache-ice);font-family:var(--ache-display);font-weight:400;font-size:.9em;letter-spacing:.04em}
+.ache-meeting-section{margin:1em 0 .45em;padding:0;font-family:var(--ache-note);font-size:1.02em;font-weight:400;color:var(--ache-ink);border-bottom:1.5px solid var(--ache-ice-pale);padding-bottom:.25em;transform:rotate(-.2deg)}
+.ache-meeting-section::before{content:"";display:inline-block;width:1.6em;height:.55em;margin-right:.5em;background:var(--ache-ice);opacity:.35;border-radius:2px;transform:translateY(-.1em) rotate(-1.5deg)}
+.ache-meeting-list{margin:0;padding:0;list-style:none}
+.ache-meeting-li{position:relative;display:flex;gap:.6em;align-items:flex-start;margin:0 0 .38em;padding:.3em 0 .38em 0;border-bottom:1px solid rgba(120,168,220,.1)}
+.ache-meeting-li:last-child{border-bottom:0}
+.ache-meeting-li--bullet{padding-left:1em}
+.ache-meeting-dash{position:relative;flex:0 0 auto;width:1em;margin-top:.72em}
+.ache-meeting-dash::before{content:"";position:absolute;left:0;top:50%;width:.7em;height:2px;background:var(--ache-ice);border-radius:99px;transform:translateY(-50%) rotate(-6deg)}
+.ache-meeting-num{flex:0 0 auto;display:inline-grid;place-items:center;min-width:1.55em;height:1.55em;margin-top:.08em;font-family:var(--ache-display);font-size:.82em;color:var(--ache-ice);background:rgba(120,168,220,.12);border-radius:50%;transform:rotate(-2deg)}
+.ache-meeting-num--decision{color:var(--ache-coral);background:rgba(201,99,85,.12)}
+.ache-meeting-check{flex:0 0 auto;margin-top:.12em;color:var(--ache-ice)}
+.ache-meeting-subhead{margin:.95em 0 .35em;font-family:var(--ache-note);font-size:.98em;font-weight:500;color:var(--ache-ink)}
+.ache-meeting-subhead::before{content:"";display:inline-block;width:.52em;height:.52em;margin-right:.5em;background:var(--ache-coral);border-radius:1.5px;opacity:.55;transform:rotate(-4deg) translateY(-.04em)}
+.ache-meeting-tone-decision .ache-meeting-text{font-weight:500}
+.ache-meeting-tone-risk .ache-meeting-text{color:color-mix(in srgb,var(--ache-ink) 88%,var(--ache-coral));text-decoration:underline wavy rgba(201,99,85,.45);text-underline-offset:3px;text-decoration-thickness:1.5px}
+.ache-meeting-priority{display:inline-block;padding:0 .38em;margin:0 .15em;font-family:var(--ache-display);font-size:.88em;font-style:normal;color:#fff;background:var(--ache-coral);border-radius:3px;transform:rotate(-1.5deg);box-shadow:0 1px 0 rgba(201,99,85,.25)}
+.ache-meeting-sep{color:var(--ache-ice-pale);margin:0 .15em}
+.ache-meeting-next{display:flex;align-items:center;gap:.6em;margin-top:.85em;padding:.5em .7em;background:linear-gradient(90deg,rgba(120,168,220,.1),transparent 90%);border-left:3px solid var(--ache-ice);transform:rotate(-.3deg)}
+.ache-meeting-next-tag{flex:0 0 auto;padding:.15em .5em;font-family:var(--ache-display);font-size:.8em;color:#fff;background:var(--ache-ice);border-radius:2px;transform:rotate(-1deg)}
+.ache-meeting-next-text{font-family:var(--ache-note);font-size:.95em;color:var(--ache-ink)}
+
+/* M 呼吸感按密度分档：内容轻的页（short/regular）条目间距舒展，
+   让结构化清单先撑满页面；dense 页保持紧凑。估算器常量与本节奏
+   联动标定（条目 ≈ 行×25px + 21px） */
+.ache-route-m.ache-density-regular .ache-meeting-li{margin-bottom:.55em;padding:.4em 0 .5em}
+.ache-route-m.ache-density-regular .ache-meeting-section{margin:1.2em 0 .55em}
+.ache-route-m.ache-density-regular .ache-meeting-subhead{margin:1.1em 0 .45em}
+.ache-route-m.ache-density-short .ache-meeting-li{margin-bottom:.8em;padding:.5em 0 .6em}
+.ache-route-m.ache-density-short .ache-meeting-section{margin:1.4em 0 .7em}
+.ache-route-m.ache-density-short .ache-meeting-subhead{margin:1.25em 0 .5em}
+.ache-route-m.ache-density-short .ache-meeting-meta{margin-bottom:1.2em}
+.ache-route-m.ache-density-short .ache-meeting-next{margin-top:1.1em}
+
+/* 贴纸图注：照片贴纸下方的手写小注（如会议页"现场记录"） */
+.ache-zone-sticker-caption{margin-top:.45em;text-align:center;font-family:var(--ache-note);font-size:clamp(10px,1.5cqw,12px);letter-spacing:.1em;color:var(--ache-ink-soft)}
+
+/* 密度适配：字号随行文密度变化 */
+.ache-density-short .ache-text-full{font-size:clamp(16px,2.55cqw,23px);line-height:1.72;max-width:100%;padding-top:3%}
+.ache-density-regular .ache-text-full{font-size:clamp(14px,2.18cqw,20px);line-height:1.68}
+.ache-density-dense .ache-text-full{font-size:clamp(13px,1.92cqw,18px);line-height:1.58}
+
+/* ———————————————————————————————————————————————————————————
+   留白区（sticker zone）：正文之后的真实排版空间。
+   min-height 按密度保证贴纸永远有容身之处，绝不会向上挤进文字。
+   ——————————————————————————————————————————————————————————— */
+.ache-sticker-zone{position:relative;flex:1 1 auto;min-height:0}
+.ache-sticker-zone--roomy{min-height:185px}
+.ache-sticker-zone--regular{min-height:132px}
+.ache-sticker-zone--tight{min-height:98px}
+
+/* 贴纸基础样式：定位在留白区内部，轻微旋转 + 柔和投影 */
+.ache-zone-sticker{position:absolute;z-index:3;margin:0;pointer-events:none;transform:rotate(var(--sticker-tilt,0deg));filter:drop-shadow(0 2px 6px rgba(43,73,105,.12))}
+
+/* 贴纸贴着文字末尾（留白区上部），像写完字随手在旁边一贴；
+   不在大片留白里垂直居中——那会让贴纸漂在荒原中央、脚下留死白 */
+.ache-zone-sticker--ml{top:14px;left:4%}
+.ache-zone-sticker--mr{top:14px;right:4%}
+
+/* 贴纸尺寸随留白档位自适应：空间越足贴越大，但始终是配角 */
+.ache-sticker-zone--roomy .ache-zone-sticker--photo{width:clamp(170px,30cqw,228px)}
+.ache-sticker-zone--regular .ache-zone-sticker--photo{width:clamp(135px,24cqw,175px)}
+.ache-sticker-zone--tight .ache-zone-sticker--photo{width:clamp(105px,19cqw,140px)}
+.ache-sticker-zone--roomy .ache-zone-sticker--svg{width:clamp(130px,24cqw,175px)}
+.ache-sticker-zone--regular .ache-zone-sticker--svg{width:clamp(100px,18cqw,135px)}
+.ache-sticker-zone--tight .ache-zone-sticker--svg{width:clamp(80px,14cqw,105px)}
+
+/* 照片贴纸：胶带拍立得（白边相纸 + 和纸胶带 + 微旋转） */
+.ache-taped-photo-frame{position:relative;padding:4px 4px 12px;background:#fff;border:1px solid rgba(120,168,220,.34);box-shadow:0 3px 9px rgba(43,73,105,.14)}
+.ache-taped-photo-frame::before{content:"";position:absolute;top:-7px;left:50%;z-index:3;width:42%;height:12px;transform:translateX(-50%) rotate(-3deg);background:linear-gradient(180deg,color-mix(in srgb,var(--ache-ice) 28%,rgba(255,255,255,.55)),color-mix(in srgb,var(--ache-ice) 18%,rgba(255,255,255,.5)));border-left:1px dashed rgba(255,255,255,.8);border-right:1px dashed rgba(255,255,255,.8);border-radius:1px;opacity:.9}
+.ache-taped-photo-frame img{display:block;width:100%;height:auto;object-fit:contain}
+/* 竖图兜底：限制位图高度，保证相纸总高始终小于留白区 min-height */
+.ache-sticker-zone--tight .ache-zone-sticker--photo img{max-height:76px}
+.ache-sticker-zone--regular .ache-zone-sticker--photo img{max-height:105px}
+.ache-sticker-zone--roomy .ache-zone-sticker--photo img{max-height:150px}
+
+/* SVG 贴纸：透明手绘小装饰 + 顶部和纸胶带 */
+.ache-zone-sticker--svg .ache-interlude-svg{display:block;width:100%;height:auto}
+.ache-zone-sticker--svg::before{content:"";position:absolute;top:-6px;left:50%;z-index:4;width:40%;height:11px;transform:translateX(-50%) rotate(-3deg);background:linear-gradient(180deg,color-mix(in srgb,var(--ache-ice) 26%,rgba(255,255,255,.55)),color-mix(in srgb,var(--ache-ice) 18%,rgba(255,255,255,.5)));border-left:1px dashed rgba(255,255,255,.75);border-right:1px dashed rgba(255,255,255,.75);border-radius:1.5px;opacity:.9}
+
+/* M 会议页适配文字容器（regular 基准；short/dense 必须带密度类
+   提高优先级，否则密度档被本规则压死、大小字号永远不生效） */
+.ache-route-m .ache-text-full{font-size:clamp(12.5px,1.95cqw,17.5px);line-height:1.65}
+.ache-route-m.ache-density-short .ache-text-full{font-size:clamp(14.5px,2.3cqw,20px);line-height:1.7}
+.ache-route-m.ache-density-dense .ache-text-full{font-size:clamp(12px,1.85cqw,16.5px);line-height:1.6}
+
+/* L 长文页适配文字容器（字号由密度档决定，不在基础规则里写死） */
+.ache-text-recipe-longform-balanced-reading .ache-text-full{height:auto;display:block;max-width:100%;padding:1.5% 0 2.5%}
+.ache-density-short .ache-text-recipe-longform-balanced-reading .ache-text-full{font-size:clamp(16px,2.35cqw,21px);line-height:1.8}
+.ache-density-regular .ache-text-recipe-longform-balanced-reading .ache-text-full{font-size:clamp(15px,2.2cqw,20px);line-height:1.75}
+.ache-density-dense .ache-text-recipe-longform-balanced-reading .ache-text-full{font-size:clamp(13.5px,1.95cqw,18px);line-height:1.65}
+.ache-text-recipe-longform-balanced-reading .ache-text-full p{margin:0 0 1.05em;text-align:justify;text-justify:inter-ideograph}
+.ache-text-recipe-longform-balanced-reading .ache-text-full p:first-child{padding-left:1em;border-left:3px solid var(--ache-ice)}
 .ache-text-recipe-longform-balanced-reading .ache-longform-pullquote{width:fit-content;max-width:88%;margin:1.25em 0 1.4em!important;padding:.72em 1em .68em!important;border-left:2px solid var(--ache-coral)!important;background:linear-gradient(90deg,rgba(219,233,247,.42),rgba(255,255,255,0) 92%);font-size:1.08em;line-height:1.66;text-align:left!important}
-.ache-text-side{align-self:end;max-width:58%;margin:0 0 2% auto;color:var(--ache-ink-soft);font-family:var(--ache-note);font-size:clamp(11px,1.8cqw,16px);line-height:1.45;border-bottom:2px solid var(--ache-ice-pale)}
-.ache-inline-visual{align-self:end;min-width:0;margin:0}
-.ache-inline-visual .ache-frame{max-width:100%;max-height:none}
-.ache-inline-visual img{width:100%;height:auto;max-height:34cqw;object-fit:contain}
-.ache-inline-visual figcaption{margin-top:8px;color:var(--ache-ink-soft);font-family:var(--ache-note);font-size:clamp(10px,1.55cqw,14px);line-height:1.4}
+
+/* 移除旧的side-column和rail相关类，兼容 fallback */
+.ache-text-column{width:100%}
+.ache-text-side{display:none}
+.ache-inline-visual{display:none}
 .ache-empty-visual{display:grid;place-items:center;width:100%;height:100%;min-height:180px;color:var(--ache-ink-soft);font-family:var(--ache-note);background:radial-gradient(circle at 48% 42%,rgba(120,168,220,.16),transparent 21%),#fff}
 .ache-precomposed-page{display:block;border-color:transparent}
 .ache-precomposed-page>img{position:absolute;inset:0;width:100%;height:100%;min-width:0;min-height:0;object-fit:contain}
@@ -134,5 +216,5 @@ img{display:block;max-width:100%}
 .ache-monthly-cover-type h1{max-width:72%;margin:0;font-family:var(--ache-display);font-size:clamp(34px,7cqw,58px);font-weight:400;line-height:1.02}
 .ache-monthly-cover-type span{position:absolute;right:0;top:.3em;color:var(--ache-ink-soft);font-family:var(--ache-note);font-size:clamp(10px,1.5cqw,14px)}
 .ache-pending{width:min(100%,760px);margin:-12px auto 20px;padding:10px 14px;border:1px dashed var(--ache-ice);color:var(--ache-ink-soft);font-family:var(--ache-note);font-size:14px}
-@media(max-width:520px){.ache-volume{padding:22px 10px 56px}.ache-volume-head{margin-bottom:22px;padding-inline:8px}.ache-page-shell{margin-bottom:16px}.ache-page{border-inline:0}.ache-episode{margin-bottom:48px}.ache-page-inner{padding:4.8% 5.6% 3.8%;gap:1.8%}.ache-text-page .ache-title{font-size:24px;line-height:1.02}.ache-text-page .ache-title--medium{font-size:22px}.ache-text-page .ache-title--long{font-size:20px}.ache-text-page .ache-page-head--continuation .ache-title{font-size:20px}.ache-visual-content{grid-template-columns:minmax(0,1fr) minmax(92px,26%);gap:3%}.ache-text-page--with-visual .ache-text-layout{grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);align-content:start}.ache-text-page--with-visual .ache-inline-visual{width:44%;max-height:128px;justify-self:end}.ache-text-page--with-visual .ache-inline-visual img{max-height:106px}.ache-text-page--with-visual .ache-inline-visual figcaption{display:none}.ache-text-page--flow-visual .ache-text-recipe-longform-balanced-reading{grid-template-rows:auto auto auto;gap:.4%}.ache-text-page--flow-visual .ache-text-recipe-longform-balanced-reading .ache-text-column{max-width:100%;padding-bottom:0}.ache-text-page--flow-visual .ache-longform-flow-visual{width:32%;max-height:82px;margin:0 2% .35em 0}.ache-text-page--flow-visual .ache-longform-flow-visual img{max-height:70px}.ache-text-column{font-size:12px;line-height:1.46}.ache-density-short .ache-text-column{font-size:14px;line-height:1.56}.ache-text-recipe-knowledge-sequence-journal{grid-template-columns:minmax(0,1fr)!important;grid-template-rows:minmax(0,1fr) auto!important}.ache-text-recipe-knowledge-sequence-journal .ache-inline-visual{width:38%;margin:0 2% 0 auto}.ache-knowledge-steps{gap:.18em;margin-top:.65em!important}.ache-knowledge-steps li{padding:.18em 0 .26em!important}.ache-knowledge-reflection{font-size:1em}.ache-text-recipe-meeting-editorial-ledger{grid-template-columns:minmax(0,1fr)!important;grid-template-rows:minmax(0,1fr) auto!important}.ache-text-recipe-meeting-editorial-ledger .ache-inline-visual{width:28%;max-height:94px;margin:0 2% 0 auto}.ache-text-recipe-meeting-editorial-ledger .ache-inline-visual .ache-paper-mat{transform:none}.ache-text-recipe-meeting-editorial-ledger .ache-inline-visual .ache-paper-mat::before{inset:0}.ache-text-recipe-meeting-editorial-ledger .ache-inline-visual img{max-height:76px}.ache-route-m .ache-text-column{font-size:12px;line-height:1.34}.ache-route-m .ache-meeting-item{margin-bottom:.08em;padding-top:.12em;padding-bottom:.18em}.ache-text-recipe-longform-balanced-reading .ache-text-column{max-width:96%;font-size:12px;line-height:1.48;padding-top:.5%;padding-bottom:1%}.ache-text-recipe-longform-balanced-reading .ache-text-column p{margin-bottom:.62em}.ache-text-recipe-longform-balanced-reading .ache-longform-pullquote{margin:.8em 0 .9em!important;padding:.52em .7em .48em!important;line-height:1.5}.ache-note-strip p{font-size:12px;line-height:1.35}}
+@media(max-width:520px){.ache-volume{padding:22px 10px 56px}.ache-volume-head{margin-bottom:22px;padding-inline:8px}.ache-page-shell{margin-bottom:16px}.ache-page{border-inline:0}.ache-episode{margin-bottom:48px}.ache-page-inner{padding:5.2% 6% 4.2%;gap:1.8%}.ache-text-page .ache-title{font-size:24px;line-height:1.02}.ache-text-page .ache-title--medium{font-size:22px}.ache-text-page .ache-title--long{font-size:20px}.ache-text-page .ache-page-head--continuation .ache-title{font-size:20px}.ache-visual-content{grid-template-columns:minmax(0,1fr) minmax(92px,26%);gap:3%}.ache-text-full{font-size:12px;line-height:1.46}.ache-density-short .ache-text-full{font-size:14px;line-height:1.56}.ache-knowledge-steps{gap:.18em;margin-top:.65em!important}.ache-knowledge-steps li{padding:.18em 0 .26em!important}.ache-knowledge-reflection{font-size:1em}.ache-route-m .ache-text-full,.ache-route-m.ache-density-short .ache-text-full,.ache-route-m.ache-density-dense .ache-text-full{font-size:12px;line-height:1.5}.ache-meeting-meta{font-size:.82em;margin-bottom:.6em;gap:0 .8em}.ache-meeting-section{font-size:.95em;margin:.7em 0 .3em}.ache-meeting-li{margin-bottom:.25em;padding:.2em 0 .28em 0}.ache-meeting-num{min-width:1.4em;height:1.4em;font-size:.78em}.ache-meeting-check svg{width:14px;height:14px}.ache-meeting-priority{font-size:.82em;padding:0 .3em}.ache-meeting-next{margin-top:.6em;padding:.4em .55em}.ache-text-recipe-longform-balanced-reading .ache-text-full,.ache-density-short .ache-text-recipe-longform-balanced-reading .ache-text-full,.ache-density-regular .ache-text-recipe-longform-balanced-reading .ache-text-full,.ache-density-dense .ache-text-recipe-longform-balanced-reading .ache-text-full{font-size:12px;line-height:1.55;padding-top:.5%;padding-bottom:1%}.ache-text-recipe-longform-balanced-reading .ache-text-full p{margin-bottom:.62em}.ache-text-recipe-longform-balanced-reading .ache-longform-pullquote{margin:.8em 0 .9em!important;padding:.52em .7em .48em!important;line-height:1.5}.ache-note-strip p{font-size:12px;line-height:1.35}.ache-sticker-zone--roomy{min-height:150px}.ache-sticker-zone--regular{min-height:110px}.ache-sticker-zone--tight{min-height:86px}.ache-sticker-zone--tight .ache-zone-sticker--photo img{max-height:58px}.ache-sticker-zone--regular .ache-zone-sticker--photo img{max-height:80px}.ache-sticker-zone--roomy .ache-zone-sticker--photo img{max-height:110px}.ache-taped-photo-frame{padding:3px 3px 9px}}
 @media print{body{background:#fff}.ache-volume{width:auto;padding:0}.ache-volume-head,.ache-episode-label{display:none}.ache-page-shell{width:1080px;height:1440px;margin:0;break-after:page}.ache-page{width:1080px;height:1440px;border:0}}

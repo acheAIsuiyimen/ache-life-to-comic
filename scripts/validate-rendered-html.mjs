@@ -1,4 +1,7 @@
 import {readFile} from "node:fs/promises";
+import {DESIGN_SYSTEM_VERSION, MONTHLY_RENDERER_VERSION} from "./page-renderer.mjs";
+
+const escapeRe = (s) => s.replace(/[.*+?^${}()|[\]\\]/gu, "\\$&");
 
 const FORBIDDEN_SIGNATURES = [
   ["raw-tool-result", "mcp_call_tool_result"],
@@ -10,10 +13,12 @@ const FORBIDDEN_SIGNATURES = [
 
 export function validateRenderedHtmlText(html) {
   const failures = [];
-  if (!/<meta name="ache-design-system" content="ache-design-system\/1\.6\.0">/u.test(html)) {
+  const designMetaRe = new RegExp(`<meta name="ache-design-system" content="${escapeRe(DESIGN_SYSTEM_VERSION)}">`, "u");
+  const rendererMetaRe = new RegExp(`<meta name="ache-renderer" content="${escapeRe(MONTHLY_RENDERER_VERSION)}">`, "u");
+  if (!designMetaRe.test(html)) {
     failures.push("missing-design-system-meta");
   }
-  if (!/<meta name="ache-renderer" content="ache-monthly-renderer\/2\.4\.0">/u.test(html)) {
+  if (!rendererMetaRe.test(html)) {
     failures.push("missing-renderer-meta");
   }
   if (!html.includes('class="ache-page ')) failures.push("missing-page-artboards");
@@ -44,9 +49,21 @@ export function validateRenderedHtmlText(html) {
   if (/<img\b[^>]*data-image-fit="cover"(?![^>]*data-crop-safe-subject="declared")[^>]*>/gu.test(html)) {
     failures.push("unsafe-crop-rendered");
   }
-  const longformVisualPages = html.match(/<section\b[^>]*class="[^"]*ache-route-l[^"]*ache-text-page--with-visual[^"]*"[^>]*>/gu) ?? [];
-  if (longformVisualPages.some((tag) => !tag.includes('data-supporting-visual-placement="between-paragraphs"'))) {
-    failures.push("longform-visual-not-in-paragraph-flow");
+  // 留白区贴纸契约：K/M/L 文字页的装饰只能以 whitespace-zone 方式出现
+  // （正文之后的真实排版空间），旧的浮贴/侧栏形态一律视为回归。
+  if (html.includes("ache-float-sticker") || html.includes("ache-text-page--with-float-stickers")) {
+    failures.push("legacy-float-sticker-regression");
+  }
+  // 会议页不做"附件大卡"：重要内容一律排版成文字，图片只是小贴纸
+  if (html.includes("ache-attachment") || html.includes("zone-attachment")) {
+    failures.push("legacy-attachment-card-regression");
+  }
+  const zoneStickerPages = html.match(/<section\b[^>]*class="[^"]*ache-text-page--with-zone-sticker[^"]*"[^>]*>/gu) ?? [];
+  if (zoneStickerPages.some((tag) => !tag.includes('data-supporting-visual-placement="whitespace-zone"'))) {
+    failures.push("zone-sticker-placement-mismatch");
+  }
+  if (/class="ache-zone-sticker/gu.test(html) && !html.includes("ache-sticker-zone")) {
+    failures.push("zone-sticker-outside-zone");
   }
   if (/\.ache-text-recipe-longform-balanced-reading\s+\.ache-text-column\s*\{[^}]*justify-content:\s*space-between/gu.test(html)) {
     failures.push("longform-forced-space-between");
