@@ -163,12 +163,22 @@ test("meeting renderer exposes editorial decision risk and action rhythm", () =>
     {month: "2026-07", episodes: [sampleEpisode({
       route: "M",
       title: "这次会留下了什么",
-      text: "背景：先核对进度。风险：接口仍不稳定。决议：周三先灰度。待办：小林周二提交清单。"
+      text: [
+        "会议主题：迭代对齐会",
+        "一、讨论内容",
+        "接口仍不稳定，风险点：通知链路可能抖动",
+        "二、会议决议",
+        "1. 周三先灰度",
+        "三、待办事项",
+        "1. 小林周二提交清单"
+      ].join("\n")
     })]}
   );
-  assert.match(html, /ache-meeting-risk/u);
-  assert.match(html, /ache-meeting-decision/u);
-  assert.match(html, /ache-meeting-action/u);
+  assert.match(html, /ache-meeting-tone-risk/u);
+  assert.match(html, /ache-meeting-tone-decision/u);
+  assert.match(html, /ache-meeting-tone-todo/u);
+  assert.match(html, /ache-meeting-check/u);
+  assert.match(html, /ache-meeting-meta/u);
 });
 
 test("knowledge workflow remains one semantic sequence instead of punctuation fragments", () => {
@@ -219,7 +229,7 @@ test("long-form rendering preserves every source character in order", () => {
     {title: "一本书"},
     {month: "2026-07", episodes: [sampleEpisode({route: "L", text: source})]}
   );
-  const renderedText = [...html.matchAll(/<div class="ache-text-column(?: [^"]*)?">([\s\S]*?)<\/div>/gu)]
+  const renderedText = [...html.matchAll(/<div class="ache-text-full(?: [^"]*)?">([\s\S]*?)<\/div>/gu)]
     .map((match) => match[1])
     .join("")
     .replaceAll("&amp;", "&")
@@ -251,7 +261,7 @@ test("long-form paragraphs keep natural flow and short quotations become intenti
   assert.equal(validateRenderedHtmlText(html).status, "PASS");
 });
 
-test("longform illustrations breathe between paragraphs instead of taking a side column", () => {
+test("longform illustrations rest in the whitespace zone after full-width text", () => {
   const source = [
     "第一段先把事实完整说清楚。",
     "第二段继续沿原来的顺序展开。",
@@ -281,9 +291,10 @@ test("longform illustrations breathe between paragraphs instead of taking a side
       ]
     })]}
   );
-  assert.match(html, /data-supporting-visual-placement="between-paragraphs"/u);
-  assert.match(html, /ache-longform-segment[\s\S]*ache-longform-flow-visual[\s\S]*ache-longform-segment--continuation/u);
+  assert.match(html, /data-supporting-visual-placement="whitespace-zone"/u);
+  assert.match(html, /ache-sticker-zone[\s\S]*ache-zone-sticker/u);
   assert.doesNotMatch(html, /ache-route-l[^>]*data-supporting-visual-placement="side-column"/u);
+  assert.doesNotMatch(html, /data-supporting-visual-placement="between-paragraphs"/u);
   assert.equal(validateRenderedHtmlText(html).status, "PASS");
 });
 
